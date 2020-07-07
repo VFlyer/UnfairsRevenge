@@ -1,0 +1,142 @@
+fileFormatVersion: 2
+guid: c1d29d7fc8c089c4f8fc7888c5100a3e
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Camera
+    100002: Inner Ring
+    100004: Light
+    100006: Outer Ring
+    100008: Reference Image
+    100010: Sixth DoughnutBL
+    100012: Sixth DoughnutBM
+    100014: Sixth DoughnutBR
+    100016: Sixth DoughnutTL
+    100018: Sixth DoughnutTM
+    100020: Sixth DoughnutTR
+    100022: //RootNode
+    400000: Camera
+    400002: Inner Ring
+    400004: Light
+    400006: Outer Ring
+    400008: Reference Image
+    400010: Sixth DoughnutBL
+    400012: Sixth DoughnutBM
+    400014: Sixth DoughnutBR
+    400016: Sixth DoughnutTL
+    400018: Sixth DoughnutTM
+    400020: Sixth DoughnutTR
+    400022: //RootNode
+    2000000: Camera
+    2100000: Blue
+    2100002: Magenta
+    2100004: Green
+    2100006: Cyan
+    2100008: Red
+    2100010: Yellow
+    2100012: No Name
+    2300000: Inner Ring
+    2300002: Outer Ring
+    2300004: Sixth DoughnutBL
+    2300006: Sixth DoughnutBM
+    2300008: Sixth DoughnutBR
+    2300010: Sixth DoughnutTL
+    2300012: Sixth DoughnutTM
+    2300014: Sixth DoughnutTR
+    3300000: Inner Ring
+    3300002: Outer Ring
+    3300004: Sixth DoughnutBL
+    3300006: Sixth DoughnutBM
+    3300008: Sixth DoughnutBR
+    3300010: Sixth DoughnutTL
+    3300012: Sixth DoughnutTM
+    3300014: Sixth DoughnutTR
+    4300000: Sixth DoughnutBL
+    4300002: Sixth DoughnutTL
+    4300004: Sixth DoughnutBR
+    4300006: Sixth DoughnutBM
+    4300008: Sixth DoughnutTM
+    4300010: Sixth DoughnutTR
+    4300012: Outer Ring
+    4300014: Inner Ring
+    10800000: Light
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
