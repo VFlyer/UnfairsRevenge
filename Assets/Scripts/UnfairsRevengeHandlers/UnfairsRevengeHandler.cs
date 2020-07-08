@@ -20,6 +20,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	public Light centerLight;
 	public ParticleSystem particles;
 	public IndicatorCoreHandler indicatorHandler;
+	//public Material[] switchableMats = new Material[2];
 
 	private string[]
 		normalModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "MIT", "PRN", "CHK", "BOB", "REP", "EAT", "STR", "IKE", "SIG", "OPP", "PVP", "NXP", "PVS", "NXS" },
@@ -71,21 +72,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		modSelf.OnActivate += delegate
 		{
 			StopCoroutine(currentlyRunning);
-			if (hardModeEnabled)
-			{
-				idxColorList.Shuffle();
-			}
-			Debug.LogFormat("[Unfair's Revenge #{0}] Button colors in clockwise order (starting on the NW button): {1}", loggingModID, idxColorList.Select(a => baseColorList[a]).Join(", "));
-			StartCoroutine(HandleStartUpAnim());
-			//StartCoroutine(TypePigpenText("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM"));
-			GenerateInstructions();
-			mainDisplay.text = "";
-			string toDisplay = ValueToFixedRoman(selectedModID);
-			strikeIDDisplay.text = FitToScreen(toDisplay, 5);
-			Debug.LogFormat("[Unfair's Revenge #{0}] Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
 
 			PrepModule();
-
 			
 			hasStarted = true;
 			LogCurrentInstruction();
@@ -142,8 +130,20 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	}
 	void PrepModule()
 	{
+		if (hardModeEnabled)
+		{
+			idxColorList.Shuffle();
+		}
+		Debug.LogFormat("[Unfair's Revenge #{0}] Button colors in clockwise order (starting on the NW button): {1}", loggingModID, idxColorList.Select(a => baseColorList[a]).Join(", "));
+		StartCoroutine(HandleStartUpAnim());
+		//StartCoroutine(TypePigpenText("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM"));
+		GenerateInstructions();
+		mainDisplay.text = "";
+		string toDisplay = ValueToFixedRoman(selectedModID);
+		strikeIDDisplay.text = FitToScreen(toDisplay, 5);
+		Debug.LogFormat("[Unfair's Revenge #{0}] Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
+
 		string baseString = splittedInstructions.Join("");
-		
 		
 		Debug.LogFormat("[Unfair's Revenge #{0}] ----------Caesar Offset Calculations----------", loggingModID);
 		int offset = 0;
@@ -499,12 +499,16 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	IEnumerator HandleFlashingAnim(int btnIdx)
 	{
 		if (btnIdx < 0 || btnIdx >= 6) yield break;
-		for (int x = 20; x > 9; x--)
+		//colorButtonRenderers[btnIdx].material = switchableMats[1];
+		for (int x = 5; x >= 0; x--)
 		{
-			colorLights[btnIdx].intensity = 10f * (x / 20f);
-			colorButtonRenderers[btnIdx].material.color = colorWheel[idxColorList[btnIdx]] * (x / 20f);
+			colorLights[btnIdx].intensity = 4f + (x / 5f);
+			colorButtonRenderers[btnIdx].material.color = (colorWheel[idxColorList[btnIdx]] * .75f * ((5-x) / 5f)) + Color.white * (x/5f);
 			yield return new WaitForSeconds(0.05f);
 		}
+		//colorButtonRenderers[btnIdx].material = switchableMats[0];
+		colorButtonRenderers[btnIdx].material.color = colorWheel[idxColorList[btnIdx]] * .75f;
+		colorLights[btnIdx].intensity = 4f;
 		yield return null;
 	}
 	IEnumerator HandlePressAnim(GameObject givenItem)
@@ -565,6 +569,10 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		foreach (Light singleLight in colorLights)
 			singleLight.enabled = false;
 		centerLight.enabled = false;
+		for (int i = 0; i < colorButtonRenderers.Length; i++)
+		{
+			colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.5f;
+		}
 		yield return null;
 	}
 	IEnumerator TypePigpenText(string displayValue)
@@ -595,7 +603,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			{"Revenge...", "Of the Unfairs." },
 			{"Raffina:", "Rainbow Deluxe!" },
 			{"Landing Sequence...", "Initiated" },
-			{"I'll tell you what you want", "What you really really want" },
+			{"I'll tell you\nwhat you want", "What you really\nreally want" },
 		};
 		KeyValuePair<string, string> selectedSample = sampleQuestionResponse.PickRandom();
 		mainDisplay.color = Color.red;
@@ -604,13 +612,13 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			mainDisplay.text = selectedSample.Key.Substring(0, x);
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(1f);
 		for (int x = 1; x <= selectedSample.Value.Length; x++)
 		{
 			mainDisplay.text = selectedSample.Value.Substring(0, x);
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(2f);
 		mainDisplay.text = "";
 	}
 	IEnumerator HandleStartUpAnim()
@@ -618,8 +626,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		entireCircle.SetActive(true);
 		for (int i = 0; i < colorButtonRenderers.Length; i++)
 		{
-			MeshRenderer renderer = colorButtonRenderers[i];
-			renderer.material.color = colorWheel[idxColorList[i]] * 0.5f;
+			colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.75f;
 		}
 		int animLength = 60;
 		for (float x = 0; x <= animLength; x++)
@@ -633,10 +640,9 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
 		mAudio.PlaySoundAtTransform("werraMetallicTrimmed", entireCircle.transform);
-		outerSelectable.AddInteractionPunch(1f);
+		outerSelectable.AddInteractionPunch(3f);
 		for (int i = 0; i < colorLights.Length; i++)
 		{
-			Light singleLight = (Light)colorLights[i];
 			colorLights[i].enabled = true;
 			colorLights[i].color = colorWheel[idxColorList[i]];
 		}
@@ -1068,11 +1074,11 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					int curMinRemaining = (int)bombInfo.GetTime()/60;
 					for (int x = curMinRemaining - (ZenModeActive ? 0 : 2); x <= curMinRemaining + (ZenModeActive ? 2 : 0); x++)
 					{
-						if (x * 60 + secondsTime > bombInfo.GetTime() && !ZenModeActive)
+						if (x * 60 + secondsTime > bombInfo.GetTime() && ZenModeActive)
 						{
 							possibleTimes.Add(x * 60 + secondsTime);
 						}
-						else if (x * 60 + secondsTime < bombInfo.GetTime() && ZenModeActive)
+						else if (x * 60 + secondsTime < bombInfo.GetTime() && !ZenModeActive)
 						{
 							possibleTimes.Add(x * 60 + secondsTime);
 						}
@@ -1173,6 +1179,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					}
 					while ((int)bombInfo.GetTime() != targetTime);
 				}
+				yield return null;
 				selectedCommands[x].OnInteract();
 				yield return new WaitForSeconds(0.1f);
 			}
