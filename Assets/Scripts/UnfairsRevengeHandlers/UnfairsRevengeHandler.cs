@@ -695,10 +695,10 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				toLog = string.Format("Press Inner Center when the last seconds digit is {0}.", (selectedModID + 1 + currentInputPos + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10);
 				break;
 			case "PRN":
-				toLog = string.Format("Press {0} Center because {1} is {2}.", primesUnder20.Contains(selectedModID % 20) ? "Inner" : "Outer", selectedModID % 20, primesUnder20.Contains(selectedModID % 20) ? "prime" : "Not prime");
+				toLog = string.Format("Press {0} Center because {1} is {2}.", primesUnder20.Contains(selectedModID % 20) ? "Inner" : "Outer", selectedModID % 20, primesUnder20.Contains(selectedModID % 20) ? "prime" : "not prime");
 				break;
 			case "CHK":
-				toLog = string.Format("Press {0} Center because {1} is {2}.", primesUnder20.Contains(selectedModID % 20) ? "Outer" : "Inner", selectedModID % 20, primesUnder20.Contains(selectedModID % 20) ? "prime" : "Not prime");
+				toLog = string.Format("Press {0} Center because {1} is {2}.", primesUnder20.Contains(selectedModID % 20) ? "Outer" : "Inner", selectedModID % 20, primesUnder20.Contains(selectedModID % 20) ? "prime" : "not prime");
 				break;
 			case "BOB":
 				toLog = "Press Inner Center.";
@@ -990,12 +990,193 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			}
 	}
 
+	string FormatSecondsToTime(int num)
+	{
+		return string.Format("{0}:{1}",num/60,num%60);
+	}
+
+	// TP Handling Begins here
 	void TwitchHandleForcedSolve()
 	{
 		isFinished = true;
 		StartCoroutine(HandleSolveAnim());
 	}
 
+
 	bool TimeModeActive;
+#pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
+	readonly string TwitchHelpMessage = "Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" To time a specific press, append \"at\" onto the command and either specify based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. Semicolons can be used to combine presses, both untimed and timed.";
+#pragma warning restore IDE0051 // Remove unused private members
+	IEnumerator ProcessTwitchCommand(string command)
+	{
+		if (!hasStarted)
+		{
+			yield return "sendtochaterror The module has not activated yet. Wait for a bit until the module has started";
+			yield break;
+		}
+		string[] intereptedParts = command.ToLower().Split(';');
+		List<KMSelectable> selectedCommands = new List<KMSelectable>();
+		List<List<int>> timeThresholds = new List<List<int>>();
+		List<string> rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToList();
+
+		int[] multiplierTimes = { 1, 60, 3600, 86400 }; // To denote seconds, minutes, hours, days in seconds.
+
+		foreach (string commandPart in intereptedParts)
+		{
+			string partTrimmed = commandPart.Trim();
+			if (partTrimmed.RegexMatch(@"^press "))
+			{
+				partTrimmed = partTrimmed.Substring(6);
+			}
+			string[] partOfPartTrimmed = partTrimmed.Split();
+			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) at( (([0-9]+:)?([0-5][0-9]:){2}|[0-9]+)[0-5][0-9])+$"))
+			{
+				List<int> possibleTimes = new List<int>();
+				for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
+				{
+					if (!partOfPartTrimmed[x].RegexMatch(@"^([0-9]+:)?([0-5][0-9]:){2}[0-5][0-9])$")) break;
+					string[] curTimePart = partOfPartTrimmed[x].Split(':').Reverse().ToArray();
+					int curTime = 0;
+					for (int idx = 0; idx < curTimePart.Length; idx++)
+					{
+						curTime += multiplierTimes[idx] * int.Parse(curTimePart[idx]);
+					}
+					possibleTimes.Add(curTime);
+				}
+
+				possibleTimes = possibleTimes.Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList(); // Filter out all possible times by checking if the time stamp is possible
+
+				if (possibleTimes.Any())
+				{
+					timeThresholds.Add(possibleTimes);
+				}
+				else
+				{
+					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The command has been voided.", partTrimmed);
+					yield break;
+				}
+			}
+			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) at( [0-5][0-9])+$"))
+			{
+				
+				List<int> possibleTimes = new List<int>();
+				for (int idx = partOfPartTrimmed.Length - 1; idx > 0; idx--)
+				{
+					if (!partOfPartTrimmed[idx].RegexMatch(@"^[0-5][0-9]$")) break;
+					int secondsTime = int.Parse(partOfPartTrimmed[idx]);
+					int curMinRemaining = (int)bombInfo.GetTime()/60;
+					for (int x = curMinRemaining - (ZenModeActive ? 0 : 2); x <= curMinRemaining + (ZenModeActive ? 2 : 0); x++)
+					{
+						if (x * 60 + secondsTime > bombInfo.GetTime() && !ZenModeActive)
+						{
+							possibleTimes.Add(x * 60 + secondsTime);
+						}
+						else if (x * 60 + secondsTime < bombInfo.GetTime() && ZenModeActive)
+						{
+							possibleTimes.Add(x * 60 + secondsTime);
+						}
+					}
+
+				}
+				if (possibleTimes.Any())
+				{
+					timeThresholds.Add(possibleTimes);
+				}
+				else
+				{
+					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The command has been voided.", partTrimmed);
+					yield break;
+				}
+			}
+			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)$"))
+			{
+				timeThresholds.Add(new List<int>());
+			}
+			else
+			{
+				yield return string.Format("sendtochaterror \"{0}\" is not a valid sub command, check your command for typos.",partTrimmed);
+				yield break;
+			}
+			switch (partOfPartTrimmed[0])
+			{
+				case "r":
+				case "red":
+					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Red")]);
+					break;
+				case "g":
+				case "green":
+					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Green")]);
+					break;
+				case "b":
+				case "blue":
+					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Blue")]);
+					break;
+				case "c":
+				case "cyan":
+					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Cyan")]);
+					break;
+				case "m":
+				case "magenta":
+					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Magenta")]);
+					break;
+				case "y":
+				case "yellow":
+					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Yellow")]);
+					break;
+				case "inner":
+					selectedCommands.Add(innerSelectable);
+					break;
+				case "outer":
+					selectedCommands.Add(outerSelectable);
+					break;
+				default:
+					yield return "sendtochaterror You aren't supposed to get this error.";
+					yield break;
+			}
+		}
+		hasStruck = false;
+		if (selectedCommands.Any())
+		{
+			for (int x = 0; x < selectedCommands.Count; x++)
+			{
+				if (hasStruck) yield break;
+				if (timeThresholds[x].Any())
+				{
+					int targetTime = ZenModeActive ? timeThresholds[x].Min() : timeThresholds[x].Max();
+					yield return string.Format("sendtochat Target time for press #{0}: {1}", x + 1, FormatSecondsToTime(targetTime));
+					do
+					{
+						yield return string.Format("trycancel Your timed interation has been canceled after a total of {0}/{1} presses.", x + 1, selectedCommands.Count);
+						if ((int)bombInfo.GetTime() > targetTime && ZenModeActive)
+						{
+							timeThresholds[x] = timeThresholds[x].Where(a => a > bombInfo.GetTime()).ToList();
+							if (!timeThresholds[x].Any())
+							{
+								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
+								yield break;
+							}
+							targetTime = timeThresholds[x].Min();
+							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0}", x + 1, FormatSecondsToTime(targetTime));
+						}
+						else if ((int)bombInfo.GetTime() < targetTime && !ZenModeActive)
+						{
+							timeThresholds[x] = timeThresholds[x].Where(a => a < bombInfo.GetTime()).ToList();
+							if (!timeThresholds[x].Any())
+							{
+								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
+								yield break;
+							}
+							targetTime = timeThresholds[x].Max();
+							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0}", x + 1, FormatSecondsToTime(targetTime));
+						}
+					}
+					while ((int)bombInfo.GetTime() != targetTime);
+				}
+				selectedCommands[x].OnInteract();
+				yield return new WaitForSeconds(0.1f);
+			}
+		}
+		yield break;
+	}
 }
