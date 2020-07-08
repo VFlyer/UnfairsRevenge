@@ -382,8 +382,7 @@ GameObject:
   - component: {fileID: 4236506145383592}
   - component: {fileID: 33131657577947622}
   - component: {fileID: 114055553567255172}
-  - component: {fileID: 23003988591226424}
-  - component: {fileID: 114011192981847112}
+  - component: {fileID: 64311219580686940}
   m_Layer: 0
   m_Name: IDStrikeScreenHL
   m_TagString: Untagged
@@ -1292,7 +1291,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1384093030336012}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8, y: 0, z: 6}
+  m_LocalPosition: {x: 7.9, y: 0, z: 5.1}
   m_LocalScale: {x: 1.1, y: 1.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 4511696255516874}
@@ -2035,40 +2034,6 @@ Transform:
   m_Father: {fileID: 4479007622901342}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23003988591226424
-MeshRenderer:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1384093030336012}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
 --- !u!23 &23020567278079568
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -4099,6 +4064,20 @@ MeshCollider:
   m_CookingOptions: -2
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: f53730b072205e943860787d5df1efab, type: 3}
+--- !u!64 &64311219580686940
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1384093030336012}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300000, guid: e1b7c09e2ad16d0499d953ab9530932e, type: 3}
 --- !u!64 &64317008571169222
 MeshCollider:
   m_ObjectHideFlags: 1
@@ -4504,18 +4483,6 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!114 &114011192981847112
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1384093030336012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShaderNames: []
 --- !u!114 &114027356034483554
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4856,12 +4823,13 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Parent: {fileID: 114449301366706686}
   Children: []
   IsPassThrough: 0
   ChildRowLength: 0
   Highlight: {fileID: 114055553567255172}
-  SelectableColliders: []
+  SelectableColliders:
+  - {fileID: 64311219580686940}
   DefaultSelectableIndex: 0
   AllowSelectionWrapX: 0
   AllowSelectionWrapY: 0
@@ -5738,7 +5706,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1264462169
+  randomSeed: -696825711
   InitialModule:
     serializedVersion: 3
     enabled: 1
