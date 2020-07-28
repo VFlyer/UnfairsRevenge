@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using uernd = UnityEngine.Random;
-public class UnfairsRevengeHandler : MonoBehaviour {
+public partial class UnfairsRevengeHandler : MonoBehaviour {
 
 	public KMBombInfo bombInfo;
 	public KMAudio mAudio;
@@ -24,7 +24,6 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 
 	private string[]
 		normalModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "MIT", "PRN", "CHK", "BOB", "REP", "EAT", "STR", "IKE", "SIG", "OPP", "PVP", "NXP", "PVS", "NXS" },
-		hardModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "PVP", "NXP", "PVS", "NXS", "REP", "EAT", "STR", "IKE", "CHK", "MIT", "OPP", "SIG" },
 		baseColorList = new[] { "Red", "Yellow", "Green", "Cyan", "Blue", "Magenta" },
 		primaryList = { "Red", "Green", "Blue", };
 	private string baseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // Base alphabet for code assumes A=1,B=2,...,Y=25,Z=26
@@ -37,21 +36,22 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			{ "ABDF", "FEBG", "DBHH", "BLI", "DBIA", "AFEB", "AFCC", "CQD", "DEAE", "FEAF", "EFB", "DEDA" },
 			{ "ABDG", "FEBH", "DBHI", "BLA", "DBIB", "AFEC", "AFCD", "CQE", "DEAF", "FET", "EFBA", "DEDB" },
 	};
+
 	DayOfWeek[] possibleDays = { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday, };
 	private static int[] modIDList;
 	private static int lastModIDCnt;
 	private static int modIDCnt;
-	private int loggingModID, selectedModID, currentInputPos = 0;
+	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool hardModeEnabled, isplayingSolveAnim, hasStarted, isShowingStrikeCount, isFinished, hasStruck = false;
+	bool isplayingSolveAnim, hasStarted, isShowingStrikeCount, isFinished, hasStruck = false;
 
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
 	private int[] idxColorList = { 0, 1, 2, 3, 4, 5 };
 	List<string> lastCorrectInputs = new List<string>(), splittedInstructions = new List<string>();
 	void Awake()
 	{
-		hardModeEnabled = false;
+		
 	}
 	// Use this for initialization
 	void Start() {
@@ -128,24 +128,20 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		}
 
 	}
-	void PrepModule()
+	public void PrepModule()
 	{
-		if (hardModeEnabled)
-		{
-			idxColorList.Shuffle();
-		}
-		Debug.LogFormat("[Unfair's Revenge #{0}] Button colors in clockwise order (starting on the NW button): {1}", loggingModID, idxColorList.Select(a => baseColorList[a]).Join(", "));
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Button colors in clockwise order (starting on the NW button): {1}", loggingModID, idxColorList.Select(a => baseColorList[a]).Join(", "));
 		StartCoroutine(HandleStartUpAnim());
 		//StartCoroutine(TypePigpenText("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM"));
 		GenerateInstructions();
 		mainDisplay.text = "";
 		string toDisplay = ValueToFixedRoman(selectedModID);
 		strikeIDDisplay.text = FitToScreen(toDisplay, 5);
-		Debug.LogFormat("[Unfair's Revenge #{0}] Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
 
 		string baseString = splittedInstructions.Join("");
 		
-		Debug.LogFormat("[Unfair's Revenge #{0}] ----------Caesar Offset Calculations----------", loggingModID);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------Caesar Offset Calculations----------", loggingModID);
 		int offset = 0;
 		char[] vowelList = { 'A', 'E', 'I', 'O', 'U' };
 		int portTypeCount = bombInfo.GetPorts().Distinct().Count(),
@@ -157,39 +153,39 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			batteryCount = bombInfo.GetBatteryCount();
 		// For every port type
 		offset -= 2 * portTypeCount;
-		Debug.LogFormat("[Unfair's Revenge #{0}] There are this many distant port types: {1}, Offset logged at {2}", loggingModID, portTypeCount, offset);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: There are this many distant port types: {1}, Offset logged at {2}", loggingModID, portTypeCount, offset);
 		// For every port plate
 		offset += 1 * portPlateCount;
-		Debug.LogFormat("[Unfair's Revenge #{0}] There are this many port plates: {1}, Offset logged at {2}", loggingModID, portPlateCount, offset);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: There are this many port plates: {1}, Offset logged at {2}", loggingModID, portPlateCount, offset);
 		// For every consonant in the serial number
 		offset += 1 * consonantCount;
-		Debug.LogFormat("[Unfair's Revenge #{0}] There are this many consonants in the serial number: {1}, Offset logged at {2}", loggingModID, consonantCount, offset);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: There are this many consonants in the serial number: {1}, Offset logged at {2}", loggingModID, consonantCount, offset);
 		// For every vowel in the serial number
 		offset -= 2 * vowelCount;
-		Debug.LogFormat("[Unfair's Revenge #{0}] There are this many vowels in the serial number: {1}, Offset logged at {2}", loggingModID, vowelCount, offset);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: There are this many vowels in the serial number: {1}, Offset logged at {2}", loggingModID, vowelCount, offset);
 		// For every lit indicator
 		offset += 2 * litCount;
-		Debug.LogFormat("[Unfair's Revenge #{0}] There are this many lit indicators: {1}, Offset logged at {2}", loggingModID, litCount, offset);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: There are this many lit indicators: {1}, Offset logged at {2}", loggingModID, litCount, offset);
 		// For every unlit indicator
 		offset -= 2 * unlitCount;
-		Debug.LogFormat("[Unfair's Revenge #{0}] There are this many unlit indicators: {1}, Offset logged at {2}", loggingModID, unlitCount, offset);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: There are this many unlit indicators: {1}, Offset logged at {2}", loggingModID, unlitCount, offset);
 		if (batteryCount == 0)
 			offset += 10;
 		else
 			offset -= 1 * batteryCount;
-		Debug.LogFormat("[Unfair's Revenge #{0}] There are this many batteries: {1}, Offset logged at {2}", loggingModID, batteryCount, offset);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: There are this many batteries: {1}, Offset logged at {2}", loggingModID, batteryCount, offset);
 		if (bombInfo.GetPortCount() == 0)
 		{
 			offset *= 2;
-			Debug.LogFormat("[Unfair's Revenge #{0}] There are no ports. Offset logged at {1}", loggingModID, offset);
+			Debug.LogFormat("[Unfair's Revenge #{0}]: There are no ports. Offset logged at {1}", loggingModID, offset);
 		}
 		if (bombInfo.GetSolvableModuleIDs().Count() >= 31)
 		{
 			offset /= 2;
-			Debug.LogFormat("[Unfair's Revenge #{0}] There are 31 or more modules on the bomb, including itself. Offset logged at {1}", loggingModID, offset);
+			Debug.LogFormat("[Unfair's Revenge #{0}]: There are 31 or more modules on the bomb, including itself. Offset logged at {1}", loggingModID, offset);
 		}
-		Debug.LogFormat("[Unfair's Revenge #{0}] ----------------------------------------------", loggingModID);
-		Debug.LogFormat("[Unfair's Revenge #{0}] ----------Affine Offset Calculations----------", loggingModID);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------------------------------------------", loggingModID);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------Affine Offset Calculations----------", loggingModID);
 		int multiplier = 0;
 		Dictionary<string, int> indicatorMultipler = new Dictionary<string, int> {
 			{"BOB", 1 },{"CAR", 1 },{"CLR", 1 },
@@ -203,42 +199,42 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				multiplier += indicatorMultipler[ind] * (bombInfo.IsIndicatorOff(ind) ? -1 : bombInfo.IsIndicatorOn(ind) ? 1 : 0);
 			}
 		}
-		Debug.LogFormat("[Unfair's Revenge #{0}] After indicators: X = {1}", loggingModID, multiplier);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After indicators: X = {1}", loggingModID, multiplier);
 		multiplier += 4 * (bombInfo.GetBatteryCount() % 2 == 1 ? 1 : -1);
-		Debug.LogFormat("[Unfair's Revenge #{0}] After battery count: X = {1}", loggingModID, multiplier);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After battery count: X = {1}", loggingModID, multiplier);
 		foreach (IEnumerable<string> currentPlate in bombInfo.GetPortPlates().Where(a => a.Contains("Parallel")))
 		{
 			//Debug.Log(currentPlate.Join());
 			multiplier += currentPlate.Contains("Serial") ? -4 : 5;
 		}
-		Debug.LogFormat("[Unfair's Revenge #{0}] After port plates with parallel ports: X = {1}", loggingModID, multiplier);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After port plates with parallel ports: X = {1}", loggingModID, multiplier);
 		foreach (IEnumerable<string> currentPlate in bombInfo.GetPortPlates().Where(a => a.Contains("DVI")))
 		{
 			//Debug.Log(currentPlate.Join());
 			multiplier += currentPlate.Contains("StereoRCA") ? 4 : -5;
 		}
-		Debug.LogFormat("[Unfair's Revenge #{0}] After port plates with DVI-D ports: X = {1}", loggingModID, multiplier);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After port plates with DVI-D ports: X = {1}", loggingModID, multiplier);
 		multiplier = Mathf.Abs(multiplier);
-		Debug.LogFormat("[Unfair's Revenge #{0}] After absolute value: X = {1}", loggingModID, multiplier);
-		Debug.LogFormat("[Unfair's Revenge #{0}] ----------------------------------------------", loggingModID);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After absolute value: X = {1}", loggingModID, multiplier);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------------------------------------------", loggingModID);
 		int monthOfStart = DateTime.Now.Month;
 		int idxStartDOW = Array.IndexOf(possibleDays, DateTime.Now.DayOfWeek);
 		string keyAString = obtainKeyA();
 		string keyBString = keyBTable[idxStartDOW, monthOfStart - 1];
 		string keyCString = EncryptUsingPlayfair(keyAString, keyBString);
 
-		Debug.LogFormat("[Unfair's Revenge #{0}] Key A: {1}", loggingModID, keyAString);
-		Debug.LogFormat("[Unfair's Revenge #{0}] Key B: {1}", loggingModID, keyBString);
-		Debug.LogFormat("[Unfair's Revenge #{0}] Key C: {1}", loggingModID, keyCString);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Key A: {1}", loggingModID, keyAString);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Key B: {1}", loggingModID, keyBString);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Key C: {1}", loggingModID, keyCString);
 
 		string playfairEncryptedString = EncryptUsingPlayfair(splittedInstructions.Join(""), keyCString),
 			step3EncryptedString = multiplier % 13 == 6 ? EncryptUsingAtbash(playfairEncryptedString) : EncryptUsingAffine(playfairEncryptedString, multiplier),
 			caesarEncryptedString = EncryptUsingCaesar(step3EncryptedString,offset);
 
-		Debug.LogFormat("[Unfair's Revenge #{0}] Caesar Encrypted String: {1}", loggingModID, caesarEncryptedString);
-		Debug.LogFormat("[Unfair's Revenge #{0}] Affine/Atbash Encrypted String: {1}", loggingModID, step3EncryptedString);
-		Debug.LogFormat("[Unfair's Revenge #{0}] Playfair Encrypted String: {1}", loggingModID, playfairEncryptedString);
-		Debug.LogFormat("[Unfair's Revenge #{0}] Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Caesar Encrypted String: {1}", loggingModID, caesarEncryptedString);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Affine/Atbash Encrypted String: {1}", loggingModID, step3EncryptedString);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Playfair Encrypted String: {1}", loggingModID, playfairEncryptedString);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
 
 		StartCoroutine(TypePigpenText(caesarEncryptedString));
 
@@ -308,8 +304,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		 * Expected Result: LR IO WC ER PZ KT
 		 * 
 		 */
-		string playfairGridBase = keyword.Replace('J','I').Distinct().Join("") + baseAlphabet.Replace('J', 'I').Distinct().Where(a => !keyword.Distinct().Contains(a)).Join("");
-		Debug.LogFormat("[Unfair's Revenge #{0}] Given Playfair set: {1}", loggingModID, playfairGridBase);
+		string playfairGridBase = keyword.Replace('J','I').Distinct().Join("") + baseAlphabet.Replace('J', 'I').Distinct().Where(a => !keyword.Replace('J', 'I').Distinct().Contains(a)).Join("");
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Given Playfair set: {1}", loggingModID, playfairGridBase);
 		if (input.Length % 2 != 0) input += "X";
 		string output = "";
 		for (int y = 0; y < input.Length; y += 2)
@@ -419,7 +415,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			output += value.Substring(a);
 		return output.Trim();
 	}
-	string ValueToBrokenRoman(int value)
+	public string ValueToBrokenRoman(int value)
 	{
 		string output = "";
 		int[] possibleKeys = romanValues.Keys.ToArray();
@@ -438,7 +434,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		}
 		return output;
 	}
-	string ValueToFixedRoman(int value)
+	public string ValueToFixedRoman(int value)
 	{
 		string output = "";
 		int[] possibleKeys = romanValues.Keys.ToArray();
@@ -476,34 +472,23 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		}
 		return output;
 	}
-	void GenerateInstructions()
+	public void GenerateInstructions()
 	{
-		if (hardModeEnabled)
+		for (int x = 0; x < 4; x++)
 		{
-			string[] lastCommand = { "FIN", "ISH" };
-			List<string> instructionsToShuffle = hardModeInstructions.ToList();
-			instructionsToShuffle.Shuffle();
-			splittedInstructions.AddRange(instructionsToShuffle.Take(9));
-			splittedInstructions.Add(lastCommand.PickRandom());
+			string oneGiven = normalModeInstructions.PickRandom();
+			splittedInstructions.Add(oneGiven);
 		}
-		else
-		{
-			for (int x = 0; x < 4; x++)
-			{
-				string oneGiven = normalModeInstructions.PickRandom();
-				splittedInstructions.Add(oneGiven);
-			}
-		}
-		
 	}
 	IEnumerator HandleFlashingAnim(int btnIdx)
 	{
 		if (btnIdx < 0 || btnIdx >= 6) yield break;
 		//colorButtonRenderers[btnIdx].material = switchableMats[1];
-		for (int x = 5; x >= 0; x--)
+		int animLength = 10;
+		for (int x = animLength; x >= 0; x--)
 		{
-			colorLights[btnIdx].intensity = 4f + (x / 5f);
-			colorButtonRenderers[btnIdx].material.color = (colorWheel[idxColorList[btnIdx]] * .75f * ((5-x) / 5f)) + Color.white * (x/5f);
+			colorLights[btnIdx].intensity = 4f + (x / 10f);
+			colorButtonRenderers[btnIdx].material.color = (colorWheel[idxColorList[btnIdx]] * .75f * ((animLength - x) / (float)animLength)) + Color.white * (x / (float)animLength);
 			yield return new WaitForSeconds(0.05f);
 		}
 		//colorButtonRenderers[btnIdx].material = switchableMats[0];
@@ -529,12 +514,12 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	{
 		while (isplayingSolveAnim)
 		{
-			for (int a = 0; a < 10; a += hardModeEnabled ? 1 : 3)
+			for (int a = 0; a < 10; a += 3)
 			{
 				statusIndicators[a].material.color = Color.white;
 			}
 			yield return new WaitForSeconds(0.2f);
-			for (int a = 0; a < 10; a += hardModeEnabled ? 1 : 3)
+			for (int a = 0; a < 10; a += 3)
 			{
 				statusIndicators[a].material.color = Color.black;
 			}
@@ -564,7 +549,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			yield return new WaitForSeconds(0.1f);
 		}
 		mAudio.PlaySoundAtTransform("submitstop", transform);
-
+		StartCoroutine(indicatorHandler.HandleCollaspeAnim());
 		isplayingSolveAnim = false;
 		foreach (Light singleLight in colorLights)
 			singleLight.enabled = false;
@@ -601,7 +586,9 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		{
 			{"Meteor!", "Whooo-eeeeh!!" },
 			{"Revenge...", "Of the Unfairs." },
-			{"Raffina:", "Rainbow Deluxe!" },
+			{"This looks fishy...", "Maybe he looked at it wrong." },
+			{"[REDACTED]:", "Please don't make this a dupe." },
+			{"Me: Nothing. Raffina:", "Rainbow Deluxe!" },
 			{"Landing Sequence...", "Initiated" },
 			{"I'll tell you\nwhat you want", "What you really\nreally want" },
 		};
@@ -628,6 +615,9 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		{
 			colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.75f;
 		}
+		entireCircle.transform.localScale = Vector3.zero;
+		entireCircle.transform.localPosition = 5*Vector3.up;
+		yield return new WaitForSeconds(uernd.Range(0f,2f));
 		int animLength = 60;
 		for (float x = 0; x <= animLength; x++)
 		{
@@ -653,13 +643,13 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	{
 		for (int x = 0; x < 5; x++)
 		{
-			for (int a = 0; a < 10; a += hardModeEnabled ? 1 : 3)
+			for (int a = 0; a < 10; a += 3)
 			{
 				statusIndicators[a].material.color = Color.red;
 			}
 			mAudio.PlaySoundAtTransform("wrong", transform);
 			yield return new WaitForSeconds(0.1f);
-			for (int a = 0; a < 10; a += hardModeEnabled ? 1 : 3)
+			for (int a = 0; a < 10; a += 3)
 			{
 				statusIndicators[a].material.color = Color.black;
 			}
@@ -788,7 +778,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				toLog = "This instruction is complicated. Refer to the manual for how to press this last command.";
 				break;
 		}
-		Debug.LogFormat("[Unfair's Revenge #{0}] Instruction {2}: {1}", loggingModID, toLog, currentInputPos + 1);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Instruction {2} (\"{3}\"): {1}", loggingModID, toLog, currentInputPos + 1, splittedInstructions[currentInputPos]);
 	}
 	bool canSkip = false;
 	void ProcessInstruction(string input)
@@ -796,7 +786,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		if (isFinished) return;
 		string[] rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToArray();
 		bool isCorrect = true;
-		Debug.LogFormat("[Unfair's Revenge #{0}] Pressing the {1} button at {2} on the countdown timer...", loggingModID, input, bombInfo.GetFormattedTime());
+		Debug.LogFormat("[Unfair's Revenge #{0}]: Pressing the {1} button at {2} on the countdown timer...", loggingModID, input, bombInfo.GetFormattedTime());
 		int secondsTimer = (int)bombInfo.GetTime() % 60;
 		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
 		string[] finaleInstructions = { "FIN", "ISH" };
@@ -842,7 +832,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					isCorrect = input == "Inner";
 					if (bombInfo.IsIndicatorOn(Indicator.BOB) && bombInfo.GetBatteryCount() == 4 && bombInfo.GetBatteryHolderCount() == 2 && bombInfo.GetIndicators().Count() == 1)
 					{
-						Debug.LogFormat("[Unfair's Revenge #{0}] BOB is nice today. He will make you skip the rest of the instructions.", loggingModID);
+						Debug.LogFormat("[Unfair's Revenge #{0}]: BOB is nice today. He will make you skip the rest of the instructions.", loggingModID);
 						currentInputPos = splittedInstructions.Count;
 					}
 					break;
@@ -856,9 +846,9 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				case "STR":
 				case "IKE":
 					{
-						int strikeCount = bombInfo.GetStrikes();
+						int strikeCount = TimeModeActive ? localStrikeCount : bombInfo.GetStrikes();
 						string resultingButton = rearrangedColorList[(strikeCount + Array.IndexOf(rearrangedColorList, baseColorList[0])) % 6];
-						Debug.LogFormat("[Unfair's Revenge #{0}] At {1} strike(s) the resulting button should be {2}.", loggingModID, strikeCount, resultingButton);
+						Debug.LogFormat("[Unfair's Revenge #{0}]: At {1} strike(s) the resulting button should be {2}.", loggingModID, strikeCount, resultingButton);
 						isCorrect = input == resultingButton;
 						break;
 					}
@@ -933,19 +923,19 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 						while (curIdx < 0)
 							curIdx += 6;
 						isCorrect = input == rearrangedColorList[curIdx] && (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10 == secondsTimer % 10;
-						Debug.LogFormat("[Unfair's Revenge #{0}] At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount)%10);
+						Debug.LogFormat("[Unfair's Revenge #{0}]: At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount)%10);
 					}
 					break;
 			}
 		if (isCorrect)
 		{
-			Debug.LogFormat("[Unfair's Revenge #{0}] The resulting press is correct.", loggingModID);
+			Debug.LogFormat("[Unfair's Revenge #{0}]: The resulting press is correct.", loggingModID);
 			string[] possibleSounds = { "button1", "button2", "button3", "button4" };
 			lastCorrectInputs.Add(input);
 			currentInputPos++;
 			if (currentInputPos >= splittedInstructions.Count)
 			{
-				Debug.LogFormat("[Unfair's Revenge #{0}] All instructions are handled correctly. You're done.", loggingModID);
+				Debug.LogFormat("[Unfair's Revenge #{0}]: All instructions are handled correctly. You're done.", loggingModID);
 				isFinished = true;
 				modSelf.HandlePass();
 				StartCoroutine(HandleSolveAnim());
@@ -955,14 +945,14 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				LogCurrentInstruction();
 			else
 			{
-				Debug.LogFormat("[Unfair's Revenge #{0}] The next instruction is getting skipped.", loggingModID);
+				Debug.LogFormat("[Unfair's Revenge #{0}]: The next instruction is getting skipped.", loggingModID);
 			}
 			mAudio.PlaySoundAtTransform(possibleSounds.PickRandom(), transform);
 			UpdateStatusIndc();
 		}
 		else
 		{
-			Debug.LogFormat("[Unfair's Revenge #{0}] The resulting press is incorrect. Restarting from the first instruction...", loggingModID);
+			Debug.LogFormat("[Unfair's Revenge #{0}]: The resulting press is incorrect. Restarting from the first instruction...", loggingModID);
 			if (currentInputPos + 1 >= splittedInstructions.Count)
 				mAudio.PlaySoundAtTransform("Darkest Dungeon - OverconfidenceRant", transform);
 			modSelf.HandleStrike();
@@ -970,15 +960,16 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			lastCorrectInputs.Clear();
 			currentInputPos = 0;
 			canSkip = false;
+			localStrikeCount += TimeModeActive ? 1 : 0;
 			StartCoroutine(HandleStrikeAnim());
 			LogCurrentInstruction();
 		}
 	}
 	void UpdateStatusIndc()
 	{
-		for (int a = 0; a < 10; a += hardModeEnabled ? 1 : 3)
+		for (int a = 0; a < 10; a += 3)
 		{
-			statusIndicators[a].material.color = currentInputPos * (hardModeEnabled ? 1 : 3) == a  ? Color.yellow : currentInputPos * (hardModeEnabled ? 1 : 3) > a  ? Color.green : Color.black;
+			statusIndicators[a].material.color = currentInputPos * 3 == a  ? Color.yellow : currentInputPos * 3 > a  ? Color.green : Color.black;
 		}
 	}
 	// Update is called once per frame, may be scaled by other events
@@ -986,7 +977,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		if (hasStarted && !isFinished)
 			if (isShowingStrikeCount)
 			{
-				strikeIDDisplay.text = ValueToFixedRoman(bombInfo.GetStrikes());
+				strikeIDDisplay.text = ValueToFixedRoman(TimeModeActive ? localStrikeCount : bombInfo.GetStrikes());
 				strikeIDDisplay.color = Color.red;
 			}
 			else
@@ -1006,13 +997,14 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	{
 		isFinished = true;
 		StartCoroutine(HandleSolveAnim());
+		modSelf.HandlePass();
 	}
 
 
 	bool TimeModeActive;
 #pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
-	readonly string TwitchHelpMessage = "Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" To time a specific press, append \"at\" onto the command and either specify based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. Semicolons can be used to combine presses, both untimed and timed.";
+	readonly string TwitchHelpMessage = "Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" To time a specific press, append \"at\" onto the command and either specify based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed.";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string command)
 	{
@@ -1036,7 +1028,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				partTrimmed = partTrimmed.Substring(6);
 			}
 			string[] partOfPartTrimmed = partTrimmed.Split();
-			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) at( (([0-9]+:)?([0-5][0-9]:){2}|[0-9]+)[0-5][0-9])+$"))
+			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) (at|on)( (([0-9]+:)?([0-5][0-9]:){2}|[0-9]+)[0-5][0-9])+$"))
 			{
 				List<int> possibleTimes = new List<int>();
 				for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
@@ -1063,7 +1055,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					yield break;
 				}
 			}
-			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) at( [0-5][0-9])+$"))
+			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) (at|on)( [0-5][0-9])+$"))
 			{
 				
 				List<int> possibleTimes = new List<int>();
@@ -1095,7 +1087,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					yield break;
 				}
 			}
-			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)$"))
+			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer|screen)$"))
 			{
 				timeThresholds.Add(new List<int>());
 			}
@@ -1136,6 +1128,9 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				case "outer":
 					selectedCommands.Add(outerSelectable);
 					break;
+				case "screen":
+					selectedCommands.Add(idxStrikeSelectable);
+					break;
 				default:
 					yield return "sendtochaterror You aren't supposed to get this error.";
 					yield break;
@@ -1149,31 +1144,37 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				if (hasStruck) yield break;
 				if (timeThresholds[x].Any())
 				{
-					int targetTime = ZenModeActive ? timeThresholds[x].Min() : timeThresholds[x].Max();
+					List<int> currentTimeThresholds = timeThresholds[x].Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList();
+					if (!currentTimeThresholds.Any())
+					{
+						yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
+						yield break;
+					}
+					int targetTime = ZenModeActive ? currentTimeThresholds.Min() : currentTimeThresholds.Max();
 					yield return string.Format("sendtochat Target time for press #{0}: {1}", x + 1, FormatSecondsToTime(targetTime));
 					do
 					{
 						yield return string.Format("trycancel Your timed interation has been canceled after a total of {0}/{1} presses.", x + 1, selectedCommands.Count);
 						if ((int)bombInfo.GetTime() > targetTime && ZenModeActive)
 						{
-							timeThresholds[x] = timeThresholds[x].Where(a => a > bombInfo.GetTime()).ToList();
-							if (!timeThresholds[x].Any())
+							currentTimeThresholds = currentTimeThresholds.Where(a => a > bombInfo.GetTime()).ToList();
+							if (!currentTimeThresholds.Any())
 							{
 								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
 								yield break;
 							}
-							targetTime = timeThresholds[x].Min();
+							targetTime = currentTimeThresholds.Min();
 							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0}", x + 1, FormatSecondsToTime(targetTime));
 						}
 						else if ((int)bombInfo.GetTime() < targetTime && !ZenModeActive)
 						{
-							timeThresholds[x] = timeThresholds[x].Where(a => a < bombInfo.GetTime()).ToList();
-							if (!timeThresholds[x].Any())
+							currentTimeThresholds = currentTimeThresholds.Where(a => a < bombInfo.GetTime()).ToList();
+							if (!currentTimeThresholds.Any())
 							{
 								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
 								yield break;
 							}
-							targetTime = timeThresholds[x].Max();
+							targetTime = currentTimeThresholds.Max();
 							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0}", x + 1, FormatSecondsToTime(targetTime));
 						}
 					}

@@ -53,7 +53,6 @@
                     <img src="img/Component/Module Name.svg" class="diagram">
                     <h2>On the Subject of Unfair's Revenge</h2>
                     <p class="flavour-text">Now it's more unfair because you removed You Watanabe from Best Girl.</p>
-
                     <p>This module has two displays. The display on top shows the encrypted message. There's also a strip of LEDs which will light up to show the current stage.</p>
 					<p>The display on the right can be clicked to toggle between showing the Module ID, in white, or strikes the module is keeping track of, in red. Both of these are shown in Roman numerals.</p>
 					<p class="red"><strong>For all operations involving STRIKES, always refer to the number in red on the module itself.</strong></p>
@@ -382,7 +381,7 @@
 							<td>X</td><td>I</td><td>T</td><td>E</td><td>P</td><td>A</td><td>L</td><td>W</td><td>H</td><td>S</td><td>D</td><td>O</td><td>Z</td>
 						</tr>
 						<tr>
-							<td colspan="26">The message to decrypt would result in very ambiguous conditions for using X = 6.</td>
+							<td colspan="26">The message to decrypt would result in very ambiguous conditions if using X = 6.</td>
 						</tr>
 						<tr>
 							<td>O</td><td>D</td><td>S</td><td>H</td><td>W</td><td>L</td><td>A</td><td>P</td><td>E</td><td>T</td><td>I</td><td>X</td><td>M</td>
@@ -424,16 +423,16 @@
                 <div class="page-content">
 					<h2>Solving — Step 4: Playfair Cipher</h2>
 					<p>Use a Playfair Cipher with Key C as the keyword to decrypt the string you just deciphered.</p>
+					<p>Refer to <span class="itil">Appendix PL4YF4112 101</span> for instructions.</p>
 					<p><strong>You now have the original message.</strong></p>
 					<h2>Solving — Step 5: Executing the Instructions</h2>
-					<p>Normally the message consists of 4 instructions; however more can be added if the defuser wants a challenge. Execute the instructions left to right.</p>
-					<p>Tap the small screen on the right to toggle between showing the module ID or the number of strikes obtained so far, which is shown in red. Both of these are typically shown in Fixed Roman Numerals.</p>
+					<p>Again, the message consists of 4 instructions. Execute the instructions left to right.</p>
+					<p>Tap the small screen on the right to toggle between showing the module ID or the number of strikes obtained so far, which is shown in red. Both of these are shown in Fixed Roman Numerals.</p>
 					<h3>Instructions:</h3>
-					<p>'%' refers to the module (remainder) operation.<br>
-						<strong>Inner Center</strong> refers to the white button in the middle.<br>
-					<strong>Outer Center</strong> refers to the gray circular frame around the colored buttons.
-					</p>
-					<p>Refer to <span class="itil">Appendix PR1M3</span> for a list of prime numbers.</p>
+					<p style="margin-bottom: 0%">'%' refers to the module (remainder) operation.</p>
+					<p style="margin-bottom: 0%"><strong>Inner Center</strong> refers to the white button in the middle.</p>
+					<p style="margin-bottom: 0%"><strong>Outer Center</strong> refers to the gray circular frame around the colored buttons.</p>
+					<p style="margin-bottom: 0%">The colored buttons are always in this order, starting from the NW colored button and going clockwise around <strong>Inner Center</strong>: Red, Yellow, Green, Cyan, Blue, Magenta.</p>
 					<ul>
 						<li><em><strong>PCR:</strong></em> Press the Red button.</li>
 						<li><em><strong>PCG:</strong></em> Press the Green button.</li>
@@ -442,19 +441,20 @@
 						<li><em><strong>SCM:</strong></em> Press the Magenta button.</li>
 						<li><em><strong>SUB:</strong></em> Press <strong>Outer Center</strong> when the seconds digits on the countdown timer match.</li>
 						<li><em><strong>MIT:</strong></em> Press <strong>Inner Center</strong> when the last digit on the seconds timer is <span class="itil">(m + c + s) % 10</span>, with <span class="itil">m</span> being the Module ID, <span class="itil">c</span> being the number of times a colored (R, G, B, C, M, Y) button has been pressed since the last strike on this module (or since the beginning if there are no strikes) and <span class="itil">s</span> being the current stage, starting with 1.</li>
-						<li><em><strong>PRN:</strong></em> Press <strong>Inner Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Outer Center</strong>.</li>
-						<li><em><strong>CHK:</strong></em> Press <strong>Outer Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Inner Center</strong>.</li>
 					</ul>
                 </div>
                 <div class="page-footer relative-footer">Page 6 of 8</div>
             </div>
-			<div class="page page-bg-05">
+			<div class="page page-bg-04">
                 <div class="page-header">
                     <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
                     <span class="page-header-section-title">Unfair's Revenge</span>
                 </div>
                 <div class="page-content">
+					<p>Refer to <span class="itil">Appendix PR1M3</span> for a list of prime numbers.</p>
 					<ul>
+						<li><em><strong>PRN:</strong></em> Press <strong>Inner Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Outer Center</strong>.</li>
+						<li><em><strong>CHK:</strong></em> Press <strong>Outer Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Inner Center</strong>.</li>
 						<li><em><strong>BOB:</strong></em> Press <strong>Inner Center</strong>.</li>
 						<ul>
 							<li>If there are exactly 4 batteries in 2 holders and there is a lit BOB as the only indicator on the bomb, <strong>skip the rest of the instructions</strong> as the module will disarm itself instead.</li>
@@ -462,24 +462,17 @@
 					</ul>
 					<ul>
 						<li><em><strong>REP</strong></em> or <em><strong>EAT:</strong></em> Repeat the last input, or press <strong>Inner Center</strong> if this is the first instruction. Ignore timing constraints.</li>
-					</ul>
-					<ul>
 						<li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from <span class="red">Red</span> (0) at the top, count as many colored buttons clockwise as there are strikes and press the resulting button.</li>
 						<ul>
 							<li>For these instructions, refer to the <span class="red">Strike Counter</span> on the small screen of the module itself.</li>
 						</ul>
 					</ul>
 					<ul>
-						<li><em><strong>SIG:</strong></em> Press <strong>Inner Center</strong>. Then press the cyan button and <strong>skip the next instruction.</strong> If this instruction is unable to skip any further instructions, only the <strong>Inner Center</strong> press is needed.
+						<li><em><strong>SIG:</strong></em> Press <strong>Inner Center</strong>. Then press the cyan button and <strong>skip the next instruction.</strong> If this instruction is unable to skip the next instruction, or this is the very last instruction, only the <strong>Inner Center</strong> press is needed.
 						</li>
 						<li><em><strong>PVP</strong></em> or <em><strong>NXP:</strong></em> Start from the last colored button you pressed (or the NW button if you have not pressed any yet). Go (counter-clockwise if PVP / clockwise if NXP) until you get to a button that is a primary color (R, G, B), then press that button.</li>
 						<li><em><strong>PVS</strong></em> or <em><strong>NXS:</strong></em> Start from the last colored button you pressed (or the NW button if you have not pressed any yet). Go (counter-clockwise if PVS / clockwise if NXS) until you get to a button that is a secondary color (C, M, Y), then press that button.</li>
 						<li><em><strong>OPP:</strong></em> Press the button that is diametrically opposite to the last button you pressed. If your last button pressed was <strong>Outer Center</strong> then press <strong>Inner Center</strong> and vice versa. Otherwise, if this is the first instruction, press <strong>Outer Center</strong>.</li>
-					</ul>
-					<h3>Hard Mode Instructions:</h3>
-					<p>These instructions will only show up if you have enabled hard mode on this module.</p>
-					<ul>
-						<li><em><strong>FIN</strong></em> or <em><strong>ISH:</strong></em> This is the only instruction that <strong>CANNOT</strong> be skipped and also the last instruction. Take the number of <strong>Inner Center</strong> and <strong>Outer Center</strong> buttons you pressed up to this point and call it X. Count X buttons clockwise starting from the last colored button you pressed. Then count Y buttons counter-clockwise from that button, where Y is the number of solved modules on the bomb. Press that button when the last seconds digit on the countdown timer is the least significant digit of the number of unsolved modules on the bomb. The number of solved/unsolved modules will take into account once you press the button.</li>
 					</ul>
                 </div>
                 <div class="page-footer relative-footer">Page 7 of 8</div>

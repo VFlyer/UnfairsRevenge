@@ -1,0 +1,1351 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Unfair's Cruel Revenge — Keep Talking and Nobody Explodes Module</title>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <script src="js/ktane-utils.js"></script>
+	<style>
+		.itil{
+			font-style: italic;
+		}
+		.keybtable
+		{
+			width: 100%;
+		}
+		table
+		{
+			text-align: center;
+		}
+		.keybtable th, .keybtable td
+		{
+			padding: .1em .1em 0;
+		}
+		.keybtable tr:nth-of-type(1) th:nth-of-type(2), .keybtable tr:nth-of-type(3) th:nth-of-type(1)
+		{
+			background-color: #303030;
+			color: white;
+		}
+		table tr:nth-of-type(1) th
+		{
+			background-color: #303030;
+			color: white;
+		}
+		.red
+		{
+			color: red;
+		}
+		p
+		{
+			margin-bottom: 0%;
+		}
+		.routetransp tr td
+		{
+			width: 0.5em;
+			height: 0.75em;
+		}
+	</style>
+</head>
+<body>
+    <div id="ManualContent">
+        <div class="section">
+            <div class="page page-bg-01">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+                    <img src="img/Component/Module Name.svg" class="diagram">
+                    <h2>On the Subject of Unfair's Cruel Revenge</h2>
+                    <p class="flavour-text">Why did he make two versions of Unfair's Revenge? Don't tell me he wanted something harder than just that...</p>
+                    <p>This module has two displays. The display on top shows the encrypted message. There's also a strip of LEDs which will light up to show the current stage.</p>
+					<p>The display on the right can be clicked to cycle between showing the Module ID, in white, strikes the module is keeping track of, in red, and the extra key. The Module ID and the strike counter are either shown in fixed or broken Roman numerals, or in Arabic form, I.E 1, 2, 3, 5,...</p>
+					<p class="red"><strong>For all operations involving STRIKES, always refer to the number in red on the module itself.</strong></p>
+					<p>The module encrypts a string of six three-letter-long <span style="text-decoration: underline">instructions</span> with four different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
+					<p><strong>ALL ciphers referring to the alphabet refers to the A1Z26 standard for each letter unless stated otherwise. Alphabetical order is ALSO modified for the ciphers!</strong></p>
+					<ul>
+						<li>The basic order of the given encrypted text is the following: <strong>Original -> 4x Ciphers -> Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
+					</ul>
+					<h3>Key A</h3>
+					<ol>
+						<li>Start with the bomb's serial number.</li>
+						<li>Transform each letter into its numerical equivalent (A=1,B=2,etc.).</li>
+						<ul>
+							<li>Make this a single string of digits.</li>
+							<li>Ignore the first character if its numerical equivalent is 20 or above.</li>
+						</ul>
+					</ol>
+					<ol start="3">
+						<li>Remove the last digit if either the 4th or the 5th character of the serial number are vowels.</li>
+						<ul>
+							<li>You should only do this once, even in the case both characters are vowels.</li>
+						</ul>
+					</ol>
+					<ol start="4">
+						<li>Convert this number into <strong>hexadecimal.</strong> Refer to <span class="itil">Appendix D3K2H3X</span> for instructions.</li>
+					</ol>
+                </div>
+                <div class="page-footer relative-footer">Page 1 of 8</div>
+            </div>
+            <div class="page page-bg-02">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<ol start="5">
+						<li>Now read the string of hexadecimal digits as a string of decimal digits and letters. Going from left to right, for every digit:</li>
+						<ul>
+							<li>If the digit is followed by another digit and they form a number in the range 10–26, convert the pair into its alphabetical equivalent.</li>
+							<li>Otherwise, convert the single digit into its alphabetical equivalent, or skip it if it is a zero.</li>
+						</ul>
+					</ol>
+					<ol start="6">
+						<li>Transform the Module ID, the number of port plates and the number of battery holders into their alphabetical equivalents, using step 5 if necessary.</li>
+						<li>Append these three characters at the end of the result of the previous conversion.</li>
+						<li><strong>This is Key A.</strong></li>
+					</ol>
+					<h3>Key B</h3>
+					<p>Obtain Key B from the following table using the month and day of the week of when this module was activated:</p>
+					<table class="keybtable">
+						<tr>
+							<th colspan="2" rowspan="2" style="background-color: #101010;"></th>
+							<th colspan="12" rowspan="1">Month</th>
+						</tr>
+						<tr>
+							<th>Jan</th>
+							<th>Feb</th>
+							<th>Mar</th>
+							<th>Apr</th>
+							<th>May</th>
+							<th>Jun</th>
+							<th>Jul</th>
+							<th>Aug</th>
+							<th>Sep</th>
+							<th>Oct</th>
+							<th>Nov</th>
+							<th>Dec</th>
+						</tr>
+						<tr>
+							<th colspan="1" rowspan="7">Day</th>
+							<th>Mon</th>
+							<td>ABDA</td>
+							<td>FEV</td>
+							<td>DBHC</td>
+							<td>BLD</td>
+							<td>DBIE</td>
+							<td>AFEF</td>
+							<td>AFCG</td>
+							<td>CQH</td>
+							<td>DEAI</td>
+							<td>FEAA</td>
+							<td>EFAB</td>
+							<td>DECC</td>
+						</tr>
+						<tr>
+							<th>Tue</th>
+							<td>ABDB</td>
+							<td>FEW</td>
+							<td>DBHD</td>
+							<td>BLE</td>
+							<td>DBIF</td>
+							<td>AFEG</td>
+							<td>AFCH</td>
+							<td>CQI</td>
+							<td>DEAA</td>
+							<td>FEAB</td>
+							<td>EFAC</td>
+							<td>DECD</td>
+						</tr>
+						<tr>
+							<th>Wed</th>
+							<td>ABDC</td>
+							<td>FEX</td>
+							<td>DBHE</td>
+							<td>BLF</td>
+							<td>DBIG</td>
+							<td>AFEH</td>
+							<td>AFCI</td>
+							<td>CQA</td>
+							<td>DEAB</td>
+							<td>FEAC</td>
+							<td>EFAD</td>
+							<td>DECE</td>
+						</tr>
+						<tr>
+							<th>Thu</th>
+							<td>ABDD</td>
+							<td>FEY</td>
+							<td>DBHF</td>
+							<td>BLG</td>
+							<td>DBIH</td>
+							<td>AFEI</td>
+							<td>AFCA</td>
+							<td>CQB</td>
+							<td>DEAC</td>
+							<td>FEAD</td>
+							<td>EFAE</td>
+							<td>DECF</td>
+						</tr>
+						<tr>
+							<th>Fri</th>
+							<td>ABDE</td>
+							<td>FEZ</td>
+							<td>DBHG</td>
+							<td>BLH</td>
+							<td>DBII</td>
+							<td>AFEA</td>
+							<td>AFCB</td>
+							<td>CQC</td>
+							<td>DEAD</td>
+							<td>FEAE</td>
+							<td>EFAF</td>
+							<td>DED</td>
+						</tr>
+						<tr>
+							<th>Sat</th>
+							<td>ABDF</td>
+							<td>FEBG</td>
+							<td>DBHH</td>
+							<td>BLI</td>
+							<td>DBIA</td>
+							<td>AFEB</td>
+							<td>AFCC</td>
+							<td>CQD</td>
+							<td>DEAE</td>
+							<td>FEAF</td>
+							<td>EFB</td>
+							<td>DEDA</td>
+						</tr>
+						<tr>
+							<th>Sun</th>
+							<td>ABDG</td>
+							<td>FEBH</td>
+							<td>DBHI</td>
+							<td>BLA</td>
+							<td>DBIB</td>
+							<td>AFEC</td>
+							<td>AFCD</td>
+							<td>CQE</td>
+							<td>DEAF</td>
+							<td>FET</td>
+							<td>EFBA</td>
+							<td>DEDB</td>
+						</tr>
+					</table>
+					<h3>Key C</h3>
+					<p>Use a Playfair Cipher to encode Key A using Key B as the keyword. The alphabet used is the Modern English Alphabet for this encryption. <strong>This is Key C.</strong></p>
+					<p>Refer to <span class="itil">Appendix PL4YF4112 101</span> for instructions.</p>
+					<h3>Key D</h3>
+					<p>Sum up the value of ALL the false rules in <a href="Alphabetize.html">Alphabetize</a>, as if there are no strikes, no solved modules on the bomb. Then take the average of the sum. If this results in a decimal answer, use the 15th row on that manual as Key D, otherwise count that many rows from the top and use that as Key D.</p>
+                </div>
+                <div class="page-footer relative-footer">Page 2 of 8</div>
+            </div>
+            <div class="page page-bg-03">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Value X Table</h2>
+					<table style="float: left">
+						<tr>
+							<th>Condition</th>
+							<th>Operation</th>
+						</tr>
+						<tr>
+							<td>For each BOB, CAR, or CLR indicator:</td>
+							<td>+1 if lit, -1 if unlit</td>
+						</tr>
+						<tr>
+							<td>For each FRK, FRQ, MSA, or NSA indicator:</td>
+							<td>+2 if lit, -2 if unlit</td>
+						</tr>
+						<tr>
+							<td>For each SIG, SND, or TRN indicator: </td>
+							<td>+3 if lit, -3 if unlit</td>
+						</tr>
+						<tr>
+							<td>For the number of batteries:</td>
+							<td>+4 for odd, -4 for even</td>
+						</tr>
+						<tr>
+							<td>There are port plates with parallel port:</td>
+							<td>+5 each, -4 if paried with serial port</td>
+						</tr>
+						<tr>
+							<td>There are port plates with DVI-D:</td>
+							<td>-5 each, +4 if paired with Stereo RCA</td>
+						</tr>
+					</table>
+					<p>Start with 0 and perform all operations from the table above in this section for each matching condition. If the value is negative, make it positive. This will be referred to as X for decypting.</p>
+					<h2>Value A Table</h2>
+					<table style="width: 100%">
+						<tr>
+							<th>Condition</th>
+							<th>Operation</th>
+						</tr>
+						<tr>
+							<td>For every <strong>port type</strong></td>
+							<td>-2</td>
+						</tr>
+						<tr>
+							<td>For every <strong>port plate</strong></td>
+							<td>+1</td>
+						</tr>
+						<tr>
+							<td>For every <strong>consonant</strong> in the serial number</td>
+							<td>+1</td>
+						</tr>
+						<tr>
+							<td>For every <strong>vowel</strong> in the serial number</td>
+							<td>-2</td>
+						</tr>
+						<tr>
+							<td>For every <strong>lit</strong> indicator</td>
+							<td>+2</td>
+						</tr>
+						<tr>
+							<td>For every <strong>unlit</strong> indicator</td>
+							<td>-2</td>
+						</tr>
+						<tr>
+							<td>For every <strong>battery</strong></td>
+							<td>-1</td>
+						</tr>
+						<tr>
+							<td>No batteries</td>
+							<td>+10</td>
+						</tr>
+						<tr>
+							<td>No ports</td>
+							<td>&times;2</td>
+						</tr>
+						<tr>
+							<td>31 or more modules</td>
+							<td>&divide;2</td>
+						</tr>
+					</table>
+					<p>Start with 0 and perform all operations in the following table for each matching conditon from top to bottom. This will be refered to as Value A for decrypting.<br>
+						Drop any remainders and/or decimals when using the division operation. I.E, if you get -1.5 after division, turn -1.5 into -1 instead.</p>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+            <div class="page page-bg-02">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step 1: Figuring out Which Ciphers Were Used</h2>
+					<table style="float: right">
+						<tr>
+							<td>Playfair Cipher (Key C)</td>
+						</tr>
+						<tr>
+							<td>Affine Cipher (Value X)</td>
+						</tr>
+						<tr>
+							<td>Caesar Cipher (Value A)</td>
+						</tr>
+						<tr>
+							<td>Playfair Cipher (Key A)</td>
+						</tr>
+						<tr>
+							<td>Playfair Cipher (Key B)</td>
+						</tr>
+						
+						<tr>
+							<td>Playfair Cipher (Key D)</td>
+						</tr>
+						<tr>
+							<td>Four Square Cipher (Keys ?)</td>
+						</tr>
+						<tr>
+							<td>ROT13 Cipher</td>
+						</tr>
+						<tr>
+							<td>Atbash Cipher</td>
+						</tr>
+						<tr>
+							<td>Myszkowski Transposition</td>
+						</tr>
+						<tr>
+							<td>Autokey Cipher</td>
+						</tr>
+						<tr>
+							<td>Scytale Transposition</td>
+						</tr>
+						<tr>
+							<td>Basic Columnar Transposition</td>
+						</tr>
+						<tr>
+							<td>Anagram Shuffler</td>
+						</tr>
+					</table>
+					<p>Because Unfair Cipher and it's sequel have consistent ciphers to decrpyt out of, this version will not have consistent decrypting methods.</p>
+					<p>The table on the right will show all possible ciphers that can be used on Unfair's Cruel Revenge. The original instructions are encrypted by the top-most 4 ciphers after the modifications, and then encrypted with Pigpen Cipher to be displayed on the module. The expert will need to grab those 4 ciphers that are used in this module, and then decrpyt them by reversing the procedure.</p>
+					<p>If the defuser has colorblind mode enabled for this module, hovering over the colored button will show the color of that given button for that given position on the top screen.</p>
+					<table style="width: 100%">
+						<tr>
+						<th colspan="2">Encryption Modifications</th>	
+						</tr>
+						<tr style="background-color: lightgray;color: black">
+							<th>Condition</th>
+							<th>Response</th>
+						</tr>
+						<tr>
+							<th>The module ID is displayed in Broken or Fixed Roman Numerals</th>
+							<td>Put Playfair Cipher (Key D) at the top.</td>
+						</tr>
+						<tr>
+							<th>The strike counter is displayed in Arabic numerals</th>
+							<td>Put ROT13 Cipher at the top. And then put Scytale Transposition at the bottom.</td>
+						</tr>
+						<tr>
+							<th>Unfair Cipher is NOT present</th>
+							<td>Put Playfair Cipher (Key A), Caesar Cipher (Value A), Playfair Cipher (Key C) at the bottom, maintaining its previous order.</td>
+						</tr>
+						<tr>
+							<th>Orange Cipher is present</th>
+							<td>Put Four Square Cipher (Keys ?) at the top.</td>
+						</tr>
+						<tr>
+							<th>Alphabetize is NOT present but Reverse Alphabetize is</th>
+							<td>Swap Autokey Cipher with Atbash Cipher.</td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+            <div class="page page-bg-02">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<table style="width: 100%">
+						<tr>
+						<th colspan="2">Encryption Modifications</th>	
+						</tr>
+						<tr style="background-color: lightgray;color: black">
+							<th>Condition</th>
+							<th>Response</th>
+						</tr>
+						<tr>
+							<th>Cryptography is present</th>
+							<td>Take all of the even positioned ciphers out of the list, reverse it, and then place that at the top of the list.</td>
+						</tr>
+						<tr>
+							<th>Anagrams is present</th>
+							<td>Put Anagram Shuffler at the top.</td>
+						</tr>
+						<tr>
+							<th>Word Scramble is present</th>
+							<td>Swap the 3rd item from the top with the 3rd item from the bottom.</td>
+						</tr>
+						<tr>
+							<th>The NE colored button is Yellow</th>
+							<td>Put the top-most 4 ciphers at the bottom, maintaining its order.</td>
+						</tr>
+						<tr>
+							<th>Red is diametrically opposite to the Cyan</th>
+							<td>Swap ROT13 Cipher with Myszkowski Transposition, and Basic Columnar Transposition with Anagram Shuffler.</td>
+						</tr>
+						<tr>
+							<th>Blue and Yellow are both on the upper half of the module</th>
+							<td>Take the bottom-most cipher in the list and place it at the top.</td>
+						</tr>
+						<tr>
+							<th>Blue and Yellow are both on the lower half of the module</th>
+							<td>Take the top-most cipher in the list and place it at the bottom.</td>
+						</tr>
+						<tr>
+							<th>Unfair's Revenge is present</th>
+							<td>Cycle all the ciphers up by the number of steps it takes to get to Cyan on this module, starting on the NW button and going clockwise. (0 steps to get to Cyan is <strong>not</strong> 6 for this.)</td>
+						</tr>
+						<tr>
+							<th>Value X is 13n + 6</th>
+							<td>Swap Affine Cipher (Value X) with Atbash Cipher and then remove Affine Cipher (Value X) from the table.</td>
+						</tr>
+						<tr>
+							<th>Value A is 26n</th>
+							<td>Swap Caesar Cipher (Value A) with ROT13 Cipher and then remove Caesar Cipher (Value A) from the table.</td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+            <div class="page page-bg-03">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step 2: Pigpen Cipher</h2>
+					<p>Convert the symbols on the top screen into letters using the chart below.</p>
+					<img src="images/image2.png" width="100%" alt="A pigpen encryption table would be shown here.">
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+            <div class="page page-bg-03">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step 3: Modifying the Base Alphabet</h2>
+					<p class="flavour-text">Did he put a "Blue Arrows" in "Unfair's Revenge?" Don't tell me he did...</p>
+					<p>You will need to modify the starting alphabet in order to use the ciphers and transpositions on the next page when it is needed.</p>
+					<ol>
+						<li>Start the alphabet with "ABCDEFGHIJKLMNOPQRSTUVWXYZ".</li>
+						<li>Shift the entire alphabet to the right [1 + the last digit of the serial number (10 if none)] times.</li>
+						<li>Move the last letter of the serial number to the front of the alphabet if there are any letters in the serial number. If that letter in the front, move it to the back instead.</li>
+						<li>Then, perform the extra modifications from the table below. Your alphabet for decrypting will be the string after using the table.</li>
+					</ol>
+					<table style="width: 100%">
+						<tr>
+							<th>Condition</th>
+							<th>Action</th>
+						</tr>
+						<tr>
+							<td>Exactly all of these: Lit BOB, no batteries, no port plates, no unlit indicators, serial number contains a vowel</td>
+							<td>Throw away your current string from this point and use the starting alphabet instead for decrpyting. Skip the rest of the conditions from this table.</td>
+						</tr>
+						<tr>
+							<td>Lit BOB is present</td>
+							<td>Reverse the entire string.</td>
+						</tr>
+						<tr>
+							<td>Odd number of battery holders</td>
+							<td>Move the vowels ("A", "E", "I", "O", "U") to the back of the string, keeping the order they appeared. If "W" is also in the serial number, move that letter as well in respect with the other vowels.</td>
+						</tr>
+						<tr>
+							<td>DVI-D port is present</td>
+							<td>Reverse the first half of the string.</td>
+						</tr>
+						<tr>
+							<td>Stereo RCA port is NOT present</td>
+							<td>Move R, C, and A to the very back of the string, in that specific mentioned order.</td>
+						</tr>
+						<tr>
+							<td>Even number of batteries</td>
+							<td>Take the letters where the current 1-start position in the string has exactly 3 or 4 distant factors divisible by its position, reverse that set, and then put it back of the sequence.</td>
+						</tr>
+						<tr>
+							<td>"Green Arrows", "The Sphere", or "Yellow Arrows" are present.</td>
+							<td>Put "LAZYDOG" at the very front of the string and remove duplicate letters afterwards.</td>
+						</tr>
+						<tr>
+							<td>Duplicates of Unfair's Cruel Revenge are present</td>
+							<td>Reverse the 2nd half of the string, put "THEQUICK" at the very front of the string, and then remove duplicate letters afterwards.</td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+			<div class="page page-bg-04">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step ?: Caesar Cipher</h2>
+					<p>To <em>decrypt</em> from Caesar Cipher, shift every letter on the screen forwards by this many letters in the alphabet if the offset is negative, backwards if positive. Wrap back to the other side of the alphabet if you have to go backwards from the first letter in the modified alphabet or forwards from the last letter in the modified alphabet.</p>
+					<h2>Solving — Step ?: ROT13 Cipher</h2>
+					<p>Each letter is encrypted by using Caesar Cipher with a key of 13 on the given alphabet, wrapping around to the first letter if needed.</p>
+					<p>To <em>decrypt,</em> simply do Caesar Cipher with a key of 13.</p>
+					<h2>Solving — Step ?: Affine Cipher</h2>
+					<p>The alphabetic position of each letter is multiplied by (2X + 1).<br>
+						26 is subtracted from the product until it falls within the range [1, 26].<br>
+						This is the alphabetic position of the encrypted letter.<br>
+						To <em>decrypt</em>, add 26 to the alphabetical postion of the encrypted letter until it is divisible by (2X + 1), then divide it by (2X + 1) to get the alphabetical position of the unencrypted letter.
+					</p>
+					<p>The table underneath can be used to quickly decrypt each letter for Affine Cipher if needed. X = 0 denotes to the first row in the table and the decrypted letter, X = 1 for the 2nd row for the encrypted letter, X = 2 for the 3rd row, etc.</p>
+					<p class="flavour-text">The contents in this table are editable, you may modify this in order to use a different alphabet.</p>
+					<table style="font-size: 81%;width: 100%" contenteditable="true" class="affine">
+						<tr contenteditable="false">
+							<th colspan="26">Affine Encryption Table</th>
+						</tr>
+						<tr>
+							<td>A</td><td>B</td><td>C</td><td>D</td><td>E</td>
+							<td>F</td><td>G</td><td>H</td><td>I</td><td>J</td>
+							<td>K</td><td>L</td><td>M</td><td>N</td><td>O</td>
+							<td>P</td><td>Q</td><td>R</td><td>S</td><td>T</td>
+							<td>U</td><td>V</td><td>W</td><td>X</td><td>Y</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>C</td><td>F</td><td>I</td><td>L</td><td>O</td>
+							<td>R</td><td>U</td><td>X</td><td>A</td><td>D</td>
+							<td>G</td><td>J</td><td>M</td><td>P</td><td>S</td>
+							<td>V</td><td>Y</td><td>B</td><td>E</td><td>H</td>
+							<td>K</td><td>N</td><td>Q</td><td>T</td><td>W</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>E</td><td>J</td><td>O</td><td>T</td><td>Y</td>
+							<td>D</td><td>I</td><td>N</td><td>S</td><td>X</td>
+							<td>C</td><td>H</td><td>M</td><td>R</td><td>W</td>
+							<td>B</td><td>G</td><td>L</td><td>Q</td><td>V</td>
+							<td>A</td><td>F</td><td>K</td><td>P</td><td>U</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>G</td><td>N</td><td>U</td><td>B</td><td>I</td>
+							<td>P</td><td>W</td><td>D</td><td>K</td><td>R</td>
+							<td>Y</td><td>F</td><td>M</td><td>T</td><td>A</td>
+							<td>H</td><td>O</td><td>V</td><td>C</td><td>J</td>
+							<td>Q</td><td>X</td><td>E</td><td>L</td><td>S</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>I</td><td>R</td><td>A</td><td>J</td><td>S</td>
+							<td>B</td><td>K</td><td>T</td><td>C</td><td>L</td>
+							<td>U</td><td>D</td><td>M</td><td>V</td><td>E</td>
+							<td>N</td><td>W</td><td>F</td><td>O</td><td>X</td>
+							<td>G</td><td>P</td><td>Y</td><td>H</td><td>Q</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>K</td><td>V</td><td>G</td><td>R</td><td>C</td>
+							<td>N</td><td>Y</td><td>J</td><td>U</td><td>F</td>
+							<td>Q</td><td>B</td><td>M</td><td>X</td><td>I</td>
+							<td>T</td><td>E</td><td>P</td><td>A</td><td>L</td>
+							<td>W</td><td>H</td><td>S</td><td>D</td><td>O</td>
+							<td>Z</td>
+						</tr>
+						<tr contenteditable="false">
+							<td colspan="26">The message to decrypt would result in very ambiguous conditions if using X = 6.</td>
+						</tr>
+						<tr>
+							<td>O</td><td>D</td><td>S</td><td>H</td><td>W</td>
+							<td>L</td><td>A</td><td>P</td><td>E</td><td>T</td>
+							<td>I</td><td>X</td><td>M</td><td>B</td><td>Q</td>
+							<td>F</td><td>U</td><td>J</td><td>Y</td><td>N</td>
+							<td>C</td><td>R</td><td>G</td><td>V</td><td>K</td><td>Z</td>
+						</tr>
+						<tr>
+							<td>Q</td><td>H</td><td>Y</td><td>P</td><td>G</td>
+							<td>X</td><td>O</td><td>F</td><td>W</td><td>N</td>
+							<td>E</td><td>V</td><td>M</td><td>D</td><td>U</td>
+							<td>L</td><td>C</td><td>T</td><td>K</td><td>B</td>
+							<td>S</td><td>J</td><td>A</td><td>R</td><td>I</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>S</td><td>L</td><td>E</td><td>X</td><td>Q</td>
+							<td>J</td><td>C</td><td>V</td><td>O</td><td>H</td>
+							<td>A</td><td>T</td><td>M</td><td>F</td><td>Y</td>
+							<td>R</td><td>K</td><td>D</td><td>W</td><td>P</td>
+							<td>I</td><td>B</td><td>U</td><td>N</td><td>G</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>U</td><td>P</td><td>K</td><td>F</td><td>A</td>
+							<td>V</td><td>Q</td><td>L</td><td>G</td><td>B</td>
+							<td>W</td><td>R</td><td>M</td><td>H</td><td>C</td>
+							<td>X</td><td>S</td><td>N</td><td>I</td><td>D</td>
+							<td>Y</td><td>T</td><td>O</td><td>J</td><td>E</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>W</td><td>T</td><td>Q</td><td>N</td><td>K</td>
+							<td>H</td><td>E</td><td>B</td><td>Y</td><td>V</td>
+							<td>S</td><td>P</td><td>M</td><td>J</td><td>G</td>
+							<td>D</td><td>A</td><td>X</td><td>U</td><td>R</td>
+							<td>O</td><td>L</td><td>I</td><td>F</td><td>C</td>
+							<td>Z</td>
+						</tr>
+						<tr>
+							<td>Y</td><td>X</td><td>W</td><td>V</td><td>U</td>
+							<td>T</td><td>S</td><td>R</td><td>Q</td><td>P</td>
+							<td>O</td><td>N</td><td>M</td><td>L</td><td>K</td>
+							<td>J</td><td>I</td><td>H</td><td>G</td><td>F</td>
+							<td>E</td><td>D</td><td>C</td><td>B</td><td>A</td>
+							<td>Z</td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 4 of 8</div>
+            </div>
+			<div class="page page-bg-05">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step ?: Playfair Cipher (Key X)</h2>
+					<p>Use a Playfair Cipher with Key X as the keyword to decrypt the string you just deciphered.</p>
+					<p>Refer to <span class="itil">Appendix PL4YF4112 101</span> for instructions.</p>
+					<h2>Solving — Step ?: Atbash Cipher</h2>
+					<p>Each letter is encrypted to the alphabetical position of (27 - P), where P is the alphabetical position of the unencrypted letter.<br>
+						To <em>decrypt</em> simply get the alphabetical position of (27 - E), where E is the alphabetical position of the encrypted letter.</p>
+					<h2>Solving — Step ?: Basic Columnar Transposition</h2>
+					<p>The extra key will contain random numbers when rearranged form consectutive numbers. These have been used to encrypt the instructions.</p>
+					<p>To <em>decrypt</em> follow the process for Columnar Transposition from <a href="Green%20Cipher.html">Green Cipher</a>.</p>
+					<h2>Solving — Step ?: Myszkowski Transposition</h2>
+					<p class="flavour-text">These seem very familar to the last one...</p>
+					<table style="width: 100%">
+						<tr>
+							<th colspan="7">Keywords</th>
+						</tr>
+						<tr>
+							<td>ARCHER</td>
+							<td>ATTACK</td>
+							<td>BANANA</td>
+							<td>BLASTS</td>
+							<td>BURSTS</td>
+							<td>BUTTON</td>
+							<td>CANNON</td>
+						</tr>
+						<tr>
+							<td>CALLER</td>
+							<td>CELLAR</td>
+							<td>DAMAGE</td>
+							<td>DEFUSE</td>
+							<td>DEVICE</td>
+							<td>KABOOM</td>
+							<td>LETTER</td>
+						</tr>
+						<tr>
+							<td>LOOPED</td>
+							<td>MORTAR</td>
+							<td>NAPALM</td>
+							<td>OTTAWA</td>
+							<td>PAPERS</td>
+							<td>POODLE</td>
+							<td>POOLED</td>
+						</tr>
+						<tr>
+
+							<td>RASHES</td>
+							<td>RECALL</td>
+							<td>ROBOTS</td>
+							<td>SAPPER</td>
+							<td>SHARES</td>
+							<td>SHEARS</td>
+							<td>WIRING</td>
+						</tr>
+					</table>
+					<p>Take the sum of the serial number digits, modulo it by 28, add 1, and count that many words in reading order from the table to get your keyword, starting on "ARCHER".</p>
+					<p>The encryption process follows by splitting the unencrypted letters up so that each row is equal to the length of the keyword. The letters are then read in alphabetical order in accordance to the keyword, from left to right, top to bottom. Refer to <a href="https://en.wikipedia.org/wiki/Transposition_cipher">this</a> for clarification.</p>
+					<p>To <em>decrypt,</em> place each letter underneath the keyword, in alphabetical order. In the case of duplicate letters in the keyword, place them from left to right for the current duplicate letter, and then top to bottom until each have been filled. Then read the message in reading order to get the <em>decrypted</em> text. The example of Myszkowski Transposition being used is demonstrated on the next page.</p>
+                </div>
+                <div class="page-footer relative-footer">Page 5 of 8</div>
+            </div>
+            <div class="page page-bg-03">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h3>Example: Myszkowski Transposition</h3>
+					<p>The decrypted text reads "BOBRAN FASTER THANON EHORSE." The keyword used is "PAPERS" using the Modern English Alphabet for encrypting. The text when encrypted reads "OAHH RTNR BBFS TAEO AEOS NRNE." Spaces are provided in the quotes for readibility for decrypting and encrypting.</p>
+					<table align="center">
+						<tr>
+							<th>P</th>
+							<th>A</th>
+							<th>P</th>
+							<th>E</th>
+							<th>R</th>
+							<th>S</th>
+						</tr>
+						<tr>
+							<td>B</td>
+							<td>O</td>
+							<td>B</td>
+							<td>R</td>
+							<td>A</td>
+							<td>N</td>
+						</tr>
+						<tr>
+							<td>F</td>
+							<td>A</td>
+							<td>S</td>
+							<td>T</td>
+							<td>E</td>
+							<td>R</td>
+						</tr>
+						<tr>
+							<td>T</td>
+							<td>H</td>
+							<td>A</td>
+							<td>N</td>
+							<td>O</td>
+							<td>N</td>
+						</tr>
+						<tr>
+							<td>E</td>
+							<td>H</td>
+							<td>O</td>
+							<td>R</td>
+							<td>S</td>
+							<td>E</td>
+						</tr>
+					</table>
+					<h2>Solving — Step ?: Scytale Transposition</h2>
+					<p class="flavour-text">Railfence, meet your inferior cousin.</p>
+					<ol>
+						<li>Add 2 to (the number of ports on the bomb modulo 4); this is how many rows you will need to make.</li>
+						<li>Create dashes that match the length of the string, and to match the height of the theoretical cylinder. The dashes should start on the top-left and repeat every X letters, based on the height of the cylinder.</li>
+					</ol>
+					<p>Example, with 3 rows and 11 letters:</p>
+					<table align="center">
+						<tr>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+							<td>-</td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+					<ol start="3">
+						<li>Fill each dash in reading order with each letter in the string you have encrypted.</li>
+						<li>The read each letter like reading a ribbon wrapped around the cylinder.</li>
+						<li>This results in your <em>decrypted</em> string for Scytale Transposition.</li>
+					</ol>
+					<p>An example to decrypt to "ORANGEJUICE" from "ONJCRGUEAEI" in 3 rows can be demonstrated here.</p>
+					<table align="center">
+						<tr>
+							<td>O</td>
+							<td></td>
+							<td></td>
+							<td>N</td>
+							<td></td>
+							<td></td>
+							<td>J</td>
+							<td></td>
+							<td></td>
+							<td>C</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>R</td>
+							<td></td>
+							<td></td>
+							<td>G</td>
+							<td></td>
+							<td></td>
+							<td>U</td>
+							<td></td>
+							<td></td>
+							<td>E</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td>A</td>
+							<td></td>
+							<td></td>
+							<td>E</td>
+							<td></td>
+							<td></td>
+							<td>I</td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+            <div class="page page-bg-06">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step ?: Autokey Cipher</h2>
+					<p class="flavour-text">You're telling me he can do 18 letters for 1 cipher!? That's completely out of his mind!</p>
+					<p>The portion of the extra key will consist of a falsely selected word from the module, <a href="Word%20Search.html">Word Search</a>. The actual word used for encrypting is the word in the same cell as the falsely selected word, E.G if the falsely selected word is "TEST", the word used for encrypting is "JINX."</p>
+					<p>Part of the plain text is added to the right of the base key to form a length equivalant to the length of the plain text.</p>
+					<p>Then the module is encrypted from a theoretical table called <span style="font-style: italic">Tabula Recta</span>, except using the modified alphabet, instead of the standard alphabet. Each letter of the plain text is used for the column, and each letter of the key is used for the row.</p>
+					<p>Because of this, the theoretical table from <span style="font-style: italic">Tabula Recta</span> has a glaring flaw that can be easily described as the following for each encrypted letter:</p>
+					<ol>
+						<li>Take the index of the letter in the 0-indexed alphabet in the plain text.</li>
+						<li>Add the index of the letter in the 0-indexed alphabet from the key.</li>
+						<li>Keep this number within 0-25 and grab that letter of the result in the 0-indexed alphabet.</li>
+						<li>This is your encrypted letter.</li>
+					</ol>
+					<p>To <em>decrypt:</em></p>
+					<ol>
+						<li>Start with the first X characters of the encrypted string where X is the length of the keyword.</li>
+						<li>Decrypt this set by undoing the procedure mentioned on this page to get the first set of letters that was appended to the keyword.</li>
+						<li>Repeat this with the next set of letters in your encrypted string until you have decrypted your entire encrypted string.</li>
+					</ol>
+					<p>An example of the decrpytion procedure for decrypting to get "APPLES" with the keyword "ATE" can be shown here. The alphabet used in this example is the Standard English Alphabet.</p>
+					<table class="empty" style="width: 100%; table-layout: auto; border-style: hidden; font-size: 82%" >
+						<tr>
+								<td style="border-right-style: hidden" align="center">
+								<table>
+									<tr>
+										<td>?</td>
+										<td>?</td>
+										<td>?</td>
+										<td>?</td>
+										<td>?</td>
+										<td>?</td>
+									</tr>
+									<tr>
+										<th>A</th>
+										<th>T</th>
+										<th>E</th>
+										<th>?</th>
+										<th>?</th>
+										<th>?</th>
+									</tr>
+									<tr>
+										<td>A</td>
+										<td>I</td>
+										<td>T</td>
+										<td>L</td>
+										<td>T</td>
+										<td>H</td>
+									</tr>
+								</table>
+									Initial Setup, may differ from module
+							</td>
+							<td style="border-right-style: hidden" align="center">
+								<table>
+									<tr>
+										<td>A</td>
+										<td>P</td>
+										<td>P</td>
+										<td>?</td>
+										<td>?</td>
+										<td>?</td>
+									</tr>
+									<tr>
+										<th>A</th>
+										<th>T</th>
+										<th>E</th>
+										<th>?</th>
+										<th>?</th>
+										<th>?</th>
+									</tr>
+									<tr>
+										<td>A</td>
+										<td>I</td>
+										<td>T</td>
+										<td>L</td>
+										<td>T</td>
+										<td>H</td>
+									</tr>
+								</table>
+								Decrypt letters from keyword provided
+							</td>
+							<td style="border-right-style: hidden" align="center">
+								<table>
+									<tr>
+										<td>A</td>
+										<td>P</td>
+										<td>P</td>
+										<td>?</td>
+										<td>?</td>
+										<td>?</td>
+									</tr>
+									<tr>
+										<th>A</th>
+										<th>T</th>
+										<th>E</th>
+										<th>A</th>
+										<th>P</th>
+										<th>P</th>
+									</tr>
+									<tr>
+										<td>A</td>
+										<td>I</td>
+										<td>T</td>
+										<td>L</td>
+										<td>T</td>
+										<td>H</td>
+									</tr>
+								</table>
+								Add some decrypted text to keyword
+							</td>
+							<td align="center">
+								<table>
+									<tr>
+										<td>A</td>
+										<td>P</td>
+										<td>P</td>
+										<td>L</td>
+										<td>E</td>
+										<td>S</td>
+									</tr>
+									<tr>
+										<th>A</th>
+										<th>T</th>
+										<th>E</th>
+										<th>A</th>
+										<th>P</th>
+										<th>P</th>
+									</tr>
+									<tr>
+										<td>A</td>
+										<td>I</td>
+										<td>T</td>
+										<td>L</td>
+										<td>T</td>
+										<td>H</td>
+									</tr>
+								</table>
+								Decrypt Section &rarr; Result of decrypting
+							</td>
+						</tr>
+					</table>
+					<p class="flavour-text">Go <a href="http://www.crypto-it.net/eng/simple/autokey-cipher.html">here</a> for infomation about autokey cipher. This link provided is NOT secure and should be entered with caution.</p>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+            <div class="page page-bg-03">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step ?: Anagram Shuffler</h2>
+					<p class="flavour-text">Did you know that "Orange" is an anagram of "A Goner?"</p>
+					<table style="width: 100%">
+						<tr>
+							<th colspan="8">Anagrams</th>
+						</tr>
+						<tr>
+							<td>TAMERS</td>
+							<td>STREAM</td>
+							<td>MASTER</td>
+							<td>ARM SET</td>
+							<td>MRS TEA</td>
+							<td>MR SEAT</td>
+						</tr>
+						<tr>
+							<td>BARELY</td>
+							<td>BARLEY</td>
+							<td>BLEARY</td>
+							<td>LAB RYE</td>
+							<td>A BERYL</td>
+							<td>ALB RYE</td>
+						</tr>
+						<tr>
+							<td>RUDEST</td>
+							<td>DUSTER</td>
+							<td>RUSTED</td>
+							<td>ED RUST</td>
+							<td>EDS RUT</td>
+							<td>DUST RE</td>
+						</tr>
+						<tr>
+							<td>IDEALS</td>
+							<td>SAILED</td>
+							<td>LADIES</td>
+							<td>A SLIDE</td>
+							<td>DEAL IS</td>
+							<td>SEA LID</td>
+						</tr>
+					</table>
+					<p>Use the even rows if the pigpen display is at the top on the extra key screen, otherwise use the odd rows. Use the top half of the same table if the Columnar Transposition key is to the left of the falsely selected word used for Autokey Cipher, otherwise use the bottom half.</p>
+					<p>Then count the anagrams in that row from left to right, by the number of steps it takes to reach to Green, starting on the NW button and going CW, plus 1. That will be the base key for the unencrypted string.</p>
+					<p>If the base key consists of 2 words, swap them if the serial number does not contain a vowel (A, E, I, O, U).</p>
+					<p>Finally, count the anagrams in the same row from left to right, by the number of steps it takes to reach to Magenta, starting on the NW button and going CW, plus 1. That will be the encryption key.</p>
+					<p>If the encryption key consists of 2 words, swap them if there are an odd number of battery holders on the bomb.</p>
+					<p>To <em>decrypt,</em> place each letter in reading order in respect to the length of the encryption key. Then for each letter in the base key, place the exact combination of letters from the encrypted string underneath the corresponding letter for the base key. Finally, read the string underneath the base key in reading order to get your <em>decrypted</em> string.</p>
+					<p>An example of this is shown here.</p>
+					<table class="empty" style="width: 100%;table-layout: auto; border-style: hidden;">
+						<tr>
+							<td style="border-right-style: hidden" align="center">
+								<table>
+									<tr>
+										<th>P</th>
+										<th>R</th>
+										<th>I</th>
+										<th>N</th>
+										<th>C</th>
+										<th>E</th>
+									</tr>
+									<tr>
+										<td>A</td>
+										<td>F</td>
+										<td>A</td>
+										<td>I</td>
+										<td>N</td>
+										<td>T</td>
+									</tr>
+									<tr>
+										<td>S</td>
+										<td>O</td>
+										<td>U</td>
+										<td>N</td>
+										<td>D</td>
+										<td>T</td>
+									</tr>
+									<tr>
+										<td>H</td>
+										<td>R</td>
+										<td>I</td>
+										<td>C</td>
+										<td>E</td>
+										<td>D</td>
+									</tr>
+								</table>
+							</td>
+							<td align="center">
+								<table>
+									<tr>
+										<th>P</th>
+										<th>I</th>
+										<th>N</th>
+										<th>C</th>
+										<th>E</th>
+										<th>R</th>
+									</tr>
+									<tr>
+										<td>A</td>
+										<td>A</td>
+										<td>I</td>
+										<td>N</td>
+										<td>T</td>
+										<td>F</td>
+									</tr>
+									<tr>
+										<td>S</td>
+										<td>U</td>
+										<td>N</td>
+										<td>D</td>
+										<td>T</td>
+										<td>O</td>
+									</tr>
+									<tr>
+										<td>H</td>
+										<td>I</td>
+										<td>I</td>
+										<td>E</td>
+										<td>D</td>
+										<td>R</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+            <div class="page page-bg-05">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step ?: Four Square Cipher (Keys ?)</h2>
+					<p class="flavour-text">I think he ran out of ideas for potential reasonable ciphers.</p>
+					<p>The extra key consists of 12 random pigpen letters, which are used for the square D. Decrypt this by using step 2 from the manual. For the other 3 keys:</p>
+					<ol>
+						<li>Grab the first true and last false rule from <a href="Reverse%20Alphabetize.html">Reverse Alphabetize</a>, as if the module had no strikes, no solved modules.</li>
+						<li>Then grab the median of the true rules from the same manual with the same criteria. If there is none or it doesn't exist, use the alphabet that was created on step 3. Otherwise, use the string to the right of the median of the true rules. This will need to be built for square A.</li>
+						<li>The string from the first true and last false rule are used for squares B and C respectively.
+						</li>
+						<li>Subsitute the 10th letter in the alphabet being used with the 9th letter in the alphabet for each key, then remove duplicate letters and fill in the rest of the alphabet if necessary at the end of each key.</li>
+						<li>Create 4 5x5 squares in that regard.</li>
+						<li>Rearrange the squares into the following: A on the TL, B on the TR, C on the BL, D for the BR. Refer to the table for this step for the order.
+						<table align="center">
+						<tr><td>A</td><td>B</td></tr>
+						<tr><td>C</td><td>D</td></tr>
+						</table>
+						</li>
+						<li>Now refer to <a href="Orange%20Cipher.html">Orange Cipher</a> in order to decrypt this. This page will repeat steps from Step 3's Orange Cipher if the link is broken.</li>
+						<li>To <em>decrypt,</em> split the encrypted string into pairs, making sure all letters from the 10th letter in the alphabet are substituted with the 9th letter in the alphabet. Then for each pair:</li>
+						<ul>
+							<li>Grab the row and column of the 1st letter in the pair from the TR square.</li>
+							<li>Grab the row and column of the 2nd letter in the pair from the BL square.</li>
+							<li>Use the row position of the 1st letter and the column position of the 2nd letter to get your 1st decrypted letter in the TL square for that pair.</li>
+							<li>Use the column position of the 1st letter and the row position of the 2nd letter to get your 2nd decrypted letter in the BR square for that pair.</li>
+						</ul>
+					</ol>
+					<ol start="9">
+						<li>Concatinate the decrypted pairs to get your <em>decrypted</em> string.</li>
+					</ol>
+                </div>
+                <div class="page-footer relative-footer">Page 3 of 8</div>
+            </div>
+			<div class="page page-bg-05">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<h2>Solving — Step 8: Executing the Instructions</h2>
+					<p>If at this point the expert has least 1 instruction not in the given list of instructions, the expert will need to redo the decryption process.</p>
+					<p>Tap the screen on the right to cycle between showing the module ID, the number of strikes obtained so far, which is shown in red, or the extra key.</p>
+					<p>Again, if the defuser has colorblind mode enabled for this module, hovering over the colored button will show the color of that given button for that given position on the top screen.</p>
+					<h3>Instructions:</h3>
+					<p>'%' refers to the module (remainder) operation.<br>
+						<strong>Inner Center</strong> refers to the white button in the middle.<br>
+					<strong>Outer Center</strong> refers to the gray circular frame around the colored buttons.
+					</p>
+					<p>Refer to <span class="itil">Appendix PR1M3</span> for a list of prime numbers.</p>
+					<ul>
+						<li><em><strong>PCR:</strong></em> Press the Red button.</li>
+						<li><em><strong>PCG:</strong></em> Press the Green button.</li>
+						<li><em><strong>PCB:</strong></em> Press the Blue button.</li>
+						<li><em><strong>SCC:</strong></em> Press the Cyan button.</li>
+						<li><em><strong>SCM:</strong></em> Press the Magenta button.</li>
+						<li><em><strong>SUB:</strong></em> Press <strong>Outer Center</strong> when the seconds digits on the countdown timer match.</li>
+						<li><em><strong>MIT:</strong></em> Press <strong>Inner Center</strong> when the last digit on the seconds timer is <span class="itil">(m + c + s) % 10</span>, with <span class="itil">m</span> being the Module ID, <span class="itil">c</span> being the number of times a colored (R, G, B, C, M, Y) button has been pressed since the last strike on this module (or since the beginning if there are no strikes) and <span class="itil">s</span> being the current stage, starting with 1.</li>
+						<li><em><strong>PRN:</strong></em> Press <strong>Inner Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Outer Center</strong>.</li>
+						<li><em><strong>CHK:</strong></em> Press <strong>Outer Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Inner Center</strong>.</li>
+						<li><em><strong>REP</strong></em> or <em><strong>EAT:</strong></em> Repeat the last input, or press <strong>Inner Center</strong> if this is the first instruction. Ignore timing constraints.</li>
+						<li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from <span class="red">Red</span> (0) at the top, count as many colored buttons clockwise as there are strikes and press the resulting button.</li>
+						<ul>
+							<li>For these instructions, refer to the <span class="red">Strike Counter</span> on the screen to the right of the module itself.</li>
+						</ul>
+					</ul>
+                </div>
+                <div class="page-footer relative-footer">Page 6 of 8</div>
+            </div>
+			<div class="page page-bg-05">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+
+					<ul>
+						<li><em><strong>SKP:</strong></em> Press <strong>Inner Center</strong>. Then press <strong>Outer Center</strong> and <strong>skip the next instruction.</strong> If this instruction is unable to skip the next instruction, or this is the very last instruction, only the <strong>Inner Center</strong> press is needed.
+						</li>
+						<li><em><strong>PVP</strong></em> or <em><strong>NXP:</strong></em> Start from the last colored button you pressed (or the NW button if you have not pressed any yet). Go (counter-clockwise if PVP / clockwise if NXP) until you get to a button that is a primary color (R, G, B), then press that button.</li>
+						<li><em><strong>PVS</strong></em> or <em><strong>NXS:</strong></em> Start from the last colored button you pressed (or the NW button if you have not pressed any yet). Go (counter-clockwise if PVS / clockwise if NXS) until you get to a button that is a secondary color (C, M, Y), then press that button.</li>
+						<li><em><strong>OPP:</strong></em> Press the button that is diametrically opposite to the last button you pressed. If your last button pressed was <strong>Outer Center</strong> then press <strong>Inner Center</strong> and vice versa. Otherwise, if this is the first instruction, press <strong>Outer Center</strong>.</li>
+						<li><em><strong>FIN</strong></em> or <em><strong>ISH:</strong></em> This is the only instruction that <strong>CANNOT</strong> be skipped and also the last instruction. Take the number of <strong>Inner Center</strong> and <strong>Outer Center</strong> buttons you pressed up to this point and call it X. Count X buttons clockwise starting from the last colored button you pressed, or the NW button if you have not pressed a colored button yet. Then count Y buttons counter-clockwise from that button, where Y is the number of solved modules on the bomb. Press that button when the last seconds digit on the countdown timer is the least significant digit of the number of unsolved modules on the bomb. The number of solved/unsolved modules will take into account once you press the button.</li>
+					</ul>
+                </div>
+                <div class="page-footer relative-footer">Page 7 of 8</div>
+            </div>
+			<div class="page page-bg-05">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Cruel Revenge</span>
+                </div>
+                <div class="page-content">
+					<table style="float: right">
+						<tr>
+							<th>DEC</th>
+							<th>HEX</th>
+						</tr>
+						<tr>
+							<td>0-9</td>
+							<td>0-9</td>
+						</tr>
+						<tr>
+							<td>10</td>
+							<td>A</td>
+						</tr>
+						<tr>
+							<td>11</td>
+							<td>B</td>
+						</tr>
+						<tr>
+							<td>12</td>
+							<td>C</td>
+						</tr>
+						<tr>
+							<td>13</td>
+							<td>D</td>
+						</tr>
+						<tr>
+							<td>14</td>
+							<td>E</td>
+						</tr>
+						<tr>
+							<td>15</td>
+							<td>F</td>
+						</tr>
+						<tr>
+							<td>16</td>
+							<td>10</td>
+						</tr>
+						<tr>
+							<td>17</td>
+							<td>11</td>
+						</tr>
+						<tr>
+							<td>26</td>
+							<td>1A</td>
+						</tr>
+						<tr>
+							<td>...</td>
+							<td>...</td>
+						</tr>
+					</table>
+					<h3>Appendix — D3K2H3X</h3>
+					<p>Follow these steps to convert an integer to hexadecimal:</p>
+					<ol>
+						<li>Divide the number by 16. Obtain the remainder and quotient.</li>
+						<li>Convert the remainder into a hexadecimal digit. See the corresponding table for a quick reference.</li>
+						<li>Repeat steps 1 and 2 with the quotient as the new number. Keep repeating until the quotient is zero.</li>
+						<li>Reverse the order of the hexadecimal digits obtained.</li>
+						<li>Remove leading zeros.</li>
+					</ol>
+					<h3>Appendix — PR1M3</h3>
+					<ul>
+						<li>A prime number is referred to a number that is only divisible by 1 and itself. 1 is not considered prime even though it is divisible by 1 and itself.</li>
+						<li>Prime numbers (to 20): 2, 3, 5, 7, 11, 13, 17, 19</li>
+					</ul>
+					<h3>Appendix — PL4YF4112 101</h3>
+					<ul>
+						<li>Create a 5×5 matrix of letters. Start with your <strong>keyword</strong> and fill the rest with the unused letters of the alphabet you are using. Each letter must occur only <strong>once</strong> in the matrix, so only add the first occurrence. The 9th and 10th letters of the alphabet being used are interchangeable.
+						</li>
+						<li>In the following text, use the instructions marked (d) when <em>decrypting</em> and those marked (e) when <em>encrypting</em>.
+						</li>
+						<li>Split the <strong>message</strong> into character pairs. <em>If you cannot form a pair, add <strong>the 24th letter in the alphabet</strong></em>. For each pair:</li>
+						<ul>
+							<li>If the letters are exactly identical, do not modify them at all.</li>
+							<li>If the letters appear on the same row of your matrix, replace them with the letters to their immediate <em>left</em> (d)/<em>right</em> (e) respectively, wrapping around to the other side of the row if necessary.</li>
+							<li>If the letters are on the same column of your matrix, replace them with the letters immediately <em>above</em> (d)/<em>below</em> (e), wrapping to the other side of the column if necessary.</li>
+							<li>If the letters are on different rows and columns, replace each of them with the letter on the same row but in the column of the other letter in the original pair.</li>
+						</ul>
+						<li>Drop any final X’s that don’t make sense and locate any I’s that should be J’s.
+						</li>
+					</ul>
+                </div>
+                <div class="page-footer relative-footer">Page 8 of 8</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
