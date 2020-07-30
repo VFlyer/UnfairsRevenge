@@ -253,10 +253,10 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 					else
 					{
 						if (swapStandardKeys)
-							strikeIDDisplay.text = string.Format("\n{1} | {0}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
+							strikeIDDisplay.text = string.Format("{1} | {0}\n", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
 						else
-							strikeIDDisplay.text = string.Format("\n{0} | {1}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
-						pigpenSecondary.text = string.Format("{0}\n", extraKey);
+							strikeIDDisplay.text = string.Format("{0} | {1}\n", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
+						pigpenSecondary.text = string.Format("\n{0}", extraKey);
 					}
 					break;
 				}
@@ -301,7 +301,6 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Mod ID is in {1} Numerals", loggingModID, tableRoman[idxCurModIDDisplay]);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The strike counter is in {1} Numerals", loggingModID, tableRoman[idxCurStrikeDisplay]);
-		string baseString = splittedInstructions.Join("");
 		// Value A Calculations
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -------------Value A Calculations-------------", loggingModID);
 		int valueA = 0;
@@ -483,6 +482,9 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 			int temp = idxCipherList[idxAS];
 			idxCipherList[idxAS] = idxCipherList[idxR13];
 			idxCipherList[idxR13] = temp;
+			temp = idxCipherList[idxBCT];
+			idxCipherList[idxBCT] = idxCipherList[idxMT];
+			idxCipherList[idxMT] = temp;
 		}
 		if (curColorList.IndexOf("Yellow") < 3 && curColorList.IndexOf("Blue") < 3)
 		{
@@ -539,9 +541,10 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 		List<int> firstFourCipherIdx = idxCipherList.Take(4).ToList();
 		List<string> encryptedResults = new List<string>();
 		string[] directionSamples = { "NW", "N", "NE", "SE", "S", "SW" };
+		string baseString = splittedInstructions.Join("");
 		for (int x = 0; x < firstFourCipherIdx.Count; x++)
         {
-			string currentString = x == 0 ? splittedInstructions.Join("") : encryptedResults.Last();
+			string currentString = x == 0 ? baseString : encryptedResults.Last();
 			switch (firstFourCipherIdx[x])
 			{
 				case 0:
@@ -604,6 +607,11 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--------Anagram Shuffler Preparations--------+-", loggingModID);
 						int selectedRow = (swapPigpenAndStandard ? 1 : 0) + (swapStandardKeys ? 2 : 0);
 						int baseColIdx = curColorList.IndexOf("Green"), encryptColIdx = curColorList.IndexOf("Magenta");
+
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row Used: {1} ({2}, {3})", loggingModID, selectedRow + 1, swapPigpenAndStandard ? "Pigpen Set at the top" : "Pigpen Set at the bottom", swapStandardKeys ? "Columnar Transposition key is to the right of the Autokey Cipher false keyword" : "Columnar Transposition key is to the left of the Autokey Cipher false keyword");
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Green button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[baseColIdx], anagramValues[selectedRow][baseColIdx]);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Magenta button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[encryptColIdx], anagramValues[selectedRow][encryptColIdx]);
+
 						string[] baseWord = anagramValues[selectedRow][baseColIdx].Split(), encryptWord = anagramValues[selectedRow][encryptColIdx].Split();
 						
 						if (baseWord.Length == 2 && !bombInfo.GetSerialNumberLetters().Any(a => "AEIOU".Contains(a)))
@@ -1461,9 +1469,9 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 	{
 		Dictionary<string, string> sampleQuestionResponse = new Dictionary<string, string>()
 		{
-			{"It was too consistant.", "So he did this instead." },
+			{"It was too\nconsistant.", "So he did\nthis instead." },
 			{"It was never fair", "in the first place." },
-			{"Do defusers even read these?", "I guess not as much." },
+			{"Do defusers even\nread these?", "I guess not as much." },
 			{"Landing Sequence...", "ERROR" },
 			{"Contains TheFatRat", " - The Calling" },
 			{"Funny Text", "Side Text" },
@@ -1478,7 +1486,7 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 			strikeIDDisplay.text = selectedSample.Value.Substring(0, Math.Min(x, selectedSample.Value.Length));
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
-		yield return new WaitForSeconds(2.5f);
+		yield return new WaitForSeconds(3f);
 		mainDisplay.text = "";
 		strikeIDDisplay.text = "";
 	}

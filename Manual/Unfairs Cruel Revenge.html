@@ -89,7 +89,7 @@
 						<li>Convert this number into <strong>hexadecimal.</strong> Refer to <span class="itil">Appendix D3K2H3X</span> for instructions.</li>
 					</ol>
                 </div>
-                <div class="page-footer relative-footer">Page 1 of 8</div>
+                <div class="page-footer relative-footer">Page 1 of 16</div>
             </div>
             <div class="page page-bg-02">
                 <div class="page-header">
@@ -243,7 +243,7 @@
 					<h3>Key D</h3>
 					<p>Sum up the value of ALL the false rules in <a href="Alphabetize.html">Alphabetize</a>, as if there are no strikes, no solved modules on the bomb. Then take the average of the sum. If this results in a decimal answer, use the 15th row on that manual as Key D, otherwise count that many rows from the top and use that as Key D.</p>
                 </div>
-                <div class="page-footer relative-footer">Page 2 of 8</div>
+                <div class="page-footer relative-footer">Page 2 of 16</div>
             </div>
             <div class="page page-bg-03">
                 <div class="page-header">
@@ -333,7 +333,7 @@
 					<p>Start with 0 and perform all operations in the following table for each matching conditon from top to bottom. This will be refered to as Value A for decrypting.<br>
 						Drop any remainders and/or decimals when using the division operation. I.E, if you get -1.5 after division, turn -1.5 into -1 instead.</p>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 3 of 16</div>
             </div>
             <div class="page page-bg-02">
                 <div class="page-header">
@@ -420,7 +420,7 @@
 						</tr>
 					</table>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 4 of 16</div>
             </div>
             <div class="page page-bg-02">
                 <div class="page-header">
@@ -478,7 +478,7 @@
 						</tr>
 					</table>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 5 of 16</div>
             </div>
             <div class="page page-bg-03">
                 <div class="page-header">
@@ -490,7 +490,7 @@
 					<p>Convert the symbols on the top screen into letters using the chart below.</p>
 					<img src="images/image2.png" width="100%" alt="A pigpen encryption table would be shown here.">
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 6 of 16</div>
             </div>
             <div class="page page-bg-03">
                 <div class="page-header">
@@ -546,7 +546,7 @@
 						</tr>
 					</table>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 7 of 16</div>
             </div>
 			<div class="page page-bg-04">
                 <div class="page-header">
@@ -560,9 +560,13 @@
 					<p>Each letter is encrypted by using Caesar Cipher with a key of 13 on the given alphabet, wrapping around to the first letter if needed.</p>
 					<p>To <em>decrypt,</em> simply do Caesar Cipher with a key of 13.</p>
 					<h2>Solving — Step ?: Affine Cipher</h2>
-					<p>The alphabetic position of each letter is multiplied by (2X + 1).<br>
-						26 is subtracted from the product until it falls within the range [1, 26].<br>
-						This is the alphabetic position of the encrypted letter.<br>
+					<p>For each letter in the plain text:</p>
+					<ul>
+						<li>The alphabetic position of that letter is multiplied by (2X + 1).</li>
+						<li>26 is subtracted from the product until it falls within the range [1, 26].</li>
+						<li>This is the alphabetic position of the encrypted letter.</li>
+					</ul>
+					<p>
 						To <em>decrypt</em>, add 26 to the alphabetical postion of the encrypted letter until it is divisible by (2X + 1), then divide it by (2X + 1) to get the alphabetical position of the unencrypted letter.
 					</p>
 					<p>The table underneath can be used to quickly decrypt each letter for Affine Cipher if needed. X = 0 denotes to the first row in the table and the decrypted letter, X = 1 for the 2nd row for the encrypted letter, X = 2 for the 3rd row, etc.</p>
@@ -671,7 +675,7 @@
 						</tr>
 					</table>
                 </div>
-                <div class="page-footer relative-footer">Page 4 of 8</div>
+                <div class="page-footer relative-footer">Page 8 of 16</div>
             </div>
 			<div class="page page-bg-05">
                 <div class="page-header">
@@ -687,7 +691,7 @@
 						To <em>decrypt</em> simply get the alphabetical position of (27 - E), where E is the alphabetical position of the encrypted letter.</p>
 					<h2>Solving — Step ?: Basic Columnar Transposition</h2>
 					<p>The extra key will contain random numbers when rearranged form consectutive numbers. These have been used to encrypt the instructions.</p>
-					<p>To <em>decrypt</em> follow the process for Columnar Transposition from <a href="Green%20Cipher.html">Green Cipher</a>.</p>
+					<p>To <em>decrypt</em> follow the process for Columnar Transposition from <a href="Green%20Cipher.html">Green Cipher</a>, except with 18 characters from the encrypted text.</p>
 					<h2>Solving — Step ?: Myszkowski Transposition</h2>
 					<p class="flavour-text">These seem very familar to the last one...</p>
 					<table style="width: 100%">
@@ -736,7 +740,7 @@
 					<p>The encryption process follows by splitting the unencrypted letters up so that each row is equal to the length of the keyword. The letters are then read in alphabetical order in accordance to the keyword, from left to right, top to bottom. Refer to <a href="https://en.wikipedia.org/wiki/Transposition_cipher">this</a> for clarification.</p>
 					<p>To <em>decrypt,</em> place each letter underneath the keyword, in alphabetical order. In the case of duplicate letters in the keyword, place them from left to right for the current duplicate letter, and then top to bottom until each have been filled. Then read the message in reading order to get the <em>decrypted</em> text. The example of Myszkowski Transposition being used is demonstrated on the next page.</p>
                 </div>
-                <div class="page-footer relative-footer">Page 5 of 8</div>
+                <div class="page-footer relative-footer">Page 9 of 16</div>
             </div>
             <div class="page page-bg-03">
                 <div class="page-header">
@@ -884,7 +888,7 @@
 						</tr>
 					</table>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 10 of 16</div>
             </div>
             <div class="page page-bg-06">
                 <div class="page-header">
@@ -1033,7 +1037,7 @@
 					</table>
 					<p class="flavour-text">Go <a href="http://www.crypto-it.net/eng/simple/autokey-cipher.html">here</a> for infomation about autokey cipher. This link provided is NOT secure and should be entered with caution.</p>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 11 of 16</div>
             </div>
             <div class="page page-bg-03">
                 <div class="page-header">
@@ -1080,10 +1084,10 @@
 							<td>SEA LID</td>
 						</tr>
 					</table>
-					<p>Use the even rows if the pigpen display is at the top on the extra key screen, otherwise use the odd rows. Use the top half of the same table if the Columnar Transposition key is to the left of the falsely selected word used for Autokey Cipher, otherwise use the bottom half.</p>
-					<p>Then count the anagrams in that row from left to right, by the number of steps it takes to reach to Green, starting on the NW button and going CW, plus 1. That will be the base key for the unencrypted string.</p>
+					<p>Use the even rows if the pigpen set is at the top on the extra key screen, otherwise use the odd rows. Use the top half of the same table if the Columnar Transposition key is to the left of the falsely selected word used for Autokey Cipher, otherwise use the bottom half.</p>
+					<p>Then count the anagrams in that row from left to right, by the number of steps it takes to reach to Green, starting on the NW button and going CW if the current button is not Green until landing on Green, plus 1. That will be the base key for the unencrypted string.</p>
 					<p>If the base key consists of 2 words, swap them if the serial number does not contain a vowel (A, E, I, O, U).</p>
-					<p>Finally, count the anagrams in the same row from left to right, by the number of steps it takes to reach to Magenta, starting on the NW button and going CW, plus 1. That will be the encryption key.</p>
+					<p>Finally, count the anagrams in the same row from left to right, by the number of steps it takes to reach to Magenta, starting on the NW button and going CW if the current button is not Magenta until landing on Magenta, plus 1. That will be the encryption key.</p>
 					<p>If the encryption key consists of 2 words, swap them if there are an odd number of battery holders on the bomb.</p>
 					<p>To <em>decrypt,</em> place each letter in reading order in respect to the length of the encryption key. Then for each letter in the base key, place the exact combination of letters from the encrypted string underneath the corresponding letter for the base key. Finally, read the string underneath the base key in reading order to get your <em>decrypted</em> string.</p>
 					<p>An example of this is shown here.</p>
@@ -1164,7 +1168,7 @@
 						</tr>
 					</table>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 12 of 16</div>
             </div>
             <div class="page page-bg-05">
                 <div class="page-header">
@@ -1174,12 +1178,10 @@
                 <div class="page-content">
 					<h2>Solving — Step ?: Four Square Cipher (Keys ?)</h2>
 					<p class="flavour-text">I think he ran out of ideas for potential reasonable ciphers.</p>
-					<p>The extra key consists of 12 random pigpen letters, which are used for the square D. Decrypt this by using step 2 from the manual. For the other 3 keys:</p>
+					<p>The extra key consists of 12 random pigpen letters, which are used for square D. Decrypt this by using step 2 from the manual. For the other 3 keys:</p>
 					<ol>
-						<li>Grab the first true and last false rule from <a href="Reverse%20Alphabetize.html">Reverse Alphabetize</a>, as if the module had no strikes, no solved modules.</li>
+						<li>Grab the first true and last false rule from <a href="Reverse%20Alphabetize.html">Reverse Alphabetize</a>, as if the module had no strikes, no solved modules. The strings from the first true and last false rules are used for squares B and C respectively.</li>
 						<li>Then grab the median of the true rules from the same manual with the same criteria. If there is none or it doesn't exist, use the alphabet that was created on step 3. Otherwise, use the string to the right of the median of the true rules. This will need to be built for square A.</li>
-						<li>The string from the first true and last false rule are used for squares B and C respectively.
-						</li>
 						<li>Subsitute the 10th letter in the alphabet being used with the 9th letter in the alphabet for each key, then remove duplicate letters and fill in the rest of the alphabet if necessary at the end of each key.</li>
 						<li>Create 4 5x5 squares in that regard.</li>
 						<li>Rearrange the squares into the following: A on the TL, B on the TR, C on the BL, D for the BR. Refer to the table for this step for the order.
@@ -1188,6 +1190,8 @@
 						<tr><td>C</td><td>D</td></tr>
 						</table>
 						</li>
+					</ol>
+					<ol start="6">
 						<li>Now refer to <a href="Orange%20Cipher.html">Orange Cipher</a> in order to decrypt this. This page will repeat steps from Step 3's Orange Cipher if the link is broken.</li>
 						<li>To <em>decrypt,</em> split the encrypted string into pairs, making sure all letters from the 10th letter in the alphabet are substituted with the 9th letter in the alphabet. Then for each pair:</li>
 						<ul>
@@ -1201,7 +1205,7 @@
 						<li>Concatinate the decrypted pairs to get your <em>decrypted</em> string.</li>
 					</ol>
                 </div>
-                <div class="page-footer relative-footer">Page 3 of 8</div>
+                <div class="page-footer relative-footer">Page 13 of 16</div>
             </div>
 			<div class="page page-bg-05">
                 <div class="page-header">
@@ -1236,7 +1240,7 @@
 						</ul>
 					</ul>
                 </div>
-                <div class="page-footer relative-footer">Page 6 of 8</div>
+                <div class="page-footer relative-footer">Page 14 of 16</div>
             </div>
 			<div class="page page-bg-05">
                 <div class="page-header">
@@ -1254,7 +1258,7 @@
 						<li><em><strong>FIN</strong></em> or <em><strong>ISH:</strong></em> This is the only instruction that <strong>CANNOT</strong> be skipped and also the last instruction. Take the number of <strong>Inner Center</strong> and <strong>Outer Center</strong> buttons you pressed up to this point and call it X. Count X buttons clockwise starting from the last colored button you pressed, or the NW button if you have not pressed a colored button yet. Then count Y buttons counter-clockwise from that button, where Y is the number of solved modules on the bomb. Press that button when the last seconds digit on the countdown timer is the least significant digit of the number of unsolved modules on the bomb. The number of solved/unsolved modules will take into account once you press the button.</li>
 					</ul>
                 </div>
-                <div class="page-footer relative-footer">Page 7 of 8</div>
+                <div class="page-footer relative-footer">Page 15 of 16</div>
             </div>
 			<div class="page page-bg-05">
                 <div class="page-header">
@@ -1339,11 +1343,11 @@
 							<li>If the letters are on the same column of your matrix, replace them with the letters immediately <em>above</em> (d)/<em>below</em> (e), wrapping to the other side of the column if necessary.</li>
 							<li>If the letters are on different rows and columns, replace each of them with the letter on the same row but in the column of the other letter in the original pair.</li>
 						</ul>
-						<li>Drop any final X’s that don’t make sense and locate any I’s that should be J’s.
+						<li>Drop any final (24th letter)’s that don’t make sense and locate any (9th letter)’s that should be (10th letter)’s if necessary.
 						</li>
 					</ul>
                 </div>
-                <div class="page-footer relative-footer">Page 8 of 8</div>
+                <div class="page-footer relative-footer">Page 16 of 16</div>
             </div>
         </div>
     </div>

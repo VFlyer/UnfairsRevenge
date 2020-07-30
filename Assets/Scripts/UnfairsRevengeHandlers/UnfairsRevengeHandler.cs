@@ -139,7 +139,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 		strikeIDDisplay.text = FitToScreen(toDisplay, 5);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
 
-		string baseString = splittedInstructions.Join("");
+		
 		
 		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------Caesar Offset Calculations----------", loggingModID);
 		int offset = 0;
@@ -222,12 +222,13 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 		string keyAString = obtainKeyA();
 		string keyBString = keyBTable[idxStartDOW, monthOfStart - 1];
 		string keyCString = EncryptUsingPlayfair(keyAString, keyBString);
-
+		
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key A: {1}", loggingModID, keyAString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key B: {1}", loggingModID, keyBString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key C: {1}", loggingModID, keyCString);
 
-		string playfairEncryptedString = EncryptUsingPlayfair(splittedInstructions.Join(""), keyCString),
+		string baseString = splittedInstructions.Join("");
+		string playfairEncryptedString = EncryptUsingPlayfair(baseString, keyCString),
 			step3EncryptedString = multiplier % 13 == 6 ? EncryptUsingAtbash(playfairEncryptedString) : EncryptUsingAffine(playfairEncryptedString, multiplier),
 			caesarEncryptedString = EncryptUsingCaesar(step3EncryptedString,offset);
 
