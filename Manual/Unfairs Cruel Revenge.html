@@ -65,7 +65,7 @@
                     <p>This module has two displays. The display on top shows the encrypted message. There's also a strip of LEDs which will light up to show the current stage.</p>
 					<p>The display on the right can be clicked to cycle between showing the Module ID, in white, strikes the module is keeping track of, in red, and the extra key. The Module ID and the strike counter are either shown in fixed or broken Roman numerals, or in Arabic form, I.E 1, 2, 3, 5,...</p>
 					<p class="red"><strong>For all operations involving STRIKES, always refer to the number in red on the module itself.</strong></p>
-					<p>The module encrypts a string of six three-letter-long <span style="text-decoration: underline">instructions</span> with four different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
+					<p>The module encrypts a string of six distant three-letter-long <span style="text-decoration: underline">instructions</span> with four different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
 					<p><strong>ALL ciphers referring to the alphabet refers to the A1Z26 standard for each letter unless stated otherwise. Alphabetical order is ALSO modified for the ciphers!</strong></p>
 					<ul>
 						<li>The basic order of the given encrypted text is the following: <strong>Original -> 4x Ciphers -> Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
@@ -569,7 +569,7 @@
 					<p>
 						To <em>decrypt</em>, add 26 to the alphabetical postion of the encrypted letter until it is divisible by (2X + 1), then divide it by (2X + 1) to get the alphabetical position of the unencrypted letter.
 					</p>
-					<p>The table underneath can be used to quickly decrypt each letter for Affine Cipher if needed. X = 0 denotes to the first row in the table and the decrypted letter, X = 1 for the 2nd row for the encrypted letter, X = 2 for the 3rd row, etc.</p>
+					<p>The table underneath can be used to quickly decrypt each letter for Affine Cipher if needed. The table uses the Standard English Alphabet order however the alphabet used on the module may be different. X = 0 denotes to the first row in the table and the decrypted letter, X = 1 for the 2nd row for the encrypted letter, X = 2 for the 3rd row, etc.</p>
 					<p class="flavour-text">The contents in this table are editable, you may modify this in order to use a different alphabet.</p>
 					<table style="font-size: 81%;width: 100%" contenteditable="true" class="affine">
 						<tr contenteditable="false">
@@ -1229,12 +1229,12 @@
 						<li><em><strong>PCB:</strong></em> Press the Blue button.</li>
 						<li><em><strong>SCC:</strong></em> Press the Cyan button.</li>
 						<li><em><strong>SCM:</strong></em> Press the Magenta button.</li>
-						<li><em><strong>SUB:</strong></em> Press <strong>Outer Center</strong> when the seconds digits on the countdown timer match.</li>
-						<li><em><strong>MIT:</strong></em> Press <strong>Inner Center</strong> when the last digit on the seconds timer is <span class="itil">(m + c + s) % 10</span>, with <span class="itil">m</span> being the Module ID, <span class="itil">c</span> being the number of times a colored (R, G, B, C, M, Y) button has been pressed since the last strike on this module (or since the beginning if there are no strikes) and <span class="itil">s</span> being the current stage, starting with 1.</li>
+						<li><em><strong>SUB:</strong></em> Press <strong>Inner Center</strong> when the seconds digits on the countdown timer match.</li>
+						<li><em><strong>MIT:</strong></em> Press <strong>Outer Center</strong> when the last digit on the seconds timer is <span class="itil">(m + c + (5 - s)) % 10</span>, with <span class="itil">m</span> being the Module ID, <span class="itil">c</span> being the number of times a colored (R, G, B, C, M, Y) button has been pressed since the last strike on this module (or since the beginning if there are no strikes) and <span class="itil">s</span> being the current stage, starting with 1.</li>
 						<li><em><strong>PRN:</strong></em> Press <strong>Inner Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Outer Center</strong>.</li>
 						<li><em><strong>CHK:</strong></em> Press <strong>Outer Center</strong> if Module ID % 20 is a prime number; otherwise press <strong>Inner Center</strong>.</li>
 						<li><em><strong>REP</strong></em> or <em><strong>EAT:</strong></em> Repeat the last input, or press <strong>Inner Center</strong> if this is the first instruction. Ignore timing constraints.</li>
-						<li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from <span class="red">Red</span> (0), count as many colored buttons clockwise as there are strikes and press the resulting button.</li>
+						<li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from the last colored button you pressed or <span class="red">Red</span> if you have not pressed any colored buttons yet, count as many colored buttons clockwise as there are strikes and press the resulting button. In the case of 0 strikes, press the starting button.</li>
 						<ul>
 							<li>For these instructions, refer to the <span class="red">Strike Counter</span> on the screen to the right of the module itself.</li>
 						</ul>

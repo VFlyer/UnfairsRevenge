@@ -702,7 +702,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				break;
 			case "REP":
 			case "EAT":
-				if (lastCorrectInputs.Count == 0)
+				if (!lastCorrectInputs.Any())
 					toLog = "There were no previous inputs. Press Inner Center.";
 				else
 					toLog = string.Format("The last input was {0}, so press that.", lastCorrectInputs[currentInputPos - 1]);
@@ -719,7 +719,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				break;
 			case "PVP":
 				{
-					toLog = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
+					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
 					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 					do
 					{
@@ -731,7 +731,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				}
 			case "NXP":
 				{
-					toLog = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
+					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
 					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 					do
 					{
@@ -743,7 +743,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				}
 			case "PVS":
 				{
-					toLog = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
+					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
 					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 					do
 					{
@@ -755,7 +755,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				}
 			case "NXS":
 				{
-					toLog = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
+					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
 					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 					do
 					{
@@ -766,7 +766,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					break;
 				}
 			case "OPP":
-				if (lastCorrectInputs.Count == 0)
+				if (!lastCorrectInputs.Any())
 					toLog = "There were no previous inputs. Press Outer Center.";
 				else
 					toLog = string.Format("The last input was {0}, so press {1}.", lastCorrectInputs[currentInputPos - 1],
@@ -839,7 +839,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					break;
 				case "REP":
 				case "EAT":
-					if (lastCorrectInputs.Count == 0)
+					if (!lastCorrectInputs.Any())
 						isCorrect = input == "Inner";
 					else
 						isCorrect = input == lastCorrectInputs[lastCorrectInputs.Count - 1];
@@ -862,7 +862,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "PVP":
 					{
-						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 						do
 						{
 							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
@@ -873,7 +873,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "NXP":
 					{
-						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 						do
 						{
 							curIdx = (curIdx + 1) % 6;
@@ -884,7 +884,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "PVS":
 					{
-						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 						do
 						{
 							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
@@ -895,7 +895,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "NXS":
 					{
-						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 						do
 						{
 							curIdx = (curIdx + 1) % 6;
@@ -906,7 +906,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "OPP":
 					{
-						if (lastCorrectInputs.Count == 0 || lastCorrectInputs[lastCorrectInputs.Count - 1] == "Inner")
+						if (!lastCorrectInputs.Any() || lastCorrectInputs[lastCorrectInputs.Count - 1] == "Inner")
 							isCorrect = input == "Outer";
 						else if (lastCorrectInputs[lastCorrectInputs.Count - 1] == "Outer")
 							isCorrect = input == "Inner";
@@ -1005,13 +1005,15 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 	bool TimeModeActive;
 #pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
-	readonly string TwitchHelpMessage = "Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" To time a specific press, append \"at\" onto the command and either specify based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed.";
+	readonly string TwitchHelpMessage = "Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" "+
+		"To time a specific press, specify based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. "+
+		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed.";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string command)
 	{
 		if (!hasStarted)
 		{
-			yield return "sendtochaterror The module has not activated yet. Wait for a bit until the module has started";
+			yield return "sendtochaterror The module has not activated yet. Wait for a bit until the module has started.";
 			yield break;
 		}
 		string[] intereptedParts = command.ToLower().Split(';');
@@ -1029,12 +1031,12 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				partTrimmed = partTrimmed.Substring(6);
 			}
 			string[] partOfPartTrimmed = partTrimmed.Split();
-			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) (at|on)( (([0-9]+:)?([0-5][0-9]:){2}|[0-9]+)[0-5][0-9])+$"))
+			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( (([0-9]+:)?([0-5][0-9]:){1,2}|[0-9]+)[0-5][0-9])+$"))
 			{
 				List<int> possibleTimes = new List<int>();
 				for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
 				{
-					if (!partOfPartTrimmed[x].RegexMatch(@"^([0-9]+:)?([0-5][0-9]:){2}[0-5][0-9])$")) break;
+					if (!partOfPartTrimmed[x].RegexMatch(@"^([0-9]+:)?([0-5][0-9]:){1,2}[0-5][0-9])$")) break;
 					string[] curTimePart = partOfPartTrimmed[x].Split(':').Reverse().ToArray();
 					int curTime = 0;
 					for (int idx = 0; idx < curTimePart.Length; idx++)
@@ -1052,11 +1054,11 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				}
 				else
 				{
-					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The command has been voided.", partTrimmed);
+					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The full command has been voided.", partTrimmed);
 					yield break;
 				}
 			}
-			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer) (at|on)( [0-5][0-9])+$"))
+			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-5][0-9])+$"))
 			{
 				
 				List<int> possibleTimes = new List<int>();
@@ -1084,7 +1086,7 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 				}
 				else
 				{
-					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The command has been voided.", partTrimmed);
+					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The full command has been voided.", partTrimmed);
 					yield break;
 				}
 			}
@@ -1133,58 +1135,69 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 					selectedCommands.Add(idxStrikeSelectable);
 					break;
 				default:
-					yield return "sendtochaterror You aren't supposed to get this error.";
+					yield return "sendtochaterror You aren't supposed to get this error. If you did, it's a bug, so please contact the developer about this.";
 					yield break;
 			}
 		}
 		hasStruck = false;
 		if (selectedCommands.Any())
 		{
+			yield return "multiple strikes";
 			for (int x = 0; x < selectedCommands.Count; x++)
 			{
 				if (hasStruck) yield break;
 				if (timeThresholds[x].Any())
 				{
+					
 					List<int> currentTimeThresholds = timeThresholds[x].Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList();
 					if (!currentTimeThresholds.Any())
 					{
-						yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
+						yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
 						yield break;
 					}
 					int targetTime = ZenModeActive ? currentTimeThresholds.Min() : currentTimeThresholds.Max();
-					yield return string.Format("sendtochat Target time for press #{0}: {1}", x + 1, FormatSecondsToTime(targetTime));
+					yield return string.Format("sendtochat Target time for press #{0} in command: {1}", x + 1, FormatSecondsToTime(targetTime));
+					bool canPlayWaitingMusic = Mathf.Abs(targetTime - bombInfo.GetTime()) >= 25;
+					if (canPlayWaitingMusic)
+					{
+						yield return "waiting music";
+						yield return "sendtochat This press will take a while, if you wish to cancel this command, do \"!cancel\" now.";
+					}
 					do
 					{
-						yield return string.Format("trycancel Your timed interation has been canceled after a total of {0}/{1} presses.", x + 1, selectedCommands.Count);
+						yield return string.Format("trycancel Your timed interation has been canceled after a total of {0}/{1} presses in the command.", x + 1, selectedCommands.Count);
 						if ((int)bombInfo.GetTime() > targetTime && ZenModeActive)
 						{
 							currentTimeThresholds = currentTimeThresholds.Where(a => a > bombInfo.GetTime()).ToList();
 							if (!currentTimeThresholds.Any())
 							{
-								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
+								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
 								yield break;
 							}
 							targetTime = currentTimeThresholds.Min();
-							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0}", x + 1, FormatSecondsToTime(targetTime));
+							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
 						}
 						else if ((int)bombInfo.GetTime() < targetTime && !ZenModeActive)
 						{
 							currentTimeThresholds = currentTimeThresholds.Where(a => a < bombInfo.GetTime()).ToList();
 							if (!currentTimeThresholds.Any())
 							{
-								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0}", x + 1);
+								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
 								yield break;
 							}
 							targetTime = currentTimeThresholds.Max();
-							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0}", x + 1, FormatSecondsToTime(targetTime));
+							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
 						}
 					}
 					while ((int)bombInfo.GetTime() != targetTime);
+					if (canPlayWaitingMusic)
+						yield return "end waiting music";
 				}
 				yield return null;
 				selectedCommands[x].OnInteract();
 				yield return new WaitForSeconds(0.1f);
 			}
+			yield return "end multiple strikes";
 		}
 		yield break;
 	}
