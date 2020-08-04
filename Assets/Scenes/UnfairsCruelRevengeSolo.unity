@@ -458,7 +458,7 @@ Prefab:
     - target: {fileID: 102020130851294860, guid: 548ecc8579a80174faf45048fdb51c90,
         type: 2}
       propertyPath: m_Text
-      value: '123456789 | SEAGULL
+      value: '123456789 | NUMBER
 
 '
       objectReference: {fileID: 0}
