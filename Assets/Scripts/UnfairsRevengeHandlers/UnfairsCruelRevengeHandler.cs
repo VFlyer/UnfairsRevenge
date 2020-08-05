@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using uernd = UnityEngine.Random;
-public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
+public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 	public KMBombInfo bombInfo;
 	public KMAudio mAudio;
@@ -37,8 +37,8 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{ "CHAR", "THRE", "IJKL", "WBC", "SECR", "EOTA", "IONL", "REXK", "MOON", "ONYX", "SPAR", "MOCK" },
 			{ "DELT", "FOUR", "MNOP", "DFG", "CIPH", "CAIT", "LEGN", "RIVE", "TAOO", "SAMD", "KONQ", "BRIN" },
 			{ "ECHO", "FIVE", "QRST", "HJK", "FAIL", "MARA", "WILL", "TRAI", "LUPO", "ELUM", "FLAM", "KANE" },
-			{ "FOXT", "SIX", "UVWX", "KLM", "PART", "WARI", "SKIP", "NANT", "LUMB", "FLUS", "MOMO", "HEXI" },
-			{ "GOLF", "SEVN", "YZAB", "NPQ", "BECO", "PIGD", "ETRS", "GRYB", "CATN", "ASIM", "MITT", "PERK" },
+			{ "FOXT", "SIX", "UVWX", "LMN", "PART", "WARI", "SKIP", "NANT", "LUMB", "FLUS", "MOMO", "HEXI" },
+			{ "GOLF", "SEVN", "YZAB", "PQR", "BECO", "PIGD", "ETRS", "GRYB", "CATN", "ASIM", "MITT", "PERK" },
 	};
 	private string[] myszkowskiKeywords = {
 		"ARCHER", "ATTACK", "BANANA", "BLASTS", "BURSTS", "BUTTON", "CANNON",
@@ -50,19 +50,19 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 		"Broken Roman",
 		"Arabic",
     }, wordSearchWordsEven = {
-        "HOTEL","SEARCH","ADD","SIERRA","FINISH",
-		"PORT","BOOM","LINE","KABOOM","PANIC","MANUAL","DECOY",
-		"SEE","INDIA","NUMBER","ZULU","VICTOR","DELTA","HELP",
-		"ROMEO","TRUE","MIKE","FOUND","BOMBS","WORK","TEST",
-		"GOLF","TALK","BRAVO","SEVEN","MODULE","LIST","YANKEE",
-		"CHART","MATH","READ","LIMA","COUNT",
+        "HOTEL", "SEARCH", "ADD", "SIERRA", "FINISH",
+		"PORT", "BOOM", "LINE", "KABOOM", "PANIC", "MANUAL", "DECOY",
+		"SEE", "INDIA", "NUMBER", "ZULU","VICTOR", "DELTA", "HELP",
+		"ROMEO", "TRUE","MIKE", "FOUND","BOMBS","WORK", "TEST",
+		"GOLF", "TALK","BRAVO", "SEVEN", "MODULE", "LIST", "YANKEE",
+		"CHART", "MATH", "READ", "LIMA", "COUNT",
     }, wordSearchWordsOdd = {
 		"DONE", "QUEBEC", "CHECK", "FIND", "EAST",
 		"COLOR", "SUBMIT", "BLUE", "ECHO", "FALSE", "ALARM", "CALL",
 		"TWENTY", "NORTH", "LOOK", "GREEN", "XRAY", "YES", "LOCATE",
-        "BEEP", "EXPERT", "EDGE", "FOUND"," BOMBS", "WORK", "TEST",
-		"GOLF", "TALK", "BRAVO", "SEVEN", "MODULE", "LIST", "YANKEE",
-		"CHART", "MATH", "READ", "LIMA", "COUNT",
+        "BEEP", "EXPERT", "EDGE", "RED", "WORD", "UNIQUE", "JINX",
+		"LETTER", "SIX", "SERIAL", "TIMER", "SPELL", "TANGO", "SOLVE",
+		"OSCAR", "NEXT", "LISTEN", "FOUR", "OFFICE",
 	};
 	private string[][] anagramValues = new string[][]
 	{
@@ -1070,22 +1070,25 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{'I', 9 }, {'J', 10 }, {'K', 11 }, {'L', 12 }, {'M', 13 }, {'N', 14 },
 		{'O', 15 }, {'P', 16 }, {'Q', 17 }, {'R', 18 }, {'S', 19 }, {'T', 20 },
 		{'U', 21 }, {'V', 22 }, {'W', 23 }, {'X', 24 }, {'Y', 25 }, {'Z', 26 },
+	}, base36Reference = new Dictionary<char, int>() {
+		{'0', 0 }, {'1', 1 }, {'2', 2 }, {'3', 3 }, {'4', 4 }, {'5', 5 },
+		{'6', 6 }, {'7', 7 }, {'8', 8 }, {'9', 9 }, {'A', 10 }, {'B', 11 },
+		{'C', 12 }, {'D', 13 }, {'E', 14 }, {'F', 15 }, {'G', 16 }, {'H', 17 },
+		{'I', 18 }, {'J', 19 }, {'K', 20 }, {'L', 21 }, {'M', 22 }, {'N', 23 },
+		{'O', 24 }, {'P', 25 }, {'Q', 26 }, {'R', 27 }, {'S', 28 }, {'T', 29 },
+		{'U', 30 }, {'V', 31 }, {'W', 32 }, {'X', 33 }, {'Y', 34 }, {'Z', 35 },
 	};
 	string ObtainKeyA()
 	{
 		string returningString = "";
 		string hexDecimalString = "0123456789ABCDEF";
 		string curSerNo = bombInfo.GetSerialNumber();
-		string curValue = charReference[curSerNo[0]] >= 20 ? "0" : charReference[curSerNo[0]].ToString();
-		string remainingSerNo = curSerNo.Substring(1);
-		for (int x = 0; x < remainingSerNo.Length; x++)
+		long givenValue = 0;
+		for (int x = 0; x < curSerNo.Length; x++)
 		{
-			curValue += charReference[remainingSerNo[x]];
+			givenValue *= 36;
+			givenValue += base36Reference.ContainsKey(curSerNo[x]) ? base36Reference[curSerNo[x]] : 18;
 		}
-		string vowelList = "AEIOU";
-		if (vowelList.Contains(curSerNo[4]) || vowelList.Contains(curSerNo[3]))
-			curValue = curValue.Substring(0,curValue.Length - 1);
-		long givenValue = long.Parse(curValue);
 		while (givenValue > 0)
 		{
 			returningString += hexDecimalString[(int)(givenValue % 16)];
@@ -1093,7 +1096,7 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 		}
 		returningString = returningString.Reverse().Join("");
 		string output = "";
-		string[] listAllPossibilities = new string[] { returningString, selectedModID.ToString(), bombInfo.GetPortPlateCount().ToString(), bombInfo.GetBatteryHolderCount().ToString() };
+		string[] listAllPossibilities = new string[] { returningString, selectedModID.ToString(), (bombInfo.GetPortPlateCount() + 1).ToString(), (2 + bombInfo.GetBatteryHolderCount()).ToString() };
 
 		foreach (string selectedString in listAllPossibilities)
 			for (int x = 0; x < selectedString.Length; x++)
@@ -2039,7 +2042,7 @@ public partial class UnfairsCruelRevengeHandler : MonoBehaviour {
 					yield return "sendtochaterror I am not setting Auto-Cycle for Unfair's Cruel Revenge (#{1}) at "+cycleSpeed.ToString("0.00")+" intervals.";
 					yield break;
 				}
-				if (cycleSpeed == progressHandler.maxProgress)
+				if (cycleSpeed == progressHandler.maxProgress && autoCycleEnabled)
 				{
 					yield return "sendtochaterror Auto-Cycle interval for Unfair's Cruel Revenge (#{1}) is already at " + cycleSpeed.ToString("0.00") + ".";
 					yield break;

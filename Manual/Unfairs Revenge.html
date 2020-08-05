@@ -53,30 +53,31 @@
                     <img src="img/Component/UnfairsRevenge.svg" class="diagram">
                     <h2>On the Subject of Unfair's Revenge</h2>
                     <p class="flavour-text">Now it's more unfair because it took 2 months for him to create only to receive backlash, and another month to make sure he didn't screw up any more than that.</p>
-                    <p>This module has two displays. The display on top shows the encrypted message. There's also a strip of LEDs which will light up to show the current stage.</p>
+                    <p>The display on top shows the encrypted message. There's also a strip of LEDs underneath the display which will light up to show the current stage the defuser is on.</p>
 					<p>The display on the right can be clicked to toggle between showing the Module ID, in white, or strikes the module is keeping track of, in red. Both of these are shown in Roman numerals.</p>
 					<p class="red"><strong>For all operations involving STRIKES, always refer to the number in red on the module itself.</strong></p>
-					<p>The module encrypts a string of four three-letter-long <span style="text-decoration: underline">instructions</span> with four different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
+					<p>The module encrypts a string of four repeatable three-letter-long <span style="text-decoration: underline">instructions</span> with four different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
 					<p><strong>ALL ciphers referring to the alphabetical position refers to the A1Z26 standard for each letter unless stated otherwise.</strong></p>
 					<ul>
 						<li>The basic order of the given encrypted text is the following: <strong>Original -> Playfair Ciphered -> Affine Ciphered -> Caesar Ciphered -> Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
 					</ul>
 					<h3>Key A</h3>
 					<ol>
-						<li>Start with the bomb's serial number.</li>
-						<li>Transform each letter into its numerical equivalent (A=1,B=2,etc.).</li>
+						<li>Start with the bomb's first 3 serial number characters.</li>
+						<li>Interept each character from this set as a base-36 digit.</li>
 						<ul>
-							<li>Make this a single string of digits.</li>
-							<li>Ignore the first character if its numerical equivalent is 20 or above.</li>
+							<li>If the character is unfamilar in the set of base-36 digits, interept this character as the digit "I".</li>
 						</ul>
 					</ol>
 					<ol start="3">
-						<li>Remove the last digit if either the 4th or the 5th character of the serial number are vowels.</li>
+						<li>Convert this base-36 number into decimal. Use <span class="itil">Appendix Base-36 Conversion</span> in case for reference. You will need to append this to the result of the next step.</li>
+						<li>Grab the bomb's last 3 serial number charaters and transform each letter into its numerical equivalent (A=1,B=2,etc.).</li>
 						<ul>
-							<li>You should only do this once, even in the case both characters are vowels.</li>
+							<li>Make this a single string of digits.</li>
 						</ul>
 					</ol>
-					<ol start="4">
+					<ol start="5">
+						<li>Append the result from converting the base-36 value with the modified string from step 4. Interept this as one number.</li>
 						<li>Convert this number into <strong>hexadecimal.</strong> Refer to <span class="itil">Appendix D3K2H3X</span> for instructions.</li>
 					</ol>
                 </div>
@@ -88,16 +89,16 @@
                     <span class="page-header-section-title">Unfair's Revenge</span>
                 </div>
                 <div class="page-content">
-					<ol start="5">
+					<ol start="7">
 						<li>Now read the string of hexadecimal digits as a string of decimal digits and letters. Going from left to right, for every digit:</li>
 						<ul>
 							<li>If the digit is followed by another digit and they form a number in the range 10–26, convert the pair into its alphabetical equivalent.</li>
 							<li>Otherwise, convert the single digit into its alphabetical equivalent, or skip it if it is a zero.</li>
 						</ul>
 					</ol>
-					<ol start="6">
+					<ol start="8">
 						<li>Transform the Module ID, the number of port plates and the number of battery holders into their alphabetical equivalents, using step 5 if necessary.</li>
-						<li>Append these three characters at the end of the result of the previous conversion.</li>
+						<li>Append these characters at the end of the result of the previous conversion.</li>
 						<li><strong>This is Key A.</strong></li>
 					</ol>
 					<h3>Key B</h3>
@@ -127,13 +128,13 @@
 							<td>ABDA</td>
 							<td>FEV</td>
 							<td>DBHC</td>
-							<td>BLD</td>
+							<td>AEI</td>
 							<td>DBIE</td>
-							<td>AFEF</td>
+							<td>PLAY</td>
 							<td>AFCG</td>
-							<td>CQH</td>
+							<td>ONE</td>
 							<td>DEAI</td>
-							<td>FEAA</td>
+							<td>ALPH</td>
 							<td>EFAB</td>
 							<td>DECC</td>
 						</tr>
@@ -142,13 +143,13 @@
 							<td>ABDB</td>
 							<td>FEW</td>
 							<td>DBHD</td>
-							<td>BLE</td>
+							<td>OUY</td>
 							<td>DBIF</td>
-							<td>AFEG</td>
+							<td>HIDE</td>
 							<td>AFCH</td>
-							<td>CQI</td>
+							<td>TWO</td>
 							<td>DEAA</td>
-							<td>FEAB</td>
+							<td>BETA</td>
 							<td>EFAC</td>
 							<td>DECD</td>
 						</tr>
@@ -157,13 +158,13 @@
 							<td>ABDC</td>
 							<td>FEX</td>
 							<td>DBHE</td>
-							<td>BLF</td>
+							<td>WBC</td>
 							<td>DBIG</td>
-							<td>AFEH</td>
+							<td>SECR</td>
 							<td>AFCI</td>
-							<td>CQA</td>
+							<td>THRE</td>
 							<td>DEAB</td>
-							<td>FEAC</td>
+							<td>CHAR</td>
 							<td>EFAD</td>
 							<td>DECE</td>
 						</tr>
@@ -172,13 +173,13 @@
 							<td>ABDD</td>
 							<td>FEY</td>
 							<td>DBHF</td>
-							<td>BLG</td>
+							<td>DFG</td>
 							<td>DBIH</td>
-							<td>AFEI</td>
+							<td>CIPH</td>
 							<td>AFCA</td>
-							<td>CQB</td>
+							<td>FOUR</td>
 							<td>DEAC</td>
-							<td>FEAD</td>
+							<td>DELT</td>
 							<td>EFAE</td>
 							<td>DECF</td>
 						</tr>
@@ -187,13 +188,13 @@
 							<td>ABDE</td>
 							<td>FEZ</td>
 							<td>DBHG</td>
-							<td>BLH</td>
+							<td>HJK</td>
 							<td>DBII</td>
-							<td>AFEA</td>
+							<td>FAIL</td>
 							<td>AFCB</td>
-							<td>CQC</td>
+							<td>FIVE</td>
 							<td>DEAD</td>
-							<td>FEAE</td>
+							<td>ECHO</td>
 							<td>EFAF</td>
 							<td>DED</td>
 						</tr>
@@ -202,13 +203,13 @@
 							<td>ABDF</td>
 							<td>FEBG</td>
 							<td>DBHH</td>
-							<td>BLI</td>
+							<td>LMN</td>
 							<td>DBIA</td>
-							<td>AFEB</td>
+							<td>PART</td>
 							<td>AFCC</td>
-							<td>CQD</td>
+							<td>SIX</td>
 							<td>DEAE</td>
-							<td>FEAF</td>
+							<td>FOXT</td>
 							<td>EFB</td>
 							<td>DEDA</td>
 						</tr>
@@ -217,13 +218,13 @@
 							<td>ABDG</td>
 							<td>FEBH</td>
 							<td>DBHI</td>
-							<td>BLA</td>
+							<td>PQR</td>
 							<td>DBIB</td>
-							<td>AFEC</td>
+							<td>BECO</td>
 							<td>AFCD</td>
-							<td>CQE</td>
+							<td>SEVN</td>
 							<td>DEAF</td>
-							<td>FET</td>
+							<td>GOLF</td>
 							<td>EFBA</td>
 							<td>DEDB</td>
 						</tr>
@@ -476,6 +477,76 @@
 					</ul>
                 </div>
                 <div class="page-footer relative-footer">Page 7 of 8</div>
+            </div>
+			<div class="page page-bg-05">
+                <div class="page-header">
+                    <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                    <span class="page-header-section-title">Unfair's Revenge</span>
+                </div>
+				<div class="page-content">
+					<table style="float: right">
+						<tr>
+							<th>Base 36</th>
+							<th>DEC</th>
+							<th>Base 36</th>
+							<th>DEC</th>
+						</tr>
+						<tr>
+							<td>0 - 9</td><td>0 - 9</td><td>O</td><td>24</td>
+						</tr>
+						<tr>
+							<td>A</td><td>10</td><td>P</td><td>25</td>
+						</tr>
+						<tr>
+							<td>B</td><td>11</td><td>Q</td><td>26</td>
+						</tr>
+						<tr>
+							<td>C</td><td>12</td><td>R</td><td>27</td>
+						</tr>
+						<tr>
+							<td>D</td><td>13</td><td>S</td><td>28</td>
+						</tr>
+						<tr>
+							<td>E</td><td>14</td><td>T</td><td>29</td>
+						</tr>
+						<tr>
+							<td>F</td><td>15</td><td>U</td><td>30</td>
+						</tr>
+						<tr>
+							<td>G</td><td>16</td><td>V</td><td>31</td>
+						</tr>
+						<tr>
+							<td>H</td><td>17</td><td>W</td><td>32</td>
+						</tr>
+						<tr>
+							<td>I</td><td>18</td><td>X</td><td>33</td>
+						</tr>
+						<tr>
+							<td>J</td><td>19</td><td>Y</td><td>34</td>
+						</tr>
+						<tr>
+							<td>K</td><td>20</td><td>Z</td><td>35</td>
+						</tr>
+						<tr>
+							<td>L</td><td>21</td><td>10</td><td>36</td>
+						</tr>
+						<tr>
+							<td>M</td><td>22</td><td>11</td><td>37</td>
+						</tr>
+						<tr>
+							<td>N</td><td>23</td><td>...</td><td>...</td>
+						</tr>
+					</table>
+					<h3>Appendix: Base-36 Conversion</h3>
+					<p>The table on the right shows a quick lookup for the base 36 values on the table, in base-10 (DEC). To convert a base-36 number into base-10 (DEC):</p>
+					<ol>
+						<li>Add the base-36 value of the first digit.</li>
+						<li>If this is not the last base-36 digit, multiply the current value by 36 and go to the next digit.</li>
+						<li>Add the base-36 value of the digit you are on.</li>
+						<li>Repeat steps 2 and 3 until you have went through all 6 digits.</li>
+						<li>You should now have a number in base 10 or in decimal.</li>
+					</ol>
+				</div>
             </div>
 			<div class="page page-bg-05">
                 <div class="page-header">

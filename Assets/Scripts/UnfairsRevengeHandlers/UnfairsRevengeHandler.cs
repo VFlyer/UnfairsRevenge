@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using uernd = UnityEngine.Random;
-public partial class UnfairsRevengeHandler : MonoBehaviour {
+public class UnfairsRevengeHandler : MonoBehaviour {
 
 	public KMBombInfo bombInfo;
 	public KMAudio mAudio;
@@ -28,13 +28,13 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 		primaryList = { "Red", "Green", "Blue", };
 	private string baseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // Base alphabet for code assumes A=1,B=2,...,Y=25,Z=26
 	private string[,] keyBTable = {
-			{ "ABDA", "FEV", "DBHC", "BLD", "DBIE", "AFEF", "AFCG", "CQH", "DEAI", "FEAA", "EFAB", "DECC" },
-			{ "ABDB", "FEW", "DBHD", "BLE", "DBIF", "AFEG", "AFCH", "CQI", "DEAA", "FEAB", "EFAC", "DECD" },
-			{ "ABDC", "FEX", "DBHE", "BLF", "DBIG", "AFEH", "AFCI", "CQA", "DEAB", "FEAC", "EFAD", "DECE" },
-			{ "ABDD", "FEY", "DBHF", "BLG", "DBIH", "AFEI", "AFCA", "CQB", "DEAC", "FEAD", "EFAE", "DECF" },
-			{ "ABDE", "FEZ", "DBHG", "BLH", "DBII", "AFEA", "AFCB", "CQC", "DEAD", "FEAE", "EFAF", "DED" },
-			{ "ABDF", "FEBG", "DBHH", "BLI", "DBIA", "AFEB", "AFCC", "CQD", "DEAE", "FEAF", "EFB", "DEDA" },
-			{ "ABDG", "FEBH", "DBHI", "BLA", "DBIB", "AFEC", "AFCD", "CQE", "DEAF", "FET", "EFBA", "DEDB" },
+			{ "ABDA", "FEV", "DBHC", "AEI", "DBIE", "PLAY", "AFCG", "ONE", "DEAI", "ALPH", "EFAB", "DECC" },
+			{ "ABDB", "FEW", "DBHD", "OUY", "DBIF", "HIDE", "AFCH", "TWO", "DEAA", "BETA", "EFAC", "DECD" },
+			{ "ABDC", "FEX", "DBHE", "WBC", "DBIG", "SECR", "AFCI", "THRE", "DEAB", "CHAR", "EFAD", "DECE" },
+			{ "ABDD", "FEY", "DBHF", "DFG", "DBIH", "CIPH", "AFCA", "FOUR", "DEAC", "DELT", "EFAE", "DECF" },
+			{ "ABDE", "FEZ", "DBHG", "HJK", "DBII", "FAIL", "AFCB", "FIVE", "DEAD", "ECHO", "EFAF", "DED" },
+			{ "ABDF", "FEBG", "DBHH", "LMN", "DBIA", "PART", "AFCC", "SIX", "DEAE", "FOXT", "EFB", "DEDA" },
+			{ "ABDG", "FEBH", "DBHI", "PQR", "DBIB", "BECO", "AFCD", "SEVN", "DEAF", "GOLF", "EFBA", "DEDB" },
 	};
 
 	DayOfWeek[] possibleDays = { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday, };
@@ -345,21 +345,32 @@ public partial class UnfairsRevengeHandler : MonoBehaviour {
 		{'I', 9 }, {'J', 10 }, {'K', 11 }, {'L', 12 }, {'M', 13 }, {'N', 14 },
 		{'O', 15 }, {'P', 16 }, {'Q', 17 }, {'R', 18 }, {'S', 19 }, {'T', 20 },
 		{'U', 21 }, {'V', 22 }, {'W', 23 }, {'X', 24 }, {'Y', 25 }, {'Z', 26 },
+	}, base36Reference = new Dictionary<char, int>() {
+		{'0', 0 }, {'1', 1 }, {'2', 2 }, {'3', 3 }, {'4', 4 }, {'5', 5 },
+		{'6', 6 }, {'7', 7 }, {'8', 8 }, {'9', 9 }, {'A', 10 }, {'B', 11 },
+		{'C', 12 }, {'D', 13 }, {'E', 14 }, {'F', 15 }, {'G', 16 }, {'H', 17 },
+		{'I', 18 }, {'J', 19 }, {'K', 20 }, {'L', 21 }, {'M', 22 }, {'N', 23 },
+		{'O', 24 }, {'P', 25 }, {'Q', 26 }, {'R', 27 }, {'S', 28 }, {'T', 29 },
+		{'U', 30 }, {'V', 31 }, {'W', 32 }, {'X', 33 }, {'Y', 34 }, {'Z', 35 },
 	};
+
 	string obtainKeyA()
 	{
 		string returningString = "";
 		string hexDecimalString = "0123456789ABCDEF";
 		string curSerNo = bombInfo.GetSerialNumber();
-		string curValue = charReference[curSerNo[0]] >= 20 ? "0" : charReference[curSerNo[0]].ToString();
-		string remainingSerNo = curSerNo.Substring(1);
+		int curValBig = 0;
+		for (int x = 0; x < 3; x++)
+        {
+			curValBig *= 36;
+			curValBig += base36Reference.ContainsKey(curSerNo[x]) ? base36Reference[curSerNo[x]] : 18;
+        }
+		string curValue = curValBig.ToString();
+		string remainingSerNo = curSerNo.Substring(3);
 		for (int x = 0; x < remainingSerNo.Length; x++)
 		{
 			curValue += charReference[remainingSerNo[x]];
 		}
-		string vowelList = "AEIOU";
-		if (vowelList.Contains(curSerNo[4]) || vowelList.Contains(curSerNo[3]))
-			curValue = curValue.Substring(0,curValue.Length - 1);
 		long givenValue = long.Parse(curValue);
 		while (givenValue > 0)
 		{
