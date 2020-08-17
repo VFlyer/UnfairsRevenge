@@ -4241,8 +4241,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 0.2
+  m_Intensity: 1
+  m_Range: 0.1
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -4277,8 +4277,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 0.2
+  m_Intensity: 1
+  m_Range: 0.1
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -4313,8 +4313,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 0.2
+  m_Intensity: 1
+  m_Range: 0.1
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -4349,8 +4349,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 0.2
+  m_Intensity: 1
+  m_Range: 0.1
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -4385,8 +4385,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 0.2
+  m_Intensity: 1
+  m_Range: 0.1
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -4421,8 +4421,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 0.2
+  m_Intensity: 1
+  m_Range: 0.1
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -4457,8 +4457,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 0.2
+  m_Intensity: 1
+  m_Range: 0.1
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -5498,6 +5498,7 @@ MonoBehaviour:
   bombInfo: {fileID: 114191386427966882}
   mAudio: {fileID: 114316734731670806}
   modSelf: {fileID: 114088258249794292}
+  gameInfo: {fileID: 114149783020371228}
   colorButtonSelectables:
   - {fileID: 114216352039895966}
   - {fileID: 114715432647840990}
@@ -5548,6 +5549,9 @@ MonoBehaviour:
   centerLight: {fileID: 108724675913214560}
   particles: {fileID: 198684770601832890}
   indicatorHandler: {fileID: 114277017572486326}
+  switchableMats:
+  - {fileID: 2100000, guid: 67c74eee4ed11044ea9957f96bdf446d, type: 2}
+  - {fileID: 2100000, guid: 475e5f4f7c31de548a27810885267746, type: 2}
 --- !u!114 &114915745894987434
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5706,7 +5710,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1788389615
+  randomSeed: 1340464428
   InitialModule:
     serializedVersion: 3
     enabled: 1

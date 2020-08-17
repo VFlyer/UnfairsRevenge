@@ -10,6 +10,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	public KMBombInfo bombInfo;
 	public KMAudio mAudio;
 	public KMBombModule modSelf;
+	public KMGameInfo gameInfo;
 	public KMSelectable[] colorButtonSelectables;
 	public KMSelectable innerSelectable, outerSelectable, idxStrikeSelectable;
 	public GameObject[] colorButtonObjects;
@@ -20,7 +21,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	public Light centerLight;
 	public ParticleSystem particles;
 	public IndicatorCoreHandler indicatorHandler;
-	//public Material[] switchableMats = new Material[2];
+	public Material[] switchableMats = new Material[2];
 
 	private string[]
 		normalModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "MIT", "PRN", "CHK", "BOB", "REP", "EAT", "STR", "IKE", "SIG", "OPP", "PVP", "NXP", "PVS", "NXS" },
@@ -126,6 +127,19 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		{
 			colorLights[x].range *= rangeModifier;
 		}
+		gameInfo.OnLightsChange += delegate (bool turnedOn)
+		{
+			if (isFinished) return;
+			for (int i = 0; i < colorButtonRenderers.Length; i++)
+			{
+				colorButtonRenderers[i].material = turnedOn ? switchableMats[0] : switchableMats[1];
+				colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.75f;
+			}
+		};
+		if (Application.isEditor)
+        {
+			Debug.LogFormat("[Unfair's Revenge #{0}]: Unity Editor Mode is active, if TP is enabled, you may use \"!# simulate on/off to simulate lights turning on or off.\"", loggingModID);
+		}
 
 	}
 	public void PrepModule()
@@ -221,14 +235,14 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		int idxStartDOW = Array.IndexOf(possibleDays, DateTime.Now.DayOfWeek);
 		string keyAString = obtainKeyA();
 		string keyBString = keyBTable[idxStartDOW, monthOfStart - 1];
-		string keyCString = EncryptUsingPlayfair(keyAString, keyBString);
+		string keyCString = EncryptUsingPlayfair(keyAString, keyBString, true);
 		
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key A: {1}", loggingModID, keyAString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key B: {1}", loggingModID, keyBString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key C: {1}", loggingModID, keyCString);
 
 		string baseString = splittedInstructions.Join("");
-		string playfairEncryptedString = EncryptUsingPlayfair(baseString, keyCString),
+		string playfairEncryptedString = EncryptUsingPlayfair(baseString, keyCString, true),
 			step3EncryptedString = multiplier % 13 == 6 ? EncryptUsingAtbash(playfairEncryptedString) : EncryptUsingAffine(playfairEncryptedString, multiplier),
 			caesarEncryptedString = EncryptUsingCaesar(step3EncryptedString,offset);
 
@@ -280,7 +294,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		}
 		return stringInputs.Select(a => baseAlphabet[a]).Join("");
 	}
-	string EncryptUsingPlayfair(string input, string keyword = "")
+	string EncryptUsingPlayfair(string input, string keyword = "", bool logSquares = false)
 	{
 
 		/* Example:
@@ -306,12 +320,13 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		 * 
 		 */
 		string playfairGridBase = keyword.Replace('J','I').Distinct().Join("") + baseAlphabet.Replace('J', 'I').Distinct().Where(a => !keyword.Replace('J', 'I').Distinct().Contains(a)).Join("");
-		Debug.LogFormat("[Unfair's Revenge #{0}]: Given Playfair set: {1}", loggingModID, playfairGridBase);
+		if (logSquares)
+			Debug.LogFormat("[Unfair's Revenge #{0}]: Given Playfair set: {1}", loggingModID, playfairGridBase);
 		if (input.Length % 2 != 0) input += "X";
 		string output = "";
 		for (int y = 0; y < input.Length; y += 2)
 		{
-			string currentSet = input.Substring(y, 2);
+			string currentSet = input.Substring(y, 2).Replace('J','I');
 			if (currentSet.Distinct().Count() == 1)
 				currentSet = currentSet.Substring(0, 1) + "X";
 
@@ -356,6 +371,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 
 	string obtainKeyA()
 	{
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
+		
 		string returningString = "";
 		string hexDecimalString = "0123456789ABCDEF";
 		string curSerNo = bombInfo.GetSerialNumber();
@@ -365,12 +382,14 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			curValBig *= 36;
 			curValBig += base36Reference.ContainsKey(curSerNo[x]) ? base36Reference[curSerNo[x]] : 18;
         }
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After Base-36 Conversion: {1}", loggingModID, curValBig);
 		string curValue = curValBig.ToString();
 		string remainingSerNo = curSerNo.Substring(3);
 		for (int x = 0; x < remainingSerNo.Length; x++)
 		{
 			curValue += charReference[remainingSerNo[x]];
 		}
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After Appending Numerical Equivalents: {1}", loggingModID, curValue);
 		long givenValue = long.Parse(curValue);
 		while (givenValue > 0)
 		{
@@ -378,6 +397,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			givenValue /= 16;
 		}
 		returningString = returningString.Reverse().Join("");
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After Converting into Hexadecimal: {1}", loggingModID, returningString);
 		string output = "";
 		string[] listAllPossibilities = new string[] { returningString, selectedModID.ToString(), bombInfo.GetPortPlateCount().ToString(), bombInfo.GetBatteryHolderCount().ToString() };
 
@@ -406,6 +426,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 						output += baseAlphabet[intereptedValue - 1];
 				}
 			}
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After Intereperation + ModID, Port Plate, Battery Holder appending: {1}", loggingModID, output);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
 		return output;
 	}
 
@@ -1012,7 +1034,6 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		modSelf.HandlePass();
 	}
 
-
 	bool TimeModeActive;
 #pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
@@ -1033,6 +1054,17 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		List<string> rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToList();
 
 		int[] multiplierTimes = { 1, 60, 3600, 86400 }; // To denote seconds, minutes, hours, days in seconds.
+
+		if (Application.isEditor)
+		{
+			if (command.ToLower().RegexMatch(@"^simulate (off|on)$"))
+			{
+				yield return null;
+				string[] commandParts = command.Split();
+				gameInfo.OnLightsChange(commandParts[1].EqualsIgnoreCase("on"));
+				yield break;
+			}
+		}
 
 		foreach (string commandPart in intereptedParts)
 		{

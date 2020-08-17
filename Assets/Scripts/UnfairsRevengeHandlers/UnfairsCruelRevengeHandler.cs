@@ -79,8 +79,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false;
-
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, noCopyright;
+	UnfairsCruelRevengeSettings ucrSettings = new UnfairsCruelRevengeSettings();
 
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
 	private int[] idxColorList = { 0, 1, 2, 3, 4, 5 }, columnalTranspositionLst = new int[] { 0, 1, 2, 3, 4, 5 };
@@ -88,12 +88,26 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	void Awake()
 	{
 		try
-		{
-			colorblindDetected = colorblindMode.ColorblindModeActive;
-		}
+        {
+			ModConfig<UnfairsCruelRevengeSettings> modConfig = new ModConfig<UnfairsCruelRevengeSettings>("UnfairsCruelRevengeSettings");
+			ucrSettings = modConfig.Settings;
+			noCopyright = ucrSettings.noCopyright;
+        }
 		catch
+        {
+			Debug.LogWarningFormat("<Unfair's Cruel Revenge Settings>: Settings for Unfair's Cruel Revenge do not work as intended! Using default settings instead.", loggingModID);
+			noCopyright = true;
+		}
+		finally
 		{
-			colorblindDetected = false;
+			try
+			{
+				colorblindDetected = colorblindMode.ColorblindModeActive;
+			}
+			catch
+			{
+				colorblindDetected = false;
+			}
 		}
 	}
 	// Use this for initialization
@@ -204,6 +218,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.75f;
 			}
 		};
+		if (Application.isEditor)
+		{
+			Debug.LogFormat("[Unfair's Revenge #{0}]: Unity Editor Mode is active, if TP is enabled, you may use \"!# simulate on/off to simulate lights turning on or off.\"", loggingModID);
+		}
 		StartCoroutine(HandleAutoCycleAnim(false));
 	}
 
@@ -494,12 +512,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red is diametrically opposite to Cyan.", loggingModID);
 			int idxR13 = Array.IndexOf(idxCipherList, 5), idxAS = Array.IndexOf(idxCipherList, 10), idxBCT = Array.IndexOf(idxCipherList, 8), idxMT = Array.IndexOf(idxCipherList, 9);
-			int temp = idxCipherList[idxAS];
-			idxCipherList[idxAS] = idxCipherList[idxR13];
+			int temp = idxCipherList[idxMT];
+			idxCipherList[idxMT] = idxCipherList[idxR13];
 			idxCipherList[idxR13] = temp;
 			temp = idxCipherList[idxBCT];
-			idxCipherList[idxBCT] = idxCipherList[idxMT];
-			idxCipherList[idxMT] = temp;
+			idxCipherList[idxBCT] = idxCipherList[idxAS];
+			idxCipherList[idxAS] = temp;
 		}
 		if (curColorList.IndexOf("Yellow") < 3 && curColorList.IndexOf("Blue") < 3)
 		{
@@ -1080,6 +1098,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	};
 	string ObtainKeyA()
 	{
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
 		string returningString = "";
 		string hexDecimalString = "0123456789ABCDEF";
 		string curSerNo = bombInfo.GetSerialNumber();
@@ -1089,15 +1108,16 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			givenValue *= 36;
 			givenValue += base36Reference.ContainsKey(curSerNo[x]) ? base36Reference[curSerNo[x]] : 18;
 		}
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After Base-36 Conversion: {1}", loggingModID, givenValue);
 		while (givenValue > 0)
 		{
 			returningString += hexDecimalString[(int)(givenValue % 16)];
 			givenValue /= 16;
 		}
 		returningString = returningString.Reverse().Join("");
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After Converting into Hexadecimal: {1}", loggingModID, returningString);
 		string output = "";
 		string[] listAllPossibilities = new string[] { returningString, selectedModID.ToString(), (bombInfo.GetPortPlateCount() + 1).ToString(), (2 + bombInfo.GetBatteryHolderCount()).ToString() };
-
 		foreach (string selectedString in listAllPossibilities)
 			for (int x = 0; x < selectedString.Length; x++)
 			{
@@ -1123,11 +1143,14 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						output += baseAlphabet[intereptedValue - 1];
 				}
 			}
+		Debug.LogFormat("[Unfair's Revenge #{0}]: After Intereperation + ModID, Port Plate, Battery Holder appending: {1}", loggingModID, output);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
 		return output;
 	}
 
 	string ObtainKeyD()
 	{
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key D Calculations------------", loggingModID);
 		string[] allPossibleStrings = {
 			"WLUAZVHEJDNQSYFPGMBOIRCXTK",
 			"MVFBXJQNHWZTAKPEOCURISDYLG",
@@ -1152,7 +1175,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			true,
 			bombInfo.GetBatteryCount() % 2 == 0,
 			bombInfo.IsIndicatorPresent(Indicator.MSA),
-			"BCDFGHJKLMNPQRSTVWXYZ".Contains(bombInfo.GetSerialNumber()[0]),
+			"BCDFGHJKLMNPQRSTVWXYZ".Contains(bombInfo.GetSerialNumberLetters().ElementAtOrDefault(0)),
 			bombInfo.GetPortPlateCount() == 2,
 			bombInfo.GetBatteryCount() % 2 == 1,
 			bombInfo.GetSerialNumberNumbers().Count() >= 3,
@@ -1172,6 +1195,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The sum of all of the false rules is {1}", loggingModID, sum);
 		string output = sum % trueConditions.Where(a => !a).Count() == 0 ? allPossibleStrings[sum / trueConditions.Count(a => !a) - 1] : allPossibleStrings[14];
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row used for Key D: {1}", loggingModID, sum % trueConditions.Count(a => !a) == 0 ? (sum / trueConditions.Count(a => !a)) : 15);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
 		return output;
 	}
 
@@ -1470,14 +1494,16 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			StartCoroutine(HandleAutoCycleAnim(false));
 		for (int y = 9; y > 0; y -= 2)
 		{
-			for (int x = 0; x < 10; x++)
+			for (int x = 0; x < y; x++)
 			{
 				pigpenDisplay.text = pigpenDisplay.text.Select(a => !char.IsWhiteSpace(a) ? baseAlphabet.PickRandom() : a).Join("");
 				mainDisplay.text = mainDisplay.text.Select(a => !char.IsWhiteSpace(a) ? char.IsLetter(a) ? baseAlphabet.PickRandom() : a : a).Join("");
 				pigpenSecondary.text = pigpenSecondary.text.Select(a => !char.IsWhiteSpace(a) ? baseAlphabet.PickRandom() : a).Join("");
 				strikeIDDisplay.text = strikeIDDisplay.text.Select(a => !char.IsWhiteSpace(a) ? char.IsLetter(a) ? baseAlphabet.PickRandom() : char.IsDigit(a) ? "0123456789".PickRandom() : a : a).Join("");
-				yield return new WaitForSeconds(0.1f);
+				mAudio.PlaySoundAtTransform("submiterate", transform);
+				yield return new WaitForSeconds(0.2f);
 			}
+			mAudio.PlaySoundAtTransform("submiterate2", transform);
 			yield return new WaitForSeconds(0.1f);
 		}
 		isplayingSolveAnim = false;
@@ -1528,6 +1554,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{"Contains TheFatRat", " - The Calling" },
 			{"Funny Text", "Side Text" },
 			{"You have time...", "Right?" },
+			{"Where did he go?", "Is it there?" },
+			{"Who saw this coming?", "Certainly not him." },
 		};
 		KeyValuePair<string, string> selectedSample = sampleQuestionResponse.PickRandom();
 		mainDisplay.color = Color.red;
@@ -1862,7 +1890,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						while (curIdx < 0)
 							curIdx += 6;
 						isCorrect = input == rearrangedColorList[curIdx] && (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10 == secondsTimer % 10;
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount)%10);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10);
 					}
 					break;
 			}
@@ -1878,7 +1906,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				isFinished = true;
 				modSelf.HandlePass();
 
-				if (bombInfo.GetSolvableModuleIDs().Count == bombInfo.GetSolvedModuleIDs().Count)
+				if (bombInfo.GetSolvableModuleIDs().Count == bombInfo.GetSolvedModuleIDs().Count && !noCopyright)
 				{
 					mAudio.PlaySoundAtTransform("TheFatRat-TheCalling-Loop", transform);
 					StartCoroutine(HandleSpecialSolveAnim());
@@ -1954,10 +1982,17 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		}
 	}
 
+	public class UnfairsCruelRevengeSettings
+    {
+		public bool noCopyright = true;
+    }
+
 	string FormatSecondsToTime(int num)
 	{
 		return string.Format("{0}:{1}",num/60,num%60);
 	}
+
+
 
 	// TP Handling Begins here
 	void TwitchHandleForcedSolve()
@@ -2026,7 +2061,16 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		List<string> rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToList();
 
 		int[] multiplierTimes = { 1, 60, 3600, 86400 }; // To denote seconds, minutes, hours, days in seconds.
-		
+		if (Application.isEditor)
+		{
+			if (command.ToLower().RegexMatch(@"^simulate (off|on)$"))
+			{
+				yield return null;
+				string[] commandParts = command.Split();
+				gameInfo.OnLightsChange(commandParts[1].EqualsIgnoreCase("off"));
+				yield break;
+			}
+		}
 		if (baseCommand.RegexMatch(@"^autocycle (\d+(\.\d+)?|off|disable|deactivate)$"))
 		{
 			string[] shutoffCommands = { "off", "disable", "deactivate" };
