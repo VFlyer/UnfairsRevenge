@@ -41,7 +41,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	DayOfWeek[] possibleDays = { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday, };
 	private static int[] modIDList;
 	private static int lastModIDCnt;
-	private static int modIDCnt;
+	private static int modIDCnt = 0;
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
@@ -620,8 +620,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		{
 			{"Meteor!", "Whooo-eeeeh!!" },
 			{"Revenge...", "Of the Unfairs." },
-			{"This looks fishy...", "Maybe he looked at it wrong." },
-			{"[REDACTED]:", "Please don't make this a dupe." },
+			{"This looks fishy...", "Maybe he looked\nat it wrong." },
+			{"[REDACTED]:", "Please don't make\nthis a dupe." },
 			{"Me: Nothing. Raffina:", "Rainbow Deluxe!" },
 			{"Landing Sequence...", "Initiated" },
 			{"I'll tell you\nwhat you want", "What you really\nreally want" },
@@ -1074,12 +1074,12 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				partTrimmed = partTrimmed.Substring(6);
 			}
 			string[] partOfPartTrimmed = partTrimmed.Split();
-			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( (([0-9]+:)?([0-5][0-9]:){1,2}|[0-9]+)[0-5][0-9])+$"))
+			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-9]+:([0-5][0-9]:){0,2}[0-5][0-9])+$"))
 			{
 				List<int> possibleTimes = new List<int>();
 				for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
 				{
-					if (!partOfPartTrimmed[x].RegexMatch(@"^([0-9]+:)?([0-5][0-9]:){1,2}[0-5][0-9])$")) break;
+					if (!partOfPartTrimmed[x].RegexMatch(@"^[0-9]+:([0-5][0-9]:){0,2}[0-5][0-9]$")) break;
 					string[] curTimePart = partOfPartTrimmed[x].Split(':').Reverse().ToArray();
 					int curTime = 0;
 					for (int idx = 0; idx < curTimePart.Length; idx++)

@@ -1108,14 +1108,14 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			givenValue *= 36;
 			givenValue += base36Reference.ContainsKey(curSerNo[x]) ? base36Reference[curSerNo[x]] : 18;
 		}
-		Debug.LogFormat("[Unfair's Revenge #{0}]: After Base-36 Conversion: {1}", loggingModID, givenValue);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Base-36 Conversion: {1}", loggingModID, givenValue);
 		while (givenValue > 0)
 		{
 			returningString += hexDecimalString[(int)(givenValue % 16)];
 			givenValue /= 16;
 		}
 		returningString = returningString.Reverse().Join("");
-		Debug.LogFormat("[Unfair's Revenge #{0}]: After Converting into Hexadecimal: {1}", loggingModID, returningString);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Converting into Hexadecimal: {1}", loggingModID, returningString);
 		string output = "";
 		string[] listAllPossibilities = new string[] { returningString, selectedModID.ToString(), (bombInfo.GetPortPlateCount() + 1).ToString(), (2 + bombInfo.GetBatteryHolderCount()).ToString() };
 		foreach (string selectedString in listAllPossibilities)
@@ -1143,7 +1143,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						output += baseAlphabet[intereptedValue - 1];
 				}
 			}
-		Debug.LogFormat("[Unfair's Revenge #{0}]: After Intereperation + ModID, Port Plate, Battery Holder appending: {1}", loggingModID, output);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Intereperation + ModID, Port Plate, Battery Holder appending: {1}", loggingModID, output);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
 		return output;
 	}
@@ -1181,7 +1181,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			bombInfo.GetSerialNumberNumbers().Count() >= 3,
 			bombInfo.GetIndicators().Count() > 2,
 			false,
-			!bombInfo.GetSerialNumber().Where(a => "AEIOU".Contains(a)).Any(),
+			!bombInfo.GetSerialNumber().Any(a => "AEIOU".Contains(a)),
 			bombInfo.GetModuleIDs().Count() > 30,
 			bombInfo.GetIndicators().Count() < 4,
 		};
@@ -2151,12 +2151,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				partTrimmed = partTrimmed.Substring(6);
 			}
 			string[] partOfPartTrimmed = partTrimmed.Split();
-			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( (([0-9]+:)?([0-5][0-9]:){1,2}|[0-9]+)[0-5][0-9])+$"))
+			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-9]+:([0-5][0-9]:){0,2}[0-5][0-9])+$"))
 			{
 				List<int> possibleTimes = new List<int>();
 				for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
 				{
-					if (!partOfPartTrimmed[x].RegexMatch(@"^[0-9]+:([0-5][0-9]:){1,2}[0-5][0-9])$")) break;
+					if (!partOfPartTrimmed[x].RegexMatch(@"^[0-9]+:([0-5][0-9]:){0,2}[0-5][0-9]$")) break;
 					string[] curTimePart = partOfPartTrimmed[x].Split(':').Reverse().ToArray();
 					int curTime = 0;
 					for (int idx = 0; idx < curTimePart.Length; idx++)

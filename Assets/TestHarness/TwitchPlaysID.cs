@@ -798,7 +798,7 @@ public class TwitchPlaysID : MonoBehaviour
 				}
 				else if (SendToTwitchChat(currentString, "[USER_NICK_NAME_HERE]") != SendToTwitchChatResponse.NotHandled)
 				{
-					if (AntiTrollMode && !AnarchyMode) break;
+					if (currentString.StartsWith("antitroll") && AntiTrollMode && !AnarchyMode) break;
 					yield return null;
 					continue;
 				}
