@@ -1025,7 +1025,10 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	{
 		return string.Format("{0}:{1}",num/60,num%60);
 	}
-
+	string FormatSecondsToTime(long num)
+	{
+		return string.Format("{0}:{1}", num / 60, num % 60);
+	}
 	// TP Handling Begins here
 	void TwitchHandleForcedSolve()
 	{
@@ -1050,7 +1053,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		}
 		string[] intereptedParts = command.ToLower().Split(';');
 		List<KMSelectable> selectedCommands = new List<KMSelectable>();
-		List<List<int>> timeThresholds = new List<List<int>>();
+		List<List<long>> timeThresholds = new List<List<long>>();
 		List<string> rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToList();
 
 		int[] multiplierTimes = { 1, 60, 3600, 86400 }; // To denote seconds, minutes, hours, days in seconds.
@@ -1076,15 +1079,21 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			string[] partOfPartTrimmed = partTrimmed.Split();
 			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-9]+:([0-5][0-9]:){0,2}[0-5][0-9])+$"))
 			{
-				List<int> possibleTimes = new List<int>();
+				List<long> possibleTimes = new List<long>();
 				for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
 				{
 					if (!partOfPartTrimmed[x].RegexMatch(@"^[0-9]+:([0-5][0-9]:){0,2}[0-5][0-9]$")) break;
 					string[] curTimePart = partOfPartTrimmed[x].Split(':').Reverse().ToArray();
-					int curTime = 0;
+					long curTime = 0;
 					for (int idx = 0; idx < curTimePart.Length; idx++)
 					{
-						curTime += multiplierTimes[idx] * int.Parse(curTimePart[idx]);
+						long possibleModifier;
+						if (!long.TryParse(curTimePart[idx], out possibleModifier))
+						{
+							yield return string.Format("sendtochaterror The command part \"{0}\" contains an uncalculatable time. The full command has been voided.", partTrimmed);
+							yield break;
+						}
+						curTime += multiplierTimes[idx] * possibleModifier;
 					}
 					possibleTimes.Add(curTime);
 				}
@@ -1104,13 +1113,13 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-5][0-9])+$"))
 			{
 				
-				List<int> possibleTimes = new List<int>();
+				List<long> possibleTimes = new List<long>();
 				for (int idx = partOfPartTrimmed.Length - 1; idx > 0; idx--)
 				{
 					if (!partOfPartTrimmed[idx].RegexMatch(@"^[0-5][0-9]$")) break;
 					int secondsTime = int.Parse(partOfPartTrimmed[idx]);
-					int curMinRemaining = (int)bombInfo.GetTime()/60;
-					for (int x = curMinRemaining - (ZenModeActive ? 0 : 2); x <= curMinRemaining + (ZenModeActive ? 2 : 0); x++)
+					long curMinRemaining = (long)bombInfo.GetTime()/60;
+					for (long x = curMinRemaining - (ZenModeActive ? 0 : 2); x <= curMinRemaining + (ZenModeActive ? 2 : 0); x++)
 					{
 						if (x * 60 + secondsTime > bombInfo.GetTime() && ZenModeActive)
 						{
@@ -1135,7 +1144,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			}
 			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer|screen)$"))
 			{
-				timeThresholds.Add(new List<int>());
+				timeThresholds.Add(new List<long>());
 			}
 			else
 			{
@@ -1192,13 +1201,13 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				if (timeThresholds[x].Any())
 				{
 					
-					List<int> currentTimeThresholds = timeThresholds[x].Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList();
+					List<long> currentTimeThresholds = timeThresholds[x].Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList();
 					if (!currentTimeThresholds.Any())
 					{
 						yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
 						yield break;
 					}
-					int targetTime = ZenModeActive ? currentTimeThresholds.Min() : currentTimeThresholds.Max();
+					long targetTime = ZenModeActive ? currentTimeThresholds.Min() : currentTimeThresholds.Max();
 					yield return string.Format("sendtochat Target time for press #{0} in command: {1}", x + 1, FormatSecondsToTime(targetTime));
 					bool canPlayWaitingMusic = Mathf.Abs(targetTime - bombInfo.GetTime()) >= 25;
 					if (canPlayWaitingMusic)
@@ -1209,7 +1218,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					do
 					{
 						yield return string.Format("trycancel Your timed interation has been canceled after a total of {0}/{1} presses in the command.", x + 1, selectedCommands.Count);
-						if ((int)bombInfo.GetTime() > targetTime && ZenModeActive)
+						if ((long)bombInfo.GetTime() > targetTime && ZenModeActive)
 						{
 							currentTimeThresholds = currentTimeThresholds.Where(a => a > bombInfo.GetTime()).ToList();
 							if (!currentTimeThresholds.Any())
@@ -1220,7 +1229,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 							targetTime = currentTimeThresholds.Min();
 							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
 						}
-						else if ((int)bombInfo.GetTime() < targetTime && !ZenModeActive)
+						else if ((long)bombInfo.GetTime() < targetTime && !ZenModeActive)
 						{
 							currentTimeThresholds = currentTimeThresholds.Where(a => a < bombInfo.GetTime()).ToList();
 							if (!currentTimeThresholds.Any())
@@ -1232,7 +1241,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
 						}
 					}
-					while ((int)bombInfo.GetTime() != targetTime);
+					while ((long)bombInfo.GetTime() != targetTime);
 					if (canPlayWaitingMusic)
 						yield return "end waiting music";
 				}

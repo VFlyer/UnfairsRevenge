@@ -24,6 +24,6 @@ MonoBehaviour:
     IDs:\r\nUnfair's Revenge: unfairsRevenge\r\nUnfair's Cruel Revenge: unfairsRevengeCruel\r\n\r\nOriginal
     idea by Tachatat18\r\nImplemented by VFlyer\r\n\r\nSource Code: https://github.com/VFlyer/UnfairsRevenge\r\nTemporary
     Manuals can be found in source code, as PDFs\r\n\n"
-  version: 1.2_01
+  version: 1.2_02
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 8b1d362f728a06744a8f1aaad392d7fd, type: 3}
