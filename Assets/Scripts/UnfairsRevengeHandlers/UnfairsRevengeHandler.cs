@@ -142,6 +142,31 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		}
 
 	}
+	List<string> GrabNonOverlappingInstructions(IEnumerable<string> instructionSets)
+	{
+		List<int> allIdxes = new List<int>();
+		for (int x = 0; x < instructionSets.Count(); x++)
+		{
+			bool isUnique = true;
+			string curInstruction = instructionSets.ElementAtOrDefault(x).Replace(baseAlphabet[8], baseAlphabet[9]);
+
+			for (int y = 0; y < allIdxes.Count && isUnique; y++)
+			{
+				string curScanInstruction = instructionSets.ElementAtOrDefault(y).Replace(baseAlphabet[8], baseAlphabet[9]);
+				if (curInstruction == curScanInstruction)
+				{
+					allIdxes.RemoveAt(y);
+					isUnique = false;
+					break;
+				}
+			}
+			if (isUnique)
+				allIdxes.Add(x);
+		}
+
+		return allIdxes.Select(a => instructionSets.ElementAtOrDefault(a)).ToList();
+	}
+
 	public void PrepModule()
 	{
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Button colors in clockwise order (starting on the NW button): {1}", loggingModID, idxColorList.Select(a => baseColorList[a]).Join(", "));
@@ -432,7 +457,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	}
 
 	private Dictionary<int, string> romanValues = new Dictionary<int, string>() {
-		{1,"I" },{5,"V" },{10,"X" },{50,"L" },{100,"C" },{500,"D" },{1000,"M" },{5000,"V_" },{10000,"X_" }
+        {1,"I" },{5,"V" },{10,"X" },{50,"L" },{100,"C" },{500,"D" },{1000,"M" },{5000,"V_" },{10000,"X_" }
 	};
 	string FitToScreen(string value, int maxLength)
 	{
@@ -508,9 +533,10 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	}
 	public void GenerateInstructions()
 	{
+		List<string> uniqueInstructions = GrabNonOverlappingInstructions(normalModeInstructions);
 		for (int x = 0; x < 4; x++)
 		{
-			string oneGiven = normalModeInstructions.PickRandom();
+			string oneGiven = uniqueInstructions.PickRandom();
 			splittedInstructions.Add(oneGiven);
 		}
 	}
@@ -568,20 +594,22 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		isplayingSolveAnim = true;
 		StartCoroutine(HandleFlickerSolveAnim());
 		strikeIDDisplay.text = "";
-		for (int y = 12; y > 0; y -= 3)
+        int[] delaysPossible = { 12, 9, 6, 3 };
+
+		foreach (int y in delaysPossible.Shuffle())
 		{
 			for (int x = 0; x < y; x++)
 			{
 				pigpenDisplay.text = pigpenDisplay.text.Select(a => !char.IsWhiteSpace(a) ? baseAlphabet.PickRandom() : a).Join("");
-				pigpenDisplay.gameObject.SetActive(true);
+				//pigpenDisplay.gameObject.SetActive(true);
 				mAudio.PlaySoundAtTransform("submiterate", transform);
-				yield return new WaitForSeconds(0.1f);
-				pigpenDisplay.gameObject.SetActive(false);
-				yield return new WaitForSeconds(0.1f);
+				yield return new WaitForSeconds(0.2f);
+				//pigpenDisplay.gameObject.SetActive(false);
 			}
 			mAudio.PlaySoundAtTransform("submiterate2", transform);
 			yield return new WaitForSeconds(0.1f);
 		}
+		pigpenDisplay.text = "";
 		mAudio.PlaySoundAtTransform("submitstop", transform);
 		StartCoroutine(indicatorHandler.HandleCollaspeAnim());
 		isplayingSolveAnim = false;
@@ -680,12 +708,14 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			for (int a = 0; a < 10; a += 3)
 			{
 				statusIndicators[a].material.color = Color.red;
+				pigpenDisplay.color = Color.red;
 			}
 			mAudio.PlaySoundAtTransform("wrong", transform);
 			yield return new WaitForSeconds(0.1f);
 			for (int a = 0; a < 10; a += 3)
 			{
 				statusIndicators[a].material.color = Color.black;
+				pigpenDisplay.color = Color.white;
 			}
 			yield return new WaitForSeconds(Time.deltaTime);
 		}

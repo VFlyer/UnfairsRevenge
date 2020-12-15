@@ -279,14 +279,39 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 		}
 	}
+	List<string> GrabNonOverlappingInstructions(IEnumerable<string> instructionSets)
+    {
+		List<int> allIdxes = new List<int>();
+        for (int x = 0; x < instructionSets.Count(); x++)
+        {
+			bool isUnique = true;
+            string curInstruction = instructionSets.ElementAtOrDefault(x).Replace(baseAlphabet[8],baseAlphabet[9]);
+
+			for (int y = 0; y < allIdxes.Count && isUnique; y++)
+            {
+				string curScanInstruction = instructionSets.ElementAtOrDefault(y).Replace(baseAlphabet[8], baseAlphabet[9]);
+				if (curInstruction == curScanInstruction)
+                {
+					allIdxes.RemoveAt(y);
+					isUnique = false;
+					break;
+                }
+			}
+			if (isUnique)
+				allIdxes.Add(x);
+        }
+
+		return allIdxes.Select(a => instructionSets.ElementAtOrDefault(a)).ToList();
+    }
+
 	void PrepModule()
 	{
 		idxColorList.Shuffle();
 		List<string> curColorList = idxColorList.Select(a => baseColorList[a]).ToList();
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: This Unfair's Cruel Revenge script has a fix implemented as of November 5th, 2020. If you see this message, this means you have a more stable version.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Button colors in clockwise order (starting on the NW button): {1}", loggingModID, curColorList.Join(", "));
 		StartCoroutine(HandleStartUpAnim());
 		//StartCoroutine(TypePigpenText(FitToScreen("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM",13)));
-		GenerateInstructions();
 		mainDisplay.text = "";
 		// Basic Columnar Transposition Set
 		int[] possibleSizes = { 2, 3, 6, 9 };
@@ -408,6 +433,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key D: {1}", loggingModID, keyDString);
 
 		ModifyBaseAlphabet();
+
 		// Distinguishing Ciphers
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Which Ciphers Are Used------------", loggingModID);
 		string[] baseCipherList = {
@@ -429,7 +455,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		};
 		int[] idxCipherList = new int[] { 2, 6, 4, 0, 1, 3, 13, 5, 7, 9, 12, 11, 8, 10, 14 };
 		/* The Ciphers are given based on a given set of instructions. Indexes are defined by the following:
-		 * 0, 1, 2, 3 are Playfair Ciphers with keys A,B,C,D respectively.
+		 * 0, 1, 2, 3 are Playfair Ciphers with keys A, B, C, D respectively.
 		 * 4, 5 are Caesar Cipher with values A and 13 respectively.
 		 * 6 is Affine Cipher with value x.
 		 * 7 is Atbash Cipher
@@ -594,16 +620,27 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		for (int x = 0; x < idxCipherList.Length; x++)
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2}: {1}", loggingModID, baseCipherList[idxCipherList[x]], x + 1);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
+
+		// Generate non-conflicting instructions.
+		do
+		{
+			splittedInstructions.Clear();
+			GenerateInstructions();
+		}
+		while (splittedInstructions.Select(a => a.Replace(baseAlphabet[9], baseAlphabet[8])).Distinct().Count() != 6);
+		// For each splitted instruction, replace any (10th letters) with (9th letters) and check if they are distinct to each other to have a length of 6.
+
+
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -----------------------Encrypting-----------------------", loggingModID);
 		// The Encryption Format
-		List<int> firstFourCipherIdx = idxCipherList.Take(5).ToList();
+		List<int> firstCiphersIdx = idxCipherList.Take(5).ToList();
 		List<string> encryptedResults = new List<string>();
 		string[] directionSamples = { "NW", "N", "NE", "SE", "S", "SW" };
 		string baseString = splittedInstructions.Join("");
-		for (int x = 0; x < firstFourCipherIdx.Count; x++)
+		for (int x = 0; x < firstCiphersIdx.Count; x++)
         {
 			string currentString = x == 0 ? baseString : encryptedResults.Last();
-			switch (firstFourCipherIdx[x])
+			switch (firstCiphersIdx[x])
 			{
 				case 0:
                     {// Playfair Cipher with Key A
@@ -781,7 +818,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
         }
 		for (int y = encryptedResults.Count - 1; y >= 0; y--)
 		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After {2}: {1}", loggingModID, encryptedResults[y], baseCipherList[firstFourCipherIdx[y]]);
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After {2}: {1}", loggingModID, encryptedResults[y], baseCipherList[firstCiphersIdx[y]]);
 		}
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
 		displayPigpenText = FitToScreen(encryptedResults.Any() ? encryptedResults.Last() : splittedInstructions.Join(""), 13);
@@ -1105,21 +1142,24 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		return key.OrderBy(a => a).Select(a => separtedSets[Array.IndexOf(key, a)]).Join("");
     }
 
-	Dictionary<char, int> charReference = new Dictionary<char, int>() {
-		{'0', 0 }, {'1', 1 }, {'2', 2 }, {'3', 3 }, {'4', 4 }, {'5', 5 },
-		{'6', 6 }, {'7', 7 }, {'8', 8 }, {'9', 9 }, {'A', 1 }, {'B', 2 },
-		{'C', 3 }, {'D', 4 }, {'E', 5 }, {'F', 6 }, {'G', 7 }, {'H', 8 },
-		{'I', 9 }, {'J', 10 }, {'K', 11 }, {'L', 12 }, {'M', 13 }, {'N', 14 },
-		{'O', 15 }, {'P', 16 }, {'Q', 17 }, {'R', 18 }, {'S', 19 }, {'T', 20 },
-		{'U', 21 }, {'V', 22 }, {'W', 23 }, {'X', 24 }, {'Y', 25 }, {'Z', 26 },
-	}, base36Reference = new Dictionary<char, int>() {
+	Dictionary<char, int> base36Reference = new Dictionary<char, int>() {
 		{'0', 0 }, {'1', 1 }, {'2', 2 }, {'3', 3 }, {'4', 4 }, {'5', 5 },
 		{'6', 6 }, {'7', 7 }, {'8', 8 }, {'9', 9 }, {'A', 10 }, {'B', 11 },
 		{'C', 12 }, {'D', 13 }, {'E', 14 }, {'F', 15 }, {'G', 16 }, {'H', 17 },
 		{'I', 18 }, {'J', 19 }, {'K', 20 }, {'L', 21 }, {'M', 22 }, {'N', 23 },
 		{'O', 24 }, {'P', 25 }, {'Q', 26 }, {'R', 27 }, {'S', 28 }, {'T', 29 },
 		{'U', 30 }, {'V', 31 }, {'W', 32 }, {'X', 33 }, {'Y', 34 }, {'Z', 35 },
-	};
+	}
+	/*
+	,charReference = new Dictionary<char, int>() {
+		{'0', 0 }, {'1', 1 }, {'2', 2 }, {'3', 3 }, {'4', 4 }, {'5', 5 },
+		{'6', 6 }, {'7', 7 }, {'8', 8 }, {'9', 9 }, {'A', 1 }, {'B', 2 },
+		{'C', 3 }, {'D', 4 }, {'E', 5 }, {'F', 6 }, {'G', 7 }, {'H', 8 },
+		{'I', 9 }, {'J', 10 }, {'K', 11 }, {'L', 12 }, {'M', 13 }, {'N', 14 },
+		{'O', 15 }, {'P', 16 }, {'Q', 17 }, {'R', 18 }, {'S', 19 }, {'T', 20 },
+		{'U', 21 }, {'V', 22 }, {'W', 23 }, {'X', 24 }, {'Y', 25 }, {'Z', 26 },
+	}*/
+	;
 	string ObtainKeyA()
 	{
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
@@ -1400,7 +1440,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	public void GenerateInstructions()
 	{
 		string[] lastCommand = { "FIN", "ISH" };
-		List<string> instructionsToShuffle = hardModeInstructions.ToList();
+		List<string> instructionsToShuffle = GrabNonOverlappingInstructions(hardModeInstructions);
 		instructionsToShuffle.Shuffle();
 		splittedInstructions.AddRange(instructionsToShuffle.Take(5));
 		splittedInstructions.Add(lastCommand.PickRandom());
@@ -1632,12 +1672,14 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			for (int a = 0; a < 6; a += 1)
 			{
 				statusIndicators[a].material.color = Color.red;
+				pigpenDisplay.color = Color.red;
 			}
 			mAudio.PlaySoundAtTransform("wrong", transform);
 			yield return new WaitForSeconds(0.1f);
 			for (int a = 0; a < 6; a += 1)
 			{
 				statusIndicators[a].material.color = Color.black;
+				pigpenDisplay.color = Color.white;
 			}
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
@@ -1766,10 +1808,25 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			case "ISH":
 				toLog = "This instruction is complicated. Refer to the manual for how to press this last command.";
 				break;
+			case "INV":
+			case "ERT":
+				toLog = "";
+				break;
+			case "SWP":
+				toLog = "";
+				break;
 		}
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Instruction {2} (\"{3}\"): {1}", loggingModID, toLog, currentInputPos + 1, splittedInstructions[currentInputPos]);
 	}
-	bool canSkip = false;
+	bool canSkip = false, swapInnerOuterPresses = false, invertColorButtonPresses = false;
+	Dictionary<string, string> complementaryCounterparts = new Dictionary<string, string>() {
+		{ "Red", "Cyan" },
+		{ "Yellow", "Blue" },
+		{ "Green", "Magenta" },
+		{ "Cyan", "Red" },
+		{ "Blue", "Yellow" },
+		{ "Magenta", "Green" },
+	};
 	void ProcessInstruction(string input)
 	{
 		if (isFinished) return;
@@ -1781,41 +1838,41 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		string[] finaleInstructions = { "FIN", "ISH" };
 		if (canSkip)
 		{
-			isCorrect = input == "Outer";
+			isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer");
 			canSkip = false;
 		}
 		else
 			switch (splittedInstructions[currentInputPos])
 			{
 				case "PCR":
-					isCorrect = input == baseColorList[0];
+                    isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[0]] : baseColorList[0]);
 					break;
 				case "PCG":
-					isCorrect = input == baseColorList[2];
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[2]] : baseColorList[2]);
 					break;
 				case "PCB":
-					isCorrect = input == baseColorList[4];
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[4]] : baseColorList[4]);
 					break;
 				case "SCC":
-					isCorrect = input == baseColorList[3];
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[3]] : baseColorList[3]);
 					break;
 				case "SCM":
-					isCorrect = input == baseColorList[5];
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[5]] : baseColorList[5]);
 					break;
 				case "SCY":
-					isCorrect = input == baseColorList[1];
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[1]] : baseColorList[1]);
 					break;
 				case "SUB":
-					isCorrect = input == "Inner" && secondsTimer % 11 == 0;
+					isCorrect = input == (swapInnerOuterPresses ? "Outer" : "Inner") && secondsTimer % 11 == 0;
 					break;
 				case "MOT":
-					isCorrect = input == "Outer" && secondsTimer % 10 == (selectedModID + (5 - (1 + currentInputPos)) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10;
+					isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer") && secondsTimer % 10 == (selectedModID + (5 - (1 + currentInputPos)) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10;
 					break;
 				case "PRN":
-					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ? "Inner" : "Outer");
+					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ^ swapInnerOuterPresses ? "Inner" : "Outer");
 					break;
 				case "CHK":
-					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ? "Outer" : "Inner");
+					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ^ swapInnerOuterPresses ? "Outer" : "Inner");
 					break;
 				case "BOB":
 					isCorrect = input == "Inner";
@@ -2171,127 +2228,127 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		}
 		else
 			foreach (string commandPart in intereptedParts)
-		{
-			string partTrimmed = commandPart.Trim();
-			if (partTrimmed.RegexMatch(@"^press "))
-			{
-				partTrimmed = partTrimmed.Substring(6);
-			}
-			string[] partOfPartTrimmed = partTrimmed.Split();
-			if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-9]+:([0-5][0-9]:){0,2}[0-5][0-9])+$"))
-			{
-				List<long> possibleTimes = new List<long>();
-				for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
 				{
-					if (!partOfPartTrimmed[x].RegexMatch(@"^[0-9]+:([0-5][0-9]:){0,2}[0-5][0-9]$")) break;
-					string[] curTimePart = partOfPartTrimmed[x].Split(':').Reverse().ToArray();
-						long curTime = 0;
-					for (int idx = 0; idx < curTimePart.Length; idx++)
+					string partTrimmed = commandPart.Trim();
+					if (partTrimmed.RegexMatch(@"^press "))
 					{
-							long possibleModifier;
-							if (!long.TryParse(curTimePart[idx],out possibleModifier))
-                            {
-								yield return string.Format("sendtochaterror The command part \"{0}\" contains an uncalculatable time. The full command has been voided.", partTrimmed);
-								yield break;
-                            }
-						curTime += multiplierTimes[idx] * possibleModifier;
+						partTrimmed = partTrimmed.Substring(6);
 					}
-					possibleTimes.Add(curTime);
-				}
+					string[] partOfPartTrimmed = partTrimmed.Split();
+					if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-9]+:([0-5][0-9]:){0,2}[0-5][0-9])+$"))
+					{
+						List<long> possibleTimes = new List<long>();
+						for (int x = partOfPartTrimmed.Length - 1; x > 0; x--)
+						{
+							if (!partOfPartTrimmed[x].RegexMatch(@"^[0-9]+:([0-5][0-9]:){0,2}[0-5][0-9]$")) break;
+							string[] curTimePart = partOfPartTrimmed[x].Split(':').Reverse().ToArray();
+								long curTime = 0;
+							for (int idx = 0; idx < curTimePart.Length; idx++)
+							{
+									long possibleModifier;
+									if (!long.TryParse(curTimePart[idx],out possibleModifier))
+									{
+										yield return string.Format("sendtochaterror The command part \"{0}\" contains an uncalculatable time. The full command has been voided.", partTrimmed);
+										yield break;
+									}
+								curTime += multiplierTimes[idx] * possibleModifier;
+							}
+							possibleTimes.Add(curTime);
+						}
 
-				possibleTimes = possibleTimes.Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList(); // Filter out all possible times by checking if the time stamp is possible
+						possibleTimes = possibleTimes.Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList(); // Filter out all possible times by checking if the time stamp is possible
 
-				if (possibleTimes.Any())
-				{
-					timeThresholds.Add(possibleTimes);
-				}
-				else
-				{
-					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The full command has been voided.", partTrimmed);
-					yield break;
-				}
-			}
-			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-5][0-9])+$"))
-			{
+						if (possibleTimes.Any())
+						{
+							timeThresholds.Add(possibleTimes);
+						}
+						else
+						{
+							yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The full command has been voided.", partTrimmed);
+							yield break;
+						}
+					}
+					else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-5][0-9])+$"))
+					{
 				
-				List<long> possibleTimes = new List<long>();
-				for (int idx = partOfPartTrimmed.Length - 1; idx > 0; idx--)
-				{
-					if (!partOfPartTrimmed[idx].RegexMatch(@"^[0-5][0-9]$")) break;
-					int secondsTime = int.Parse(partOfPartTrimmed[idx]);
-					long curMinRemaining = (long)bombInfo.GetTime()/60;
-					for (long x = curMinRemaining - (ZenModeActive ? 0 : 2); x <= curMinRemaining + (ZenModeActive ? 2 : 0); x++)
-					{
-						if (x * 60 + secondsTime > bombInfo.GetTime() && ZenModeActive)
+						List<long> possibleTimes = new List<long>();
+						for (int idx = partOfPartTrimmed.Length - 1; idx > 0; idx--)
 						{
-							possibleTimes.Add(x * 60 + secondsTime);
+							if (!partOfPartTrimmed[idx].RegexMatch(@"^[0-5][0-9]$")) break;
+							int secondsTime = int.Parse(partOfPartTrimmed[idx]);
+							long curMinRemaining = (long)bombInfo.GetTime()/60;
+							for (long x = curMinRemaining - (ZenModeActive ? 0 : 2); x <= curMinRemaining + (ZenModeActive ? 2 : 0); x++)
+							{
+								if (x * 60 + secondsTime > bombInfo.GetTime() && ZenModeActive)
+								{
+									possibleTimes.Add(x * 60 + secondsTime);
+								}
+								else if (x * 60 + secondsTime < bombInfo.GetTime() && !ZenModeActive)
+								{
+									possibleTimes.Add(x * 60 + secondsTime);
+								}
+							}
+
 						}
-						else if (x * 60 + secondsTime < bombInfo.GetTime() && !ZenModeActive)
+						if (possibleTimes.Any())
 						{
-							possibleTimes.Add(x * 60 + secondsTime);
+							timeThresholds.Add(possibleTimes);
+						}
+						else
+						{
+							yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The full command has been voided.", partTrimmed);
+							yield break;
 						}
 					}
-
+					else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer|screen)$"))
+					{
+						timeThresholds.Add(new List<long>());
+					}
+					else
+					{
+						yield return string.Format("sendtochaterror \"{0}\" is not a valid sub command, check your command for typos.",partTrimmed);
+						yield break;
+					}
+					switch (partOfPartTrimmed[0])
+					{
+						case "r":
+						case "red":
+							selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Red")]);
+							break;
+						case "g":
+						case "green":
+							selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Green")]);
+							break;
+						case "b":
+						case "blue":
+							selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Blue")]);
+							break;
+						case "c":
+						case "cyan":
+							selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Cyan")]);
+							break;
+						case "m":
+						case "magenta":
+							selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Magenta")]);
+							break;
+						case "y":
+						case "yellow":
+							selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Yellow")]);
+							break;
+						case "inner":
+							selectedCommands.Add(innerSelectable);
+							break;
+						case "outer":
+							selectedCommands.Add(outerSelectable);
+							break;
+						case "screen":
+							selectedCommands.Add(idxStrikeSelectable);
+							break;
+						default:
+							yield return "sendtochaterror You aren't supposed to get this error. If you did, it's a bug, so please contact the developer about this.";
+							yield break;
+					}
 				}
-				if (possibleTimes.Any())
-				{
-					timeThresholds.Add(possibleTimes);
-				}
-				else
-				{
-					yield return string.Format("sendtochaterror The command part \"{0}\" gave no accessible times for this module. The full command has been voided.", partTrimmed);
-					yield break;
-				}
-			}
-			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer|screen)$"))
-			{
-				timeThresholds.Add(new List<long>());
-			}
-			else
-			{
-				yield return string.Format("sendtochaterror \"{0}\" is not a valid sub command, check your command for typos.",partTrimmed);
-				yield break;
-			}
-			switch (partOfPartTrimmed[0])
-			{
-				case "r":
-				case "red":
-					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Red")]);
-					break;
-				case "g":
-				case "green":
-					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Green")]);
-					break;
-				case "b":
-				case "blue":
-					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Blue")]);
-					break;
-				case "c":
-				case "cyan":
-					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Cyan")]);
-					break;
-				case "m":
-				case "magenta":
-					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Magenta")]);
-					break;
-				case "y":
-				case "yellow":
-					selectedCommands.Add(colorButtonSelectables[rearrangedColorList.IndexOf("Yellow")]);
-					break;
-				case "inner":
-					selectedCommands.Add(innerSelectable);
-					break;
-				case "outer":
-					selectedCommands.Add(outerSelectable);
-					break;
-				case "screen":
-					selectedCommands.Add(idxStrikeSelectable);
-					break;
-				default:
-					yield return "sendtochaterror You aren't supposed to get this error. If you did, it's a bug, so please contact the developer about this.";
-					yield break;
-			}
-		}
 		hasStruck = false;
 		if (selectedCommands.Any())
 		{
