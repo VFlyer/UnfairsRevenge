@@ -681,17 +681,20 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		entireCircle.transform.localPosition = 5*Vector3.up;
 		yield return new WaitForSeconds(uernd.Range(0f,2f));
 		int animLength = 60;
-		for (float x = 0; x <= animLength; x++)
+        for (float x = 0; x <= 1f; x += Time.deltaTime)
 		{
-			float curScale = Mathf.Pow(x / animLength, 1);
+			float curScale = Mathf.Pow(x, 1);
 			entireCircle.transform.localScale = new Vector3(curScale, curScale, curScale);
 			if (x != animLength)
-				entireCircle.transform.Rotate(Vector3.up * (360 / Mathf.Max(animLength, 0.5f)));
-			float currentOffset = Mathf.Pow((x - animLength) / animLength, 2f);
+				entireCircle.transform.localEulerAngles = Vector3.up * 720 * (1f - x);
+			float currentOffset = Mathf.Pow(x - 1, 2f);
 			entireCircle.transform.localPosition = new Vector3(0, 5 * currentOffset, 0);
-			yield return new WaitForSeconds(Time.deltaTime);
+			yield return null;
 		}
 		mAudio.PlaySoundAtTransform("werraMetallicTrimmed", entireCircle.transform);
+		entireCircle.transform.localEulerAngles = Vector3.zero;
+		entireCircle.transform.localPosition = Vector3.zero;
+		entireCircle.transform.localScale = Vector3.one;
 		outerSelectable.AddInteractionPunch(3f);
 		for (int i = 0; i < colorLights.Length; i++)
 		{
@@ -768,7 +771,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				if (!lastCorrectInputs.Any())
 					toLog = "There were no previous inputs. Press Inner Center.";
 				else
-					toLog = string.Format("The last input was {0}, so press that.", lastCorrectInputs[currentInputPos - 1]);
+					toLog = string.Format("The last input was {0}, so press that.", lastCorrectInputs.Last());
 				break;
 			case "STR":
 			case "IKE":
@@ -782,8 +785,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				break;
 			case "PVP":
 				{
-					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
-					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Last(a => baseColorList.Contains(a))) : "You have not pressed a colored button yet. Start on the NW button.";
+					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 					do
 					{
 						curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
@@ -794,8 +797,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				}
 			case "NXP":
 				{
-					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
-					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Last(a => baseColorList.Contains(a))) : "You have not pressed a colored button yet. Start on the NW button.";
+					int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 					do
 					{
 						curIdx = (curIdx + 1) % 6;
@@ -807,7 +810,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			case "PVS":
 				{
 					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
-					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+					int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 					do
 					{
 						curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
@@ -819,7 +822,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			case "NXS":
 				{
 					toLog = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? string.Format("The last colored button you pressed is {0}.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : "You have not pressed a colored button yet. Start on the NW button.";
-					int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+					int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 					do
 					{
 						curIdx = (curIdx + 1) % 6;
@@ -905,7 +908,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					if (!lastCorrectInputs.Any())
 						isCorrect = input == "Inner";
 					else
-						isCorrect = input == lastCorrectInputs[lastCorrectInputs.Count - 1];
+						isCorrect = input == lastCorrectInputs.Last();
 					break;
 				case "STR":
 				case "IKE":
@@ -1017,8 +1020,10 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		else
 		{
 			Debug.LogFormat("[Unfair's Revenge #{0}]: The resulting press is incorrect. Restarting from the first instruction...", loggingModID);
+			/*
 			if (currentInputPos + 1 >= splittedInstructions.Count)
 				mAudio.PlaySoundAtTransform("Darkest Dungeon - OverconfidenceRant", transform);
+			*/
 			modSelf.HandleStrike();
 			hasStruck = true;
 			lastCorrectInputs.Clear();

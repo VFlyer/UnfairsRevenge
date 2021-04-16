@@ -68,7 +68,7 @@
 					<p>The module encrypts a string of six distant three-letter-long <span style="text-decoration: underline">instructions</span> with different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
 					<p><strong>ALL ciphers referring to the alphabet refers to the A1Z26 standard for each letter unless stated otherwise. Alphabetical order is ALSO modified for the ciphers!</strong></p>
 					<ul>
-						<li>The basic order of the given encrypted text is the following: <strong>Original -> 5x Ciphers -> Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
+						<li>The basic order of the given encrypted text is the following: <strong>Original &rarr; 5x Ciphers &rarr; Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
 					</ul>
 					<h3>Key A</h3>
 					<ol>
@@ -565,11 +565,11 @@
 					</p>
 					<p>The table underneath can be used to quickly decrypt each letter for Affine Cipher if needed. The table uses the Standard English Alphabet order however the alphabet used on the module may be different. X = 0 denotes to the first row in the table and the decrypted letter, X = 1 for the 2nd row for the encrypted letter, X = 2 for the 3rd row, etc.</p>
 					<p class="flavour-text">The contents in this table are editable, you may modify this in order to use a different alphabet.</p>
-					<table style="font-size: 81%;width: 100%" contenteditable="true" class="affine">
-						<tr contenteditable="false">
+					<table style="font-size: 81%;width: 100%" class="affine">
+						<tr>
 							<th colspan="26">Affine Encryption Table</th>
 						</tr>
-						<tr>
+						<tr contenteditable="true">
 							<td>A</td><td>B</td><td>C</td><td>D</td><td>E</td>
 							<td>F</td><td>G</td><td>H</td><td>I</td><td>J</td>
 							<td>K</td><td>L</td><td>M</td><td>N</td><td>O</td>
@@ -617,7 +617,7 @@
 							<td>W</td><td>H</td><td>S</td><td>D</td><td>O</td>
 							<td>Z</td>
 						</tr>
-						<tr contenteditable="false">
+						<tr>
 							<td colspan="26">The message to decrypt would result in very ambiguous conditions if using X = 6.</td>
 						</tr>
 						<tr>

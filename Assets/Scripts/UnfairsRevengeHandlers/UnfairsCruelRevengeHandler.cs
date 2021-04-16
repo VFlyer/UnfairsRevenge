@@ -11,26 +11,28 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	public KMAudio mAudio;
 	public KMBombModule modSelf;
 	public KMSelectable[] colorButtonSelectables;
-	public KMSelectable innerSelectable, outerSelectable, idxStrikeSelectable;
+	public KMSelectable innerSelectable, outerSelectable, idxStrikeSelectableT, idxStrikeSelectableB;
 	public GameObject[] colorButtonObjects;
 	public GameObject innerRing, entireCircle, animBar;
-	public MeshRenderer[] colorButtonRenderers, statusIndicators;
+	public MeshRenderer[] colorButtonRenderers, statusIndicators, statusIndicatorsExtra;
 	public TextMesh pigpenDisplay, strikeIDDisplay, mainDisplay, pigpenSecondary;
 	public Light[] colorLights;
 	public Light centerLight;
 	public ParticleSystem particles;
-	public IndicatorCoreHandlerEX indicatorCoreHandlerEX;
+	public IndicatorCoreHandlerEX indicatorCoreHandlerEX, IndicatorCoreHandlerExtraScreen;
 	public KMColorblindMode colorblindMode;
 	public Material[] switchableMats = new Material[2];
 	public KMGameInfo gameInfo;
 	public ProgressBarHandler progressHandler;
+	public StringListEditable uCipherWordBank;
 
 	private string[]
-		hardModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "PVP", "NXP", "PVS", "NXS", "REP", "EAT", "STR", "IKE", "PRN" ,"CHK", "MOT", "OPP", "SKP" },
+		hardModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "PVP", "NXP", "PVS", "NXS", "REP", "EAT", "STR", "IKE", "PRN" ,"CHK", "MOT", "OPP", "SKP", "INV", "ERT", "SWP" },
+		legacyInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "PVP", "NXP", "PVS", "NXS", "REP", "EAT", "STR", "IKE", "PRN", "CHK", "MOT", "OPP", "SKP", },
 		baseColorList = new[] { "Red", "Yellow", "Green", "Cyan", "Blue", "Magenta" },
 		primaryList = { "Red", "Green", "Blue", };
 	private string baseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", // Base alphabet for code assumes A=1,B=2,...,Y=25,Z=26
-		displayPigpenText = "", extraKey = "", selectedWord = "";
+		displayPigpenText = "", fourSquareKey = "", selectedWord = "", encodingDisplay = "", uCipherWord = "", substitutionLetters = "", keyABaseKey = "";
 	private string[,] keyBTable = {
 			{ "ALPH", "ONE", "ABCD", "AEI", "PLAY", "JAKK", "FRLA", "ZEKN", "FIZZ", "HEND", "CLUT", "SCG" },
 			{ "BETA", "TWO", "EFGH", "OUY", "HIDE", "MCDU", "VIRE", "ELIA", "TIMW", "ACRY", "MAGE", "BASH" },
@@ -49,18 +51,18 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		"Fixed Roman",
 		"Broken Roman",
 		"Arabic",
-    }, wordSearchWordsEven = {
-        "HOTEL", "SEARCH", "ADD", "SIERRA", "FINISH",
+	}, wordSearchWordsEven = {
+		"HOTEL", "SEARCH", "ADD", "SIERRA", "FINISH",
 		"PORT", "BOOM", "LINE", "KABOOM", "PANIC", "MANUAL", "DECOY",
 		"SEE", "INDIA", "NUMBER", "ZULU","VICTOR", "DELTA", "HELP",
 		"ROMEO", "TRUE","MIKE", "FOUND","BOMBS","WORK", "TEST",
 		"GOLF", "TALK","BRAVO", "SEVEN", "MODULE", "LIST", "YANKEE",
 		"CHART", "MATH", "READ", "LIMA", "COUNT",
-    }, wordSearchWordsOdd = {
+	}, wordSearchWordsOdd = {
 		"DONE", "QUEBEC", "CHECK", "FIND", "EAST",
 		"COLOR", "SUBMIT", "BLUE", "ECHO", "FALSE", "ALARM", "CALL",
 		"TWENTY", "NORTH", "LOOK", "GREEN", "XRAY", "YES", "LOCATE",
-        "BEEP", "EXPERT", "EDGE", "RED", "WORD", "UNIQUE", "JINX",
+		"BEEP", "EXPERT", "EDGE", "RED", "WORD", "UNIQUE", "JINX",
 		"LETTER", "SIX", "SERIAL", "TIMER", "SPELL", "TANGO", "SOLVE",
 		"OSCAR", "NEXT", "LISTEN", "FOUR", "OFFICE",
 	};
@@ -79,29 +81,31 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, noCopyright;
-	UnfairsCruelRevengeSettings ucrSettings = new UnfairsCruelRevengeSettings();
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR;
 
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
 	private int[] idxColorList = { 0, 1, 2, 3, 4, 5 }, columnalTranspositionLst = new int[] { 0, 1, 2, 3, 4, 5 };
 	List<string> lastCorrectInputs = new List<string>(), splittedInstructions = new List<string>();
+	UnfairsCruelRevengeSettings ucrSettings = new UnfairsCruelRevengeSettings();
 	void Awake()
 	{
 		try
-        {
-			ModConfig<UnfairsCruelRevengeSettings> modConfig = new ModConfig<UnfairsCruelRevengeSettings>("UnfairsCruelRevengeSettings");
-			ucrSettings = modConfig.Settings;
-			noCopyright = ucrSettings.noCopyright;
-        }
+		{
+			ModConfig<UnfairsCruelRevengeSettings> fileSettings = new ModConfig<UnfairsCruelRevengeSettings>("UnfairsCruelRevengeSettings");
+			ucrSettings = fileSettings.Settings;
+			fileSettings.Settings = ucrSettings;
+			legacyUCR = ucrSettings.enableLegacyUCR;
+		}
 		catch
-        {
-			Debug.LogWarningFormat("<Unfair's Cruel Revenge Settings>: Settings for Unfair's Cruel Revenge do not work as intended! Using default settings instead.", loggingModID);
-			noCopyright = true;
+		{
+			Debug.LogWarningFormat("<Unfair's Cruel Revenge>: Settings do not work as intended! Using default settings!", loggingModID);
+			legacyUCR = false;
 		}
 		finally
 		{
 			try
 			{
+
 				colorblindDetected = colorblindMode.ColorblindModeActive;
 			}
 			catch
@@ -129,8 +133,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		modSelf.OnActivate += delegate
 		{
 			StopCoroutine(currentlyRunning);
-
-			PrepModule();
+			if (legacyUCR)
+				PrepModuleLegacy();
+			else
+				PrepModule();
 			
 			hasStarted = true;
 			LogCurrentInstruction();
@@ -187,11 +193,20 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			ProcessInstruction("Outer");
 			return false;
 		};
-		idxStrikeSelectable.OnInteract += delegate
+		idxStrikeSelectableT.OnInteract += delegate
 		{
 			if (!isFinished)
 			{
-				currentScreenVal = (currentScreenVal + 1) % 3;
+				currentScreenVal = (currentScreenVal + 3) % 4;
+				UpdateSecondaryScreen();
+			}
+			return false;
+		};
+		idxStrikeSelectableB.OnInteract += delegate
+		{
+			if (!isFinished)
+			{
+				currentScreenVal = (currentScreenVal + 1) % 4;
 				UpdateSecondaryScreen();
 			}
 			return false;
@@ -220,7 +235,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		};
 		if (Application.isEditor)
 		{
-			Debug.LogFormat("[Unfair's Revenge #{0}]: Unity Editor Mode is active, if TP is enabled, you may use \"!# simulate on/off to simulate lights turning on or off.\"", loggingModID);
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Unity Editor Mode is active, if TP is enabled, you may use \"!# simulate on/off to simulate lights turning on or off.\"", loggingModID);
 		}
 		StartCoroutine(HandleAutoCycleAnim(false));
 	}
@@ -251,8 +266,22 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				}
 			case 1:
 				{
-					strikeIDDisplay.color = Color.red;
+					strikeIDDisplay.color = TimeModeActive ? new Color(1, 0.5f, 0) : ZenModeActive ? Color.cyan : Color.red;
 					pigpenSecondary.text = "";
+					string strikeCntToDisplay = "";
+					switch (idxCurStrikeDisplay)
+					{
+						case 0:
+							strikeCntToDisplay = ValueToFixedRoman(TimeModeActive ? localStrikeCount : bombInfo.GetStrikes());
+							break;
+						case 1:
+							strikeCntToDisplay = ValueToBrokenRoman(TimeModeActive ? localStrikeCount : bombInfo.GetStrikes());
+							break;
+						case 2:
+							strikeCntToDisplay = (TimeModeActive ? localStrikeCount : bombInfo.GetStrikes()).ToString();
+							break;
+					}
+					strikeIDDisplay.text = string.Format("Strikes Detected:\n{0}", strikeCntToDisplay);
 					break;
 				}
 			case 2:
@@ -261,23 +290,40 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					if (swapPigpenAndStandard)
 					{
 						if (swapStandardKeys)
-							strikeIDDisplay.text = string.Format("\n{1} | {0}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
+							strikeIDDisplay.text = string.Format("\n{1} | {0}\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
 						else
-							strikeIDDisplay.text = string.Format("\n{0} | {1}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
-						pigpenSecondary.text = string.Format("{0}\n", extraKey);
+							strikeIDDisplay.text = string.Format("\n{0} | {1}\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
+						pigpenSecondary.text = string.Format("{0}\n\n", fourSquareKey);
 					}
 					else
 					{
 						if (swapStandardKeys)
-							strikeIDDisplay.text = string.Format("{1} | {0}\n", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
+							strikeIDDisplay.text = string.Format("{1} | {0}\n\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
 						else
-							strikeIDDisplay.text = string.Format("{0} | {1}\n", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord);
-						pigpenSecondary.text = string.Format("\n{0}", extraKey);
+							strikeIDDisplay.text = string.Format("{0} | {1}\n\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
+						pigpenSecondary.text = string.Format("\n{0}\n", fourSquareKey);
 					}
 					break;
 				}
-
+			case 3:
+                {
+					strikeIDDisplay.color = Color.white;
+					pigpenSecondary.text = FitToScreen(substitutionLetters,13) + "\n";
+					strikeIDDisplay.text = string.Format("\n\n={0}=", encodingDisplay);
+					break;
+                }
+			default:
+				{
+					strikeIDDisplay.color = Color.white;
+					pigpenSecondary.text = "";
+					strikeIDDisplay.text = "";
+					break;
+				}
 		}
+        for (var x = 0; x < statusIndicatorsExtra.Length; x++)
+        {
+			statusIndicatorsExtra[x].material.color = x == currentScreenVal ? Color.white : Color.black;
+        }
 	}
 	List<string> GrabNonOverlappingInstructions(IEnumerable<string> instructionSets)
     {
@@ -303,12 +349,13 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 		return allIdxes.Select(a => instructionSets.ElementAtOrDefault(a)).ToList();
     }
-
-	void PrepModule()
+	// Legacy Unfair's Cruel Revenge Section Begins Here
+	void PrepModuleLegacy()
 	{
+		StartCoroutine(IndicatorCoreHandlerExtraScreen.HandleIndicatorModification(4));
 		idxColorList.Shuffle();
 		List<string> curColorList = idxColorList.Select(a => baseColorList[a]).ToList();
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: This Unfair's Cruel Revenge script has a fix implemented as of November 5th, 2020. If you see this message, this means you have a more stable version.", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: [Unfair's Cruel Revenge #{0}]: A lot of things have been changed recently. You may also notice fewer condtions being applied. You are currently using the legacy ruleset for Unfair's Cruel Revenge.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Button colors in clockwise order (starting on the NW button): {1}", loggingModID, curColorList.Join(", "));
 		StartCoroutine(HandleStartUpAnim());
 		//StartCoroutine(TypePigpenText(FitToScreen("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM",13)));
@@ -323,9 +370,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 		columnalTranspositionLst.Shuffle();
 		// Extra Pigpen Key
-		for (int x = 0; x < 12;x++)
+		for (int x = 0; x < 12; x++)
 		{
-			extraKey += baseAlphabet.PickRandom();
+			fourSquareKey += baseAlphabet.PickRandom();
 		}
 
 		// Autokey Keyword Mislead
@@ -337,6 +384,535 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		idxCurStrikeDisplay = uernd.Range(0, 3);
 		swapPigpenAndStandard = uernd.Range(0, 2) == 1;
 		swapStandardKeys = uernd.Range(0, 2) == 1;
+
+		keyABaseKey = "-------";
+		uCipherWord = "------";
+		encodingDisplay = "LEGACY";
+
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Mod ID is in {1} Numerals", loggingModID, tableRoman[idxCurModIDDisplay]);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The strike counter is in {1} Numerals", loggingModID, tableRoman[idxCurStrikeDisplay]);
+		// Value A Calculations
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -------------Value A Calculations-------------", loggingModID);
+		int valueA = 0;
+		char[] vowelList = { 'A', 'E', 'I', 'O', 'U' };
+		int portTypeCount = bombInfo.GetPorts().Distinct().Count(),
+			portPlateCount = bombInfo.GetPortPlateCount(),
+			consonantCount = bombInfo.GetSerialNumberLetters().Where(a => !vowelList.Contains(a)).Count(),
+			vowelCount = bombInfo.GetSerialNumberLetters().Where(a => vowelList.Contains(a)).Count(),
+			litCount = bombInfo.GetOnIndicators().Count(),
+			unlitCount = bombInfo.GetOffIndicators().Count(),
+			batteryCount = bombInfo.GetBatteryCount();
+		// For every port type
+		valueA -= 2 * portTypeCount;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are this many distant port types: {1}, Value A logged at {2}", loggingModID, portTypeCount, valueA);
+		// For every port plate
+		valueA += 1 * portPlateCount;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are this many port plates: {1}, Value A logged at {2}", loggingModID, portPlateCount, valueA);
+		// For every consonant in the serial number
+		valueA += 1 * consonantCount;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are this many consonants in the serial number: {1}, Value A logged at {2}", loggingModID, consonantCount, valueA);
+		// For every vowel in the serial number
+		valueA -= 2 * vowelCount;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are this many vowels in the serial number: {1}, Value A logged at {2}", loggingModID, vowelCount, valueA);
+		// For every lit indicator
+		valueA += 2 * litCount;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are this many lit indicators: {1}, Value A logged at {2}", loggingModID, litCount, valueA);
+		// For every unlit indicator
+		valueA -= 2 * unlitCount;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are this many unlit indicators: {1}, Value A logged at {2}", loggingModID, unlitCount, valueA);
+		if (batteryCount == 0)
+			valueA += 10;
+		else
+			valueA -= 1 * batteryCount;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are this many batteries: {1}, Value A logged at {2}", loggingModID, batteryCount, valueA);
+		if (bombInfo.GetPortCount() == 0)
+		{
+			valueA *= 2;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are no ports. Value A logged at {1}", loggingModID, valueA);
+		}
+		if (bombInfo.GetSolvableModuleIDs().Count() >= 31)
+		{
+			valueA /= 2;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are 31 or more modules on the bomb, including itself. Value A logged at {1}", loggingModID, valueA);
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
+		// Value X calculations
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -------------Value X Calculations-------------", loggingModID);
+		int valueX = 0;
+		Dictionary<string, int> indicatorMultipler = new Dictionary<string, int> {
+			{"BOB", 1 },{"CAR", 1 },{"CLR", 1 },
+			{"FRK", 2 },{"FRQ", 2 },{"MSA", 2 },{"NSA", 2 },
+			{"SIG", 3 },{"SND", 3 },{"TRN", 3 },
+		};
+		foreach (string ind in bombInfo.GetIndicators())
+		{
+			if (indicatorMultipler.ContainsKey(ind))
+			{
+				valueX += indicatorMultipler[ind] * (bombInfo.IsIndicatorOff(ind) ? -1 : bombInfo.IsIndicatorOn(ind) ? 1 : 0);
+			}
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After indicators: X = {1}", loggingModID, valueX);
+		valueX += 4 * (bombInfo.GetBatteryCount() % 2 == 1 ? 1 : -1);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After battery count: X = {1}", loggingModID, valueX);
+		foreach (IEnumerable<string> currentPlate in bombInfo.GetPortPlates().Where(a => a.Contains("Parallel")))
+		{
+			//Debug.Log(currentPlate.Join());
+			valueX += currentPlate.Contains("Serial") ? -4 : 5;
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After port plates with parallel ports: X = {1}", loggingModID, valueX);
+		foreach (IEnumerable<string> currentPlate in bombInfo.GetPortPlates().Where(a => a.Contains("DVI")))
+		{
+			//Debug.Log(currentPlate.Join());
+			valueX += currentPlate.Contains("StereoRCA") ? 4 : -5;
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After port plates with DVI-D ports: X = {1}", loggingModID, valueX);
+		valueX = Mathf.Abs(valueX);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After absolute value: X = {1}", loggingModID, valueX);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
+		int monthOfStart = DateTime.Now.Month;
+		int idxStartDOW = Array.IndexOf(possibleDays, DateTime.Now.DayOfWeek);
+		string keyAString = ObtainKeyALegacy();
+		string keyBString = keyBTable[idxStartDOW, monthOfStart - 1];
+		string keyCString = EncryptUsingPlayfair(keyAString, keyBString);
+		string keyDString = ObtainKeyCNew();
+
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key A: {1}", loggingModID, keyAString);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key B: {1}", loggingModID, keyBString);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key C: {1}", loggingModID, keyCString);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key D: {1}", loggingModID, keyDString);
+
+		ModifyBaseAlphabetLegacy();
+
+		// Distinguishing Ciphers
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Which Ciphers Are Used------------", loggingModID);
+		string[] baseCipherList = {
+			"Playfair Cipher (Key A)",
+			"Playfair Cipher (Key B)",
+			"Playfair Cipher (Key C)",
+			"Playfair Cipher (Key D)",
+			"Caesar Cipher (Value A)",
+			"ROT13 Cipher",
+			"Affine Cipher (Value X)",
+			"Atbash Cipher",
+			"Basic Columnar Transposition",
+			"Myszkowski Transposition",
+			"Anagram Shuffler",
+			"Scytale Transposition",
+			"Autokey Cipher",
+			"Four Square Cipher",
+			"Redefence Transposition"
+		};
+		int[] idxCipherList = new int[] { 2, 6, 4, 0, 1, 3, 13, 5, 7, 9, 12, 11, 8, 10, 14 };
+		/* The Ciphers are given based on a given set of instructions. Indexes are defined by the following:
+		 * 0, 1, 2, 3 are Playfair Ciphers with keys A, B, C, D respectively.
+		 * 4, 5 are Caesar Cipher with values A and 13 respectively.
+		 * 6 is Affine Cipher with value x.
+		 * 7 is Atbash Cipher
+		 * 8 is Basic Columnar Transposition
+		 * 9 is Myszkowski Transposition
+		 * 10 is Anagram Shuffler
+		 * 11 is Scytale Transposition
+		 * 12 is Autokey Cipher
+		 * 13 is Four Square Cipher
+		 * 14 is Redefence Transposition
+		 */
+		List<string> allModIDs = bombInfo.GetModuleIDs();
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Conditions Taken:", loggingModID);
+		if (idxCurModIDDisplay != 2)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Module ID is displayed in Broken or Fixed Roman Numerals.", loggingModID);
+			idxCipherList = idxCipherList.OrderBy(a => a == 3 ? 0 : 1).ToArray();
+		}
+		if (idxCurStrikeDisplay == 2)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Strike Counter is displayed in Arabic Numerals.", loggingModID);
+			idxCipherList = idxCipherList.OrderBy(a => a == 5 ? 0 : a == 11 ? 2 : 1).ToArray();
+		}
+		if (!allModIDs.Contains("unfairCipher"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Unfair Cipher is not present.", loggingModID);
+			idxCipherList = idxCipherList.OrderBy(a => new int[] { 0, 2, 4 }.Contains(a) ? 1 : 0).ToArray();
+		}
+		if (allModIDs.Contains("orangeCipher"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Orange Cipher is present.", loggingModID);
+			idxCipherList = idxCipherList.OrderBy(a => a == 13 ? 0 : 1).ToArray();
+		}
+		if (!allModIDs.Contains("Alphabetize") && allModIDs.Contains("ReverseAlphabetize"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Alphabetize is not present but Reverse Alphabetize is.", loggingModID);
+			int idxRT = Array.IndexOf(idxCipherList, 12), idxAB = Array.IndexOf(idxCipherList, 7);
+			int temp = idxCipherList[idxAB];
+			idxCipherList[idxAB] = idxCipherList[idxRT];
+			idxCipherList[idxRT] = temp;
+		}
+		if (allModIDs.Contains("CryptModule"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Cryptography is present.", loggingModID);
+			List<int> ciphersEvenPos = new List<int>(), ciphersOddPos = new List<int>();
+			for (int x = 0; x < idxCipherList.Length; x++)
+			{
+				if ((x + 1) % 2 == 0)
+				{
+					ciphersEvenPos.Add(idxCipherList[x]);
+				}
+				else
+				{
+					ciphersOddPos.Add(idxCipherList[x]);
+				}
+			}
+			ciphersEvenPos.Reverse();
+			int curPos = 0;
+			for (int x = 0; x < ciphersEvenPos.Count; x++)
+			{
+				idxCipherList[curPos] = ciphersEvenPos[x];
+				curPos++;
+			}
+			for (int x = 0; x < ciphersOddPos.Count; x++)
+			{
+				idxCipherList[curPos] = ciphersOddPos[x];
+				curPos++;
+			}
+		}
+		if (allModIDs.Contains("AnagramsModule"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Anagrams is present.", loggingModID);
+			idxCipherList = idxCipherList.OrderBy(a => a == 10 ? 0 : 1).ToArray();
+		}
+		if (allModIDs.Contains("WordScrambleModule"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Word Scramble is present.", loggingModID);
+			int temp = idxCipherList[2];
+			idxCipherList[2] = idxCipherList[idxCipherList.Length - 3];
+			idxCipherList[idxCipherList.Length - 3] = temp;
+		}
+		if (allModIDs.Contains("blackCipher"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Black Cipher is present.", loggingModID);
+			int idxRT = Array.IndexOf(idxCipherList, 14), firstId = idxCipherList.FirstOrDefault();
+			idxCipherList[idxRT] = firstId;
+			idxCipherList[0] = 14;
+
+			if (columnalTranspositionLst.Length <= 3)
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Columnar Transposition key has 3 or fewer numbers.", loggingModID);
+				int lastId = idxCipherList.LastOrDefault(), idxBCT = Array.IndexOf(idxCipherList, 8);
+				idxCipherList[idxBCT] = lastId;
+				idxCipherList[idxCipherList.Length - 1] = 8;
+			}
+		}
+		if (curColorList[2] == "Yellow")
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The NE colored button is Yellow.", loggingModID);
+			IEnumerable<int> firstFour = idxCipherList.Take(4);
+			idxCipherList = idxCipherList.OrderBy(a => firstFour.Contains(a) ? 1 : 0).ToArray();
+		}
+		if (Mathf.Abs(curColorList.IndexOf("Red") - curColorList.IndexOf("Cyan")) == 3)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red is diametrically opposite to Cyan.", loggingModID);
+			int idxR13 = Array.IndexOf(idxCipherList, 5), idxAS = Array.IndexOf(idxCipherList, 10), idxBCT = Array.IndexOf(idxCipherList, 8), idxMT = Array.IndexOf(idxCipherList, 9);
+			int temp = idxCipherList[idxMT];
+			idxCipherList[idxMT] = idxCipherList[idxR13];
+			idxCipherList[idxR13] = temp;
+			temp = idxCipherList[idxBCT];
+			idxCipherList[idxBCT] = idxCipherList[idxAS];
+			idxCipherList[idxAS] = temp;
+		}
+		if (curColorList.IndexOf("Yellow") < 3 && curColorList.IndexOf("Blue") < 3)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Yellow and Blue are both on the upper half.", loggingModID);
+			int lastOne = idxCipherList.Last();
+			idxCipherList = idxCipherList.OrderBy(a => a == lastOne ? 0 : 1).ToArray();
+		}
+		if (curColorList.IndexOf("Yellow") >= 3 && curColorList.IndexOf("Blue") >= 3)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Yellow and Blue are both on the lower half.", loggingModID);
+			int firstOne = idxCipherList.First();
+			idxCipherList = idxCipherList.OrderBy(a => a == firstOne ? 1 : 0).ToArray();
+		}
+		if (allModIDs.Contains("unfairsRevenge"))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Unfair's Revenge is present.", loggingModID);
+			int stepsToCyan = 0;
+			while (curColorList[stepsToCyan] != "Cyan" && stepsToCyan < curColorList.Count)
+				stepsToCyan++;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: It takes {1} steps to reach Cyan, starting from the NW colored button and going CW.", loggingModID, stepsToCyan);
+			for (int x = 0; x < stepsToCyan; x++)
+			{
+				int firstOne = idxCipherList.First();
+				idxCipherList = idxCipherList.OrderBy(a => a == firstOne ? 1 : 0).ToArray();
+			}
+		}
+		if (valueX % 13 == 6)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Value X is 13n + 6.", loggingModID);
+			int idxAff = Array.IndexOf(idxCipherList, 6), idxAB = Array.IndexOf(idxCipherList, 7);
+			int temp = idxCipherList[idxAff];
+			idxCipherList[idxAff] = idxCipherList[idxAB];
+			idxCipherList[idxAB] = temp;
+			idxCipherList = idxCipherList.Where(a => a != 6).ToArray();
+		}
+
+		if (valueA % 26 == 0)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Value A is a multiple of 26.", loggingModID);
+
+			int idxR13 = Array.IndexOf(idxCipherList, 5), idxCC = Array.IndexOf(idxCipherList, 4);
+			int temp = idxCipherList[idxR13];
+			idxCipherList[idxR13] = idxCipherList[idxCC];
+			idxCipherList[idxCC] = temp;
+			idxCipherList = idxCipherList.Where(a => a != 4).ToArray();
+		}
+
+
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The final order of the Cipher List is the following:", loggingModID);
+		for (int x = 0; x < idxCipherList.Length; x++)
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2}: {1}", loggingModID, baseCipherList[idxCipherList[x]], x + 1);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
+
+		// Generate non-conflicting instructions.
+		do
+		{
+			splittedInstructions.Clear();
+			GenerateInstructions();
+		}
+		while (splittedInstructions.Select(a => a.Replace(baseAlphabet[9], baseAlphabet[8])).Distinct().Count() != 6);
+		// For each splitted instruction, replace any (10th letters) with (9th letters) and check if they are distinct to each other to have a length of 6.
+
+
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -----------------------Encrypting-----------------------", loggingModID);
+		// The Encryption Format
+		List<int> firstCiphersIdx = idxCipherList.Take(5).ToList();
+		List<string> encryptedResults = new List<string>();
+		string[] directionSamples = { "NW", "N", "NE", "SE", "S", "SW" };
+		string baseString = splittedInstructions.Join("");
+		for (int x = 0; x < firstCiphersIdx.Count; x++)
+		{
+			string currentString = x == 0 ? baseString : encryptedResults.Last();
+			switch (firstCiphersIdx[x])
+			{
+				case 0:
+					{// Playfair Cipher with Key A
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyAString, true));
+						break;
+					}
+				case 1:
+					{// Playfair Cipher with Key B
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyBString, true));
+						break;
+					}
+				case 2:
+					{// Playfair Cipher with Key C
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyCString, true));
+						break;
+					}
+				case 3:
+					{// Playfair Cipher with Key D
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyDString, true));
+						break;
+					}
+				case 4:
+					{// Caesar Cipher with Value A
+						encryptedResults.Add(EncryptUsingCaesar(currentString, valueA));
+						break;
+					}
+				case 5:
+					{// ROT 13 Cipher
+						encryptedResults.Add(EncryptUsingCaesar(currentString, 13));
+						break;
+					}
+				case 6:
+					{// Affine Cipher with Value X
+						encryptedResults.Add(EncryptUsingAffine(currentString, valueX));
+						break;
+					}
+				case 7:
+					{// Atbash Cipher
+						encryptedResults.Add(EncryptUsingAtbash(currentString));
+						break;
+					}
+				case 8:
+					{// Basic Columnar Transposition
+						encryptedResults.Add(EncryptUsingBasicColumnar(currentString, columnalTranspositionLst));
+						break;
+					}
+				case 9:
+					{// Myszkowski Transposition
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----Mysckowski Transposition Preparations----+-", loggingModID);
+						int sumSerNumDigits = bombInfo.GetSerialNumberNumbers().Sum();
+						string selectedKey = myszkowskiKeywords[sumSerNumDigits % 28];
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Myszkowski Transposition, the sum of the serial number digits is {1}, which lands on the keyword: \"{2}\"", loggingModID, sumSerNumDigits, selectedKey);
+						encryptedResults.Add(EncryptUsingMyszkowskiTransposition(currentString, selectedKey));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
+						break;
+					}
+				case 10:
+					{// Anagram Shuffler
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--------Anagram Shuffler Preparations--------+-", loggingModID);
+						int selectedRow = (swapPigpenAndStandard ? 1 : 0) + (swapStandardKeys ? 2 : 0);
+						int baseColIdx = curColorList.IndexOf("Green"), encryptColIdx = curColorList.IndexOf("Magenta");
+
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row Used: {1} ({2}, {3})", loggingModID, selectedRow + 1, swapPigpenAndStandard ? "Pigpen Set at the top" : "Pigpen Set at the bottom", swapStandardKeys ? "Columnar Transposition key is to the right of the Autokey Cipher false keyword" : "Columnar Transposition key is to the left of the Autokey Cipher false keyword");
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Green button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[baseColIdx], anagramValues[selectedRow][baseColIdx]);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Magenta button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[encryptColIdx], anagramValues[selectedRow][encryptColIdx]);
+
+						string[] baseWord = anagramValues[selectedRow][baseColIdx].Split(), encryptWord = anagramValues[selectedRow][encryptColIdx].Split();
+
+						if (baseWord.Length == 2 && !bombInfo.GetSerialNumberLetters().Any(a => "AEIOU".Contains(a)))
+						{
+							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The base key consists of 2 words and there is no vowel in the serial number.", loggingModID);
+							baseWord = baseWord.Reverse().ToArray();
+						}
+						if (encryptWord.Length == 2 && bombInfo.GetBatteryHolderCount() % 2 == 1)
+						{
+							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The encryption key consists of 2 words and there is an odd number of battery holders.", loggingModID);
+							encryptWord = encryptWord.Reverse().ToArray();
+						}
+						string baseWordFinal = baseWord.Join(""), encryptWordFinal = encryptWord.Join("");
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Anagram Shuffler, the base key used is {1} and the encryption key used is {2}", loggingModID, baseWordFinal, encryptWordFinal);
+						encryptedResults.Add(EncryptUsingAnagramShuffler(currentString, baseWordFinal, encryptWordFinal));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
+						break;
+					}
+				case 11:
+					{// Scytale Transposition
+						int portCount = bombInfo.GetPortCount();
+						encryptedResults.Add(EncryptUsingScytaleTransposition(currentString, portCount % 4 + 2));
+						break;
+					}
+				case 12:
+					{// Autokey Cipher
+						string encryptionKey = useEven ? wordSearchWordsEven[randomIdx] : wordSearchWordsOdd[randomIdx];
+						encryptedResults.Add(EncryptUsingAutoKeyCaesarCipher(currentString, encryptionKey, true));
+						break;
+					}
+				case 13:
+					{// Four Square Cipher
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--------Four Square Cipher Preparations--------+-", loggingModID);
+
+						bool[] trueRules =
+						{
+							bombInfo.GetBatteryCount() == 3,
+							bombInfo.GetPortCount() == 2,
+							bombInfo.IsIndicatorPresent(Indicator.BOB),
+							false,
+							bombInfo.GetIndicators().Count() % 2 == 1,
+							bombInfo.IsIndicatorPresent(Indicator.FRK),
+							bombInfo.GetSerialNumberNumbers().FirstOrDefault() % 2 == 1,
+							bombInfo.GetIndicators().Count() == 2,
+							true,
+							bombInfo.GetSerialNumberLetters().Count() >= 3,
+							bombInfo.GetIndicators().Count() < 2,
+							true,
+							!bombInfo.GetSerialNumberNumbers().Any(a => new int[] { 0, 2, 4, 6, 8 }.Contains(a)),
+							bombInfo.GetModuleIDs().Count() > 30,
+							bombInfo.GetBatteryHolderCount() < 3,
+						};
+						string[] possibleStrings = {
+							"NZYIFSUJWBDGVCAHMXTKLQEPOR",
+							"AOXBRYGHWFNLDMJQVZSKCTUPEI",
+							"ZPDYVKAUQWMCTLXJNHSGOFEIRB",
+							"RYCBENFZVQTSLWPXMKAGIHJUDO",
+							"ALDNUBSTVRXZOWFCIHEJGPQYKM",
+							"OMRSNCGTZYDFQAVPIBXHELKUJW",
+							"UHKTLEPQNJMIZOCDRWVSXFBAYG",
+							"EBUYZLRCDXWOKQIGTAMSNPHVFJ",
+							"YQMGRPFHSUNCEZTABVWKLDJIOX",
+							"XBOJNYQUZFVALTKPGCWESRHIMD",
+							"TWGCYNBXQKAUDZEJIMROSLHFVP",
+							"KTPQBJCEISAYZNOUXGMRDWLHVF",
+							"DXUAGEHMCJTOQSLRWPFVZBINKY",
+							"CBDJUHOVLFIKSXPZRWQGETYAMN",
+							"JIYEPUCAFKGNOQBWZDVLXMRTSH",
+						};
+						int[] trueIdxs = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }.Where(a => trueRules[a]).ToArray(),
+							falseIdxs = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }.Where(a => !trueRules[a]).ToArray();
+						int idxFirstTrue = trueIdxs.FirstOrDefault(), idxLastFalse = falseIdxs.LastOrDefault();
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The following rules from Reverse Alphabetize (At 0 solves, 0 strikes) are true: [ {1} ]", loggingModID, trueIdxs.Select(a => a + 1).Join(", "));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The following rules from Reverse Alphabetize (At 0 solves, 0 strikes) are false: [ {1} ]", loggingModID, falseIdxs.Select(a => a + 1).Join(", "));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The first true rule is in row {1}", loggingModID, idxFirstTrue + 1);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The last false rule is in row {1}", loggingModID, idxLastFalse + 1);
+						List<int> modifiedTrueInts = trueIdxs.ToList();
+						while (modifiedTrueInts.Count > 2)
+						{
+							modifiedTrueInts.Remove(modifiedTrueInts.Max());
+							modifiedTrueInts.Remove(modifiedTrueInts.Min());
+						}
+						string encryptionStringA = "";
+						if (modifiedTrueInts.Count == 1)
+						{
+							int medianVal = modifiedTrueInts.Single();
+							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon reaching a single number, the median row used is row {1}", loggingModID, medianVal + 1);
+							encryptionStringA = possibleStrings[medianVal];
+						}
+						else if (modifiedTrueInts.Sum() % 2 == 0)
+						{
+							int medianVal = modifiedTrueInts.Sum() / 2;
+							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon reaching to a pair of numbers, the median row used is row {1}", loggingModID, medianVal + 1);
+							encryptionStringA = possibleStrings[medianVal];
+						}
+						else
+							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon reaching to a pair of numbers, the median row does not exist.", loggingModID);
+
+						encryptedResults.Add(EncryptUsingFourSquare(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), encryptionStringA, possibleStrings[idxFirstTrue], possibleStrings[idxLastFalse], fourSquareKey, true));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-----------------------------------------------+-", loggingModID);
+						break;
+					}
+				case 14:
+					{// Redefence Transposition
+						encryptedResults.Add(EncryptUsingRedefenceTranspositon(currentString, columnalTranspositionLst));
+						break;
+					}
+			}
+		}
+		for (int y = encryptedResults.Count - 1; y >= 0; y--)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After {2}: {1}", loggingModID, encryptedResults[y], baseCipherList[firstCiphersIdx[y]]);
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
+		displayPigpenText = FitToScreen(encryptedResults.Any() ? encryptedResults.Last() : splittedInstructions.Join(""), 13);
+		StartCoroutine(TypePigpenText(encryptedResults.Any() ? encryptedResults.Last() : splittedInstructions.Join("")));
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: --------------------------------------------------------", loggingModID);
+	}
+	// End Legacy Unfair's Cruel Revenge Handling
+	void PrepModule()
+	{
+		StartCoroutine(IndicatorCoreHandlerExtraScreen.HandleIndicatorModification(4));
+		idxColorList.Shuffle();
+		List<string> curColorList = idxColorList.Select(a => baseColorList[a]).ToList();
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: A lot of things have been changed recently. You may also notice fewer condtions being applied. You are currently using the newer ruleset for Unfair's Cruel Revenge.", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Button colors in clockwise order (starting on the NW button): {1}", loggingModID, curColorList.Join(", "));
+		StartCoroutine(HandleStartUpAnim());
+		//StartCoroutine(TypePigpenText(FitToScreen("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM",13)));
+		mainDisplay.text = "";
+		// Basic Columnar Transposition Set
+		var possibleSizes = Enumerable.Range(2, 6);
+		columnalTranspositionLst = Enumerable.Range(0, possibleSizes.PickRandom()).ToArray();
+		columnalTranspositionLst.Shuffle();
+		// Extra Pigpen Key
+		for (int x = 0; x < 12; x++)
+		{
+			fourSquareKey += baseAlphabet.PickRandom();
+		}
+
+		// Autokey Keyword Mislead
+		int randomIdx = uernd.Range(0, wordSearchWordsEven.Length);
+		bool useEven = uernd.Range(0, 2) == 1;
+		selectedWord = useEven ? wordSearchWordsOdd[randomIdx] : wordSearchWordsEven[randomIdx];
+		uCipherWord = uCipherWordBank.allStrings.PickRandom();
+
+		idxCurModIDDisplay = uernd.Range(0, 3);
+		idxCurStrikeDisplay = uernd.Range(0, 3);
+		swapPigpenAndStandard = uernd.Range(0, 2) == 1;
+		swapStandardKeys = uernd.Range(0, 2) == 1;
+		// Generate Key A
+		var base24Keys = base36Reference.Keys.Take(24);
+        for (var x = 0; x < 7; x++)
+        {
+			keyABaseKey += base24Keys.PickRandom();
+		}
+		
 
 
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
@@ -424,421 +1000,634 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		int idxStartDOW = Array.IndexOf(possibleDays, DateTime.Now.DayOfWeek);
 		string keyAString = ObtainKeyA();
 		string keyBString = keyBTable[idxStartDOW, monthOfStart - 1];
-		string keyCString = EncryptUsingPlayfair(keyAString, keyBString);
-		string keyDString = ObtainKeyD();
+		string keyCString = ObtainKeyCNew();
 
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key A: {1}", loggingModID, keyAString);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key B: {1}", loggingModID, keyBString);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key C: {1}", loggingModID, keyCString);
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Key D: {1}", loggingModID, keyDString);
 
 		ModifyBaseAlphabet();
+		
+
 
 		// Distinguishing Ciphers
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Which Ciphers Are Used------------", loggingModID);
-		string[] baseCipherList = {
-			"Playfair Cipher (Key A)",
-			"Playfair Cipher (Key B)",
-			"Playfair Cipher (Key C)",
-			"Playfair Cipher (Key D)",
-			"Caesar Cipher (Value A)",
-			"ROT13 Cipher",
-			"Affine Cipher (Value X)",
-			"Atbash Cipher",
-			"Basic Columnar Transposition",
-			"Myszkowski Transposition",
-			"Anagram Shuffler",
-			"Scytale Transposition",
-			"Autokey Cipher",
-			"Four Square Cipher",
-			"Redefence Transposition"
+		Dictionary<int,string> baseCipherList = new Dictionary<int, string>() {
+			{ 0, "Substitution Playfair Cipher (Key A)" },
+			{ 1, "Substitution Playfair Cipher (Key B)" },
+			{ 2, "Substitution Playfair Cipher (Key C)" },
+			{ 3, "Caesar Cipher (Value A)" },
+			{ 4, "ROT13 Cipher" },
+			{ 5, "Affine Cipher (Value X)" },
+			{ 6, "Atbash Cipher" },
+			{ 7, "Basic Columnar Transposition" },
+			{ 8, "Myszkowski Transposition" },
+			{ 9, "Anagram Shuffler" },
+			{ 10, "Scytale Transposition" },
+			{ 11, "Autokey Mechanical Cipher" },
+			{ 12, "Substitution Four Square Cipher" },
+			{ 13, "Redefence Transposition" },
+			{ 14, "Monoalphabetic Substitution" },
+			{ 15, "Modified Alberti Cipher" },
 		};
-		int[] idxCipherList = new int[] { 2, 6, 4, 0, 1, 3, 13, 5, 7, 9, 12, 11, 8, 10, 14 };
+		int[] idxCipherList = baseCipherList.Keys.ToArray();
 		/* The Ciphers are given based on a given set of instructions. Indexes are defined by the following:
-		 * 0, 1, 2, 3 are Playfair Ciphers with keys A, B, C, D respectively.
-		 * 4, 5 are Caesar Cipher with values A and 13 respectively.
-		 * 6 is Affine Cipher with value x.
-		 * 7 is Atbash Cipher
-		 * 8 is Basic Columnar Transposition
-		 * 9 is Myszkowski Transposition
-		 * 10 is Anagram Shuffler
-		 * 11 is Scytale Transposition
-		 * 12 is Autokey Cipher
-		 * 13 is Four Square Cipher
-		 * 14 is Redefence Transposition
+		 * 0, 1, 2 are Playfair Ciphers with keys A, B, C respectively.
+		 * 3, 4 are Caesar Cipher with values A and 13 respectively.
+		 * 5 is Affine Cipher with value x.
+		 * 6 is Atbash Cipher
+		 * 7 is Basic Columnar Transposition
+		 * 8 is Myszkowski Transposition
+		 * 9 is Anagram Shuffler
+		 * 10 is Scytale Transposition
+		 * 11 is Autokey Mechanical Cipher
+		 * 12 is Four Square Cipher
+		 * 13 is Redefence Transposition
+		 * 14 is Monoalphabetic Substitution
+		 * 15 is Modified Alberti Cipher
 		 */
-		List<string> allModIDs = bombInfo.GetModuleIDs();
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Conditions Taken:", loggingModID);
-		if (idxCurModIDDisplay != 2)
-        {
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Module ID is displayed in Broken or Fixed Roman Numerals.", loggingModID);
-			idxCipherList = idxCipherList.OrderBy(a => a == 3 ? 0 : 1).ToArray();
-        }
-		if (idxCurStrikeDisplay == 2)
+		// Remove ambiguity decryption by removing ciphers that contradict with the base rule
+		if (Mathf.Abs(valueX % 13) == 6)
 		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Strike Counter is displayed in Arabic Numerals.", loggingModID);
-			idxCipherList = idxCipherList.OrderBy(a => a == 5 ? 0 : a == 11 ? 2 : 1).ToArray();
-		}
-		if (!allModIDs.Contains("unfairCipher"))
-        {
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Unfair Cipher is not present.", loggingModID);
-			idxCipherList = idxCipherList.OrderBy(a => new int[] { 0, 2, 4 }.Contains(a) ? 1 : 0).ToArray();
-		}
-		if (allModIDs.Contains("orangeCipher"))
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Orange Cipher is present.", loggingModID);
-			idxCipherList = idxCipherList.OrderBy(a => a == 13 ? 0 : 1).ToArray();
-		}
-		if (!allModIDs.Contains("Alphabetize") && allModIDs.Contains("ReverseAlphabetize"))
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Alphabetize is not present but Reverse Alphabetize is.", loggingModID);
-			int idxRT = Array.IndexOf(idxCipherList, 12), idxAB = Array.IndexOf(idxCipherList, 7);
-			int temp = idxCipherList[idxAB];
-			idxCipherList[idxAB] = idxCipherList[idxRT];
-			idxCipherList[idxRT] = temp;
-		}
-		if (allModIDs.Contains("CryptModule"))
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Cryptography is present.", loggingModID);
-			List<int> ciphersEvenPos = new List<int>(), ciphersOddPos = new List<int>();
-			for (int x = 0; x < idxCipherList.Length; x++)
-            {
-				if ((x + 1) % 2 == 0)
-                {
-					ciphersEvenPos.Add(idxCipherList[x]);
-                }
-				else
-                {
-					ciphersOddPos.Add(idxCipherList[x]);
-                }
-            }
-			ciphersEvenPos.Reverse();
-			int curPos = 0;
-			for (int x = 0; x < ciphersEvenPos.Count; x++)
-            {
-				idxCipherList[curPos] = ciphersEvenPos[x];
-				curPos++;
-            }
-			for (int x = 0; x < ciphersOddPos.Count; x++)
-			{
-				idxCipherList[curPos] = ciphersOddPos[x];
-				curPos++;
-			}
-		}
-		if (allModIDs.Contains("AnagramsModule"))
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Anagrams is present.", loggingModID);
-			idxCipherList = idxCipherList.OrderBy(a => a == 10 ? 0 : 1).ToArray();
-		}
-		if (allModIDs.Contains("WordScrambleModule"))
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Word Scramble is present.", loggingModID);
-			int temp = idxCipherList[2];
-			idxCipherList[2] = idxCipherList[idxCipherList.Length - 3];
-			idxCipherList[idxCipherList.Length - 3] = temp;
-		}
-		if (allModIDs.Contains("blackCipher"))
-        {
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Black Cipher is present.", loggingModID);
-			int idxRT = Array.IndexOf(idxCipherList, 14), firstId = idxCipherList.FirstOrDefault();
-			idxCipherList[idxRT] = firstId;
-			idxCipherList[0] = 14;
-
-			if (columnalTranspositionLst.Length <= 3)
-            {
-				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Columnar Transposition key has 3 or fewer numbers.", loggingModID);
-				int lastId = idxCipherList.LastOrDefault(), idxBCT = Array.IndexOf(idxCipherList, 8);
-				idxCipherList[idxBCT] = lastId;
-                idxCipherList[idxCipherList.Length - 1] = 8;
-			}
-		}
-		if (curColorList[2] == "Yellow")
-        {
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The NE colored button is Yellow.", loggingModID);
-			IEnumerable<int> firstFour = idxCipherList.Take(4);
-			idxCipherList = idxCipherList.OrderBy(a => firstFour.Contains(a) ? 1 : 0).ToArray();
-		}
-		if (Mathf.Abs(curColorList.IndexOf("Red") - curColorList.IndexOf("Cyan")) == 3)
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red is diametrically opposite to Cyan.", loggingModID);
-			int idxR13 = Array.IndexOf(idxCipherList, 5), idxAS = Array.IndexOf(idxCipherList, 10), idxBCT = Array.IndexOf(idxCipherList, 8), idxMT = Array.IndexOf(idxCipherList, 9);
-			int temp = idxCipherList[idxMT];
-			idxCipherList[idxMT] = idxCipherList[idxR13];
-			idxCipherList[idxR13] = temp;
-			temp = idxCipherList[idxBCT];
-			idxCipherList[idxBCT] = idxCipherList[idxAS];
-			idxCipherList[idxAS] = temp;
-		}
-		if (curColorList.IndexOf("Yellow") < 3 && curColorList.IndexOf("Blue") < 3)
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Yellow and Blue are both on the upper half.", loggingModID);
-			int lastOne = idxCipherList.Last();
-			idxCipherList = idxCipherList.OrderBy(a => a == lastOne ? 0 : 1).ToArray();
-		}
-		if (curColorList.IndexOf("Yellow") >= 3 && curColorList.IndexOf("Blue") >= 3)
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Yellow and Blue are both on the lower half.", loggingModID);
-			int firstOne = idxCipherList.First();
-			idxCipherList = idxCipherList.OrderBy(a => a == firstOne ? 1 : 0).ToArray();
-		}
-		if (allModIDs.Contains("unfairsRevenge"))
-        {
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Unfair's Revenge is present.", loggingModID);
-            int stepsToCyan = 0;
-			while (curColorList[stepsToCyan] != "Cyan" && stepsToCyan < curColorList.Count)
-				stepsToCyan++;
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: It takes {1} steps to reach Cyan, starting from the NW colored button and going CW.", loggingModID, stepsToCyan);
-			for (int x = 0; x < stepsToCyan; x++)
-            {
-				int firstOne = idxCipherList.First();
-				idxCipherList = idxCipherList.OrderBy(a => a == firstOne ? 1 : 0).ToArray();
-			}
-		}
-		if (valueX % 13 == 6)
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Value X is 13n + 6.", loggingModID);
-			int idxAff = Array.IndexOf(idxCipherList, 6), idxAB = Array.IndexOf(idxCipherList, 7);
-			int temp = idxCipherList[idxAff];
-			idxCipherList[idxAff] = idxCipherList[idxAB];
-			idxCipherList[idxAB] = temp;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Value X is 13n + 6. Affine Cipher will NOT show up as a possible cipher to prevent ambiguity.", loggingModID);
 			idxCipherList = idxCipherList.Where(a => a != 6).ToArray();
 		}
-
-		if (valueA % 26 == 0)
-		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Value A is a multiple of 26.", loggingModID);
-			
-			int idxR13 = Array.IndexOf(idxCipherList, 5), idxCC = Array.IndexOf(idxCipherList, 4);
-			int temp = idxCipherList[idxR13];
-			idxCipherList[idxR13] = idxCipherList[idxCC];
-			idxCipherList[idxCC] = temp;
-			idxCipherList = idxCipherList.Where(a => a != 4).ToArray();
-		}
-
-
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The final order of the Cipher List is the following:", loggingModID);
-		for (int x = 0; x < idxCipherList.Length; x++)
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2}: {1}", loggingModID, baseCipherList[idxCipherList[x]], x + 1);
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
-
 		// Generate non-conflicting instructions.
 		do
 		{
 			splittedInstructions.Clear();
 			GenerateInstructions();
 		}
-		while (splittedInstructions.Select(a => a.Replace(baseAlphabet[9], baseAlphabet[8])).Distinct().Count() != 6);
-		// For each splitted instruction, replace any (10th letters) with (9th letters) and check if they are distinct to each other to have a length of 6.
+		while (splittedInstructions.Distinct().Count() != 6);
+		// Decide what ciphers should be used and how the messages should be encrypted.
+		int cipherIdxEach, sharedCipherIdxCount, splitCount;
+		string[] splittedMessages;
+		var activationTime = bombInfo.GetTime();
+		var displayTime = bombInfo.GetFormattedTime();
+		var zenModeDetected = ZenModeActive;
+		var timeModeDetected = TimeModeActive;
+		string baseString = splittedInstructions.Join("");
+		if (timeModeDetected)
+        {
+			cipherIdxEach = 2;
+			sharedCipherIdxCount = 0;
+			splitCount = 2;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The bomb has started in Time Mode. Using 2 sets of 2 ciphers with no shared ciphers.", loggingModID);
+		}
+		else if (zenModeDetected)
+		{
+			cipherIdxEach = 3;
+			sharedCipherIdxCount = 1;
+			splitCount = 2;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The bomb has started in Zen Mode. Using 2 sets of 3 ciphers with 1 shared cipher.", loggingModID);
+		}
+		else if (activationTime >= 1800)
+		{
+			cipherIdxEach = 3;
+			sharedCipherIdxCount = 1;
+			splitCount = 2;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The bomb has started with 25:00 - 34:59 remaining. ({1} shown) Using 2 sets of 3 ciphers with 1 shared cipher.", loggingModID, displayTime);
+		}
+		else if (activationTime >= 1350)
+		{
+			cipherIdxEach = 2;
+			sharedCipherIdxCount = 0;
+			splitCount = 2;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The bomb has started with 15:00 - 24:59 remaining. ({1} shown) Using 2 sets of 2 ciphers with no shared ciphers.", loggingModID, displayTime);
+		}
+		else if (activationTime >= 900)
+		{
+			cipherIdxEach = 3;
+			sharedCipherIdxCount = 0;
+			splitCount = 1;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The bomb has started with 10:00 - 14:59 remaining. ({1} shown) Using 1 set of 3 ciphers.", loggingModID, displayTime);
+		}
+		else if (activationTime >= 450)
+		{
+			cipherIdxEach = 2;
+			sharedCipherIdxCount = 0;
+			splitCount = 1;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The bomb has started with 5:00 - 9:59 remaining. ({1} shown) Using 1 set of 2 ciphers.", loggingModID, displayTime);
+		}
+		else
+		{
+			cipherIdxEach = 1;
+			sharedCipherIdxCount = 0;
+			splitCount = 1;
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The bomb has started with 0:00 - 4:59 remaining. ({1} shown) Using 1 set of 1 cipher.", loggingModID, displayTime);
+		}
+		splittedMessages = new string[splitCount];
 
+		var baseLength = baseString.Length / splittedMessages.Length;
+		for (var x = 0; x < splittedMessages.Length; x++)
+        {
+			
+			var curSkipPos = baseLength * x;
+			if (x == splittedMessages.Length - 1)
+				splittedMessages[x] = baseString.Skip(curSkipPos).Join("");
+			else
+				splittedMessages[x] = baseString.Skip(curSkipPos).Take(baseLength).Join("");
+		}
+		//Debug.Log(splittedMessages.Join(","));
+		// Perform an uneven split if there are 2 sets of ciphers.
+		if (splitCount == 2)
+        {
+			if ((curColorList.IndexOf("Yellow") < 3 && curColorList.IndexOf("Blue") < 3) || (curColorList.IndexOf("Yellow") >= 3 && curColorList.IndexOf("Blue") >= 3))
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Yellow and Blue are both on the upper/lower half. A 10-8 split has been performed on the base message.", loggingModID);
+				string[] rHalfSet = new[] { splittedMessages[1].Substring(0, 1), splittedMessages[1].Substring(1) };
+				splittedMessages[0] += rHalfSet[0];
+				splittedMessages[1] = rHalfSet[1];
+			}
+			else
+            {
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Yellow and Blue are not both on the upper/lower half. A 8-10 split has been performed on the base message.", loggingModID);
+				string[] lHalfSet = new[] { splittedMessages[0].Substring(0, 8), splittedMessages[0].Substring(8) };
+				splittedMessages[1] = lHalfSet[1] + splittedMessages[1];
+				splittedMessages[0] = lHalfSet[0];
+			}
+		}
+		//Debug.Log(splittedMessages.Join(","));
+		// Create a cipher code used to obtain the encryptions.
+		int[][] cipherIdxesAll = new int[splitCount][];
+        do
+        {
+            idxCipherList.Shuffle();
+            int[] sharedCipherIdxes = idxCipherList.Take(sharedCipherIdxCount).ToArray();
+            for (var x = 0; x < cipherIdxesAll.Length; x++)
+            {
+                cipherIdxesAll[x] = sharedCipherIdxes.Concat(idxCipherList.Skip(sharedCipherIdxCount + x * (cipherIdxEach - sharedCipherIdxCount)).Take(cipherIdxEach - sharedCipherIdxCount)).ToArray();
+            }
+        }
+		while (idxCipherList.Take(cipherIdxEach * splitCount - sharedCipherIdxCount).Count(n => new[] { 0, 1, 2, 12 }.Contains(n)) > 1);
+		// Limit the number of polybius square ciphers to 1 to prevent very annoying ambiguities
+		encodingDisplay = "";
+		for (int x = 0; x < cipherIdxesAll.Length; x++)
+		{
+			for (int y = 0; y < cipherIdxesAll[x].Length; y++)
+			{
+				foreach (var aPair in base36Reference)
+				{
+					if (aPair.Value == cipherIdxesAll[x][y])
+					{
+						encodingDisplay += aPair.Key;
+						break;
+					}
+				}
+			}
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Required Ciphers to Disarm: ", loggingModID);
+		for (int y = 0; y < cipherIdxesAll.Length; y++)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Part {1}/{2}", loggingModID, y + 1, cipherIdxesAll.Length);
+			for (int x = 0; x < cipherIdxesAll[y].Length; x++)
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2}: {1}", loggingModID, baseCipherList[cipherIdxesAll[y][x]], x + 1);
+			}
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: This will be displayed as the following digits: {1}", loggingModID, encodingDisplay);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
+		
 
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -----------------------Encrypting-----------------------", loggingModID);
 		// The Encryption Format
-		List<int> firstCiphersIdx = idxCipherList.Take(5).ToList();
-		List<string> encryptedResults = new List<string>();
+		List<string>[] groupedEncryptedResults = new List<string>[splitCount];
+		List<int> preppedIdxes = new List<int>();
 		string[] directionSamples = { "NW", "N", "NE", "SE", "S", "SW" };
-		string baseString = splittedInstructions.Join("");
-		for (int x = 0; x < firstCiphersIdx.Count; x++)
+		var shuffleSubstitutionKeys = true;
+		for (int x = 0; x < cipherIdxEach; x++)
         {
-			string currentString = x == 0 ? baseString : encryptedResults.Last();
-			switch (firstCiphersIdx[x])
+			var baseAlphabetNot10thLetters = baseAlphabet.Take(9).Union(baseAlphabet.Skip(10));
+			if (shuffleSubstitutionKeys)
 			{
-				case 0:
-                    {// Playfair Cipher with Key A
-						encryptedResults.Add(EncryptUsingPlayfair(currentString, keyAString, true));
-						break;
-                    }
-				case 1:
-					{// Playfair Cipher with Key B
-						encryptedResults.Add(EncryptUsingPlayfair(currentString, keyBString, true));
-						break;
-					}
-				case 2:
-					{// Playfair Cipher with Key C
-						encryptedResults.Add(EncryptUsingPlayfair(currentString, keyCString, true));
-						break;
-					}
-				case 3:
-					{// Playfair Cipher with Key D
-						encryptedResults.Add(EncryptUsingPlayfair(currentString, keyDString, true));
-						break;
-					}
-				case 4:
-					{// Caesar Cipher with Value A
-						encryptedResults.Add(EncryptUsingCaesar(currentString, valueA));
-						break;
-					}
-				case 5:
-					{// ROT 13 Cipher
-						encryptedResults.Add(EncryptUsingCaesar(currentString, 13));
-						break;
-					}
-				case 6:
-                    {// Affine Cipher with Value X
-						encryptedResults.Add(EncryptUsingAffine(currentString, valueX));
-						break;
-                    }
-				case 7:
-					{// Atbash Cipher
-						encryptedResults.Add(EncryptUsingAtbash(currentString));
-						break;
-					}
-				case 8:
-					{// Basic Columnar Transposition
-						encryptedResults.Add(EncryptUsingBasicColumnar(currentString, columnalTranspositionLst));
-						break;
-					}
-				case 9:
-					{// Myszkowski Transposition
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----Mysckowski Transposition Preparations----+-", loggingModID);
-						int sumSerNumDigits = bombInfo.GetSerialNumberNumbers().Sum();
-						string selectedKey = myszkowskiKeywords[sumSerNumDigits % 28];
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Myszkowski Transposition, the sum of the serial number digits is {1}, which lands on the keyword: \"{2}\"", loggingModID,sumSerNumDigits, selectedKey);
-						encryptedResults.Add(EncryptUsingMyszkowskiTransposition(currentString, selectedKey));
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
-						break;
-                    }
-				case 10:
-                    {// Anagram Shuffler
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--------Anagram Shuffler Preparations--------+-", loggingModID);
-						int selectedRow = (swapPigpenAndStandard ? 1 : 0) + (swapStandardKeys ? 2 : 0);
-						int baseColIdx = curColorList.IndexOf("Green"), encryptColIdx = curColorList.IndexOf("Magenta");
-
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row Used: {1} ({2}, {3})", loggingModID, selectedRow + 1, swapPigpenAndStandard ? "Pigpen Set at the top" : "Pigpen Set at the bottom", swapStandardKeys ? "Columnar Transposition key is to the right of the Autokey Cipher false keyword" : "Columnar Transposition key is to the left of the Autokey Cipher false keyword");
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Green button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[baseColIdx], anagramValues[selectedRow][baseColIdx]);
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Magenta button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[encryptColIdx], anagramValues[selectedRow][encryptColIdx]);
-
-						string[] baseWord = anagramValues[selectedRow][baseColIdx].Split(), encryptWord = anagramValues[selectedRow][encryptColIdx].Split();
-						
-						if (baseWord.Length == 2 && !bombInfo.GetSerialNumberLetters().Any(a => "AEIOU".Contains(a)))
-                        {
-							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The base key consists of 2 words and there is no vowel in the serial number.", loggingModID);
-							baseWord = baseWord.Reverse().ToArray();
-                        }
-						if (encryptWord.Length == 2 && bombInfo.GetBatteryHolderCount() % 2 == 1)
-                        {
-							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The encryption key consists of 2 words and there is an odd number of battery holders.", loggingModID);
-							encryptWord = encryptWord.Reverse().ToArray();
-                        }
-						string baseWordFinal = baseWord.Join(""), encryptWordFinal = encryptWord.Join("");
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Anagram Shuffler, the base key used is {1} and the encryption key used is {2}", loggingModID, baseWordFinal, encryptWordFinal);
-						encryptedResults.Add(EncryptUsingAnagramShuffler(currentString, baseWordFinal, encryptWordFinal));
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
-						break;
-                    }
-				case 11:
-                    {// Scytale Transposition
-						int portCount = bombInfo.GetPortCount();
-						encryptedResults.Add(EncryptUsingScytaleTransposition(currentString, portCount % 4 + 2));
-						break;
-                    }
-				case 12:
-                    {// Autokey Cipher
-						string encryptionKey = useEven ? wordSearchWordsEven[randomIdx] : wordSearchWordsOdd[randomIdx];
-						encryptedResults.Add(EncryptUsingAutoKeyCipher(currentString, encryptionKey, true));
-						break;
-                    }
-				case 13:
-                    {// Four Square Cipher
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--------Four Square Cipher Preparations--------+-", loggingModID);
-						
-						bool[] trueRules =
-						{
-							bombInfo.GetBatteryCount() == 3,
-							bombInfo.GetPortCount() == 2,
-							bombInfo.IsIndicatorPresent(Indicator.BOB),
-							false,
-							bombInfo.GetIndicators().Count() % 2 == 1,
-							bombInfo.IsIndicatorPresent(Indicator.FRK),
-							bombInfo.GetSerialNumberNumbers().FirstOrDefault() % 2 == 1,
-							bombInfo.GetIndicators().Count() == 2,
-							true,
-							bombInfo.GetSerialNumberLetters().Count() >= 3,
-							bombInfo.GetIndicators().Count() < 2,
-							true,
-							!bombInfo.GetSerialNumberNumbers().Any(a => new int[] { 0, 2, 4, 6, 8 }.Contains(a)),
-							bombInfo.GetModuleIDs().Count() > 30,
-							bombInfo.GetBatteryHolderCount() < 3,
-						};
-						string[] possibleStrings = {
-							"NZYIFSUJWBDGVCAHMXTKLQEPOR",
-							"AOXBRYGHWFNLDMJQVZSKCTUPEI",
-							"ZPDYVKAUQWMCTLXJNHSGOFEIRB",
-							"RYCBENFZVQTSLWPXMKAGIHJUDO",
-							"ALDNUBSTVRXZOWFCIHEJGPQYKM",
-							"OMRSNCGTZYDFQAVPIBXHELKUJW",
-							"UHKTLEPQNJMIZOCDRWVSXFBAYG",
-							"EBUYZLRCDXWOKQIGTAMSNPHVFJ",
-							"YQMGRPFHSUNCEZTABVWKLDJIOX",
-							"XBOJNYQUZFVALTKPGCWESRHIMD",
-							"TWGCYNBXQKAUDZEJIMROSLHFVP",
-							"KTPQBJCEISAYZNOUXGMRDWLHVF",
-							"DXUAGEHMCJTOQSLRWPFVZBINKY",
-							"CBDJUHOVLFIKSXPZRWQGETYAMN",
-							"JIYEPUCAFKGNOQBWZDVLXMRTSH",
-						};
-						int[] trueIdxs = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }.Where(a => trueRules[a]).ToArray(),
-							falseIdxs = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }.Where(a => !trueRules[a]).ToArray();
-						int idxFirstTrue = trueIdxs.FirstOrDefault(), idxLastFalse = falseIdxs.LastOrDefault();
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The following rules from Reverse Alphabetize (At 0 solves, 0 strikes) are true: [ {1} ]", loggingModID, trueIdxs.Select(a => a + 1).Join(", "));
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The following rules from Reverse Alphabetize (At 0 solves, 0 strikes) are false: [ {1} ]", loggingModID, falseIdxs.Select(a => a + 1).Join(", "));
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The first true rule is in row {1}", loggingModID, idxFirstTrue + 1);
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The last false rule is in row {1}", loggingModID, idxLastFalse + 1);
-						List<int> modifiedTrueInts = trueIdxs.ToList();
-						while (modifiedTrueInts.Count > 2)
-                        {
-							modifiedTrueInts.Remove(modifiedTrueInts.Max());
-							modifiedTrueInts.Remove(modifiedTrueInts.Min());
-						}
-						string encryptionStringA = "";
-						if (modifiedTrueInts.Count == 1)
-						{
-							int medianVal = modifiedTrueInts.Single();
-							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon reaching a single number, the median row used is row {1}", loggingModID, medianVal + 1);
-							encryptionStringA = possibleStrings[medianVal];
-						}
-						else if (modifiedTrueInts.Sum() % 2 == 0)
-						{
-							int medianVal = modifiedTrueInts.Sum() / 2;
-							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon reaching to a pair of numbers, the median row used is row {1}", loggingModID, medianVal + 1);
-							encryptionStringA = possibleStrings[medianVal];
-						}
-						else
-							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon reaching to a pair of numbers, the median row does not exist.", loggingModID);
-
-						encryptedResults.Add(EncryptUsingFourSquare(currentString, encryptionStringA, possibleStrings[idxFirstTrue], possibleStrings[idxLastFalse], extraKey, true));
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-----------------------------------------------+-", loggingModID);
-						break;
-                    }
-				case 14:
-                    {// Redefence Transposition
-						encryptedResults.Add(EncryptUsingRedefenceTranspositon(currentString, columnalTranspositionLst));
-						break;
-                    }
+				substitutionLetters = "";
+				var lastEncryptedString = groupedEncryptedResults.Select(a => a != null && a.Any() ? a.Last() : "").Join("");
+				if (string.IsNullOrEmpty(lastEncryptedString))
+					lastEncryptedString = baseString;
+				for (int y = 0; y < lastEncryptedString.Length; y++)
+				{
+					char selectedLetter = baseAlphabetNot10thLetters.PickRandom();
+					while (selectedLetter == lastEncryptedString[y]) // Prevent overlapping the substitution letters in that given position.
+						selectedLetter = baseAlphabetNot10thLetters.PickRandom();
+					substitutionLetters += selectedLetter;
+				}
 			}
-        }
-		for (int y = encryptedResults.Count - 1; y >= 0; y--)
+			var resultingFinalSubstitutionString = "";
+			for (var curIdxSelected = 0; curIdxSelected < splitCount; curIdxSelected++)
+			{
+				var startSubstitutionIdx = splittedMessages.Take(curIdxSelected).Select(a => a.Length).Sum();
+				string curSubstitutionLetters = substitutionLetters.Substring(startSubstitutionIdx);
+				string currentString = splittedMessages[curIdxSelected];
+				if (groupedEncryptedResults[curIdxSelected] == null)
+					groupedEncryptedResults[curIdxSelected] = new List<string>();
+				else
+					currentString = groupedEncryptedResults[curIdxSelected].LastOrDefault();
+				var curCipherIdx = cipherIdxesAll[curIdxSelected][x];
+				switch (curCipherIdx)
+				{
+					case 0:
+						{// Playfair Cipher with Key A
+						 // Modify the string by substituting the 10th letters
+							string modifiedString = "";
+							var idx10thLetters = new List<int>();
+							for (var y = 0; y < currentString.Length; y++)
+							{
+								var curChar = currentString[y];
+								if (curChar == baseAlphabet[9])
+								{
+									modifiedString += curSubstitutionLetters[y];
+									idx10thLetters.Add(y);
+								}
+								else
+									modifiedString += curChar;
+							}
+							var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyAString, !preppedIdxes.Contains(0));
+							var resultToAdd = "";
+							for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
+							{
+								if (idx10thLetters.Contains(y))
+								{
+									resultToAdd += baseAlphabet[9];
+									resultingFinalSubstitutionString += resultingEncryption[y];
+								}
+								else
+								{
+									resultToAdd += resultingEncryption[y];
+									resultingFinalSubstitutionString += curSubstitutionLetters[y];
+								}
+							}
+							groupedEncryptedResults[curIdxSelected].Add(resultToAdd);
+							shuffleSubstitutionKeys = false;
+							break;
+						}
+					case 1:
+						{// Playfair Cipher with Key B
+						 // Modify the string by substituting the 10th letters
+							string modifiedString = "";
+							var idx10thLetters = new List<int>();
+							for (var y = 0; y < currentString.Length; y++)
+							{
+								var curChar = currentString[y];
+								if (curChar == baseAlphabet[9])
+								{
+									modifiedString += curSubstitutionLetters[y];
+									idx10thLetters.Add(y);
+								}
+								else
+									modifiedString += curChar;
+							}
+							var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyBString, !preppedIdxes.Contains(0));
+							var resultToAdd = "";
+							for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
+							{
+								if (idx10thLetters.Contains(y))
+								{
+									resultToAdd += baseAlphabet[9];
+									resultingFinalSubstitutionString += resultingEncryption[y];
+								}
+								else
+								{
+									resultToAdd += resultingEncryption[y];
+									resultingFinalSubstitutionString += curSubstitutionLetters[y];
+								}
+							}
+							groupedEncryptedResults[curIdxSelected].Add(resultToAdd);
+							shuffleSubstitutionKeys = false;
+							break;
+						}
+					case 2:
+						{// Playfair Cipher with Key C
+						 // Modify the string by substituting the 10th letters
+							string modifiedString = "";
+							var idx10thLetters = new List<int>();
+							for (var y = 0; y < currentString.Length; y++)
+							{
+								var curChar = currentString[y];
+								if (curChar == baseAlphabet[9])
+								{
+									modifiedString += curSubstitutionLetters[y];
+									idx10thLetters.Add(y);
+								}
+								else
+									modifiedString += curChar;
+							}
+							var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyBString, !preppedIdxes.Contains(0));
+							var resultToAdd = "";
+							for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
+							{
+								if (idx10thLetters.Contains(y))
+								{
+									resultToAdd += baseAlphabet[9];
+									resultingFinalSubstitutionString += resultingEncryption[y];
+								}
+								else
+								{
+									resultToAdd += resultingEncryption[y];
+									resultingFinalSubstitutionString += curSubstitutionLetters[y];
+								}
+							}
+							groupedEncryptedResults[curIdxSelected].Add(resultToAdd);
+							shuffleSubstitutionKeys = false;
+							break;
+						}
+					case 3:
+						{// Caesar Cipher with Value A
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingCaesar(currentString, valueA));
+							goto default;
+						}
+					case 4:
+						{// ROT 13 Cipher
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingCaesar(currentString, 13));
+							goto default;
+						}
+					case 5:
+						{// Affine Cipher with Value X
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingAffine(currentString, valueX));
+							goto default;
+						}
+					case 6:
+						{// Atbash Cipher
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingAtbash(currentString));
+							goto default;
+						}
+					case 7:
+						{// Basic Columnar Transposition
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingBasicColumnar(currentString, columnalTranspositionLst, !preppedIdxes.Contains(7)));
+							goto default;
+						}
+					case 8:
+						{// Myszkowski Transposition
+							if (!preppedIdxes.Contains(8))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----Mysckowski Transposition Preparations----+-", loggingModID);
+							int sumSerNumDigits = bombInfo.GetSerialNumberNumbers().Sum();
+							string selectedKey = myszkowskiKeywords[sumSerNumDigits % 28];
+							if (!preppedIdxes.Contains(8))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Myszkowski Transposition, the sum of the serial number digits is {1}, which lands on the keyword: \"{2}\"", loggingModID, sumSerNumDigits, selectedKey);
+							var keywordAlphabeticalOrder = baseAlphabet.Where(a => selectedKey.Contains(a)).Join("");
+							var numberSet = selectedKey.Select(a => keywordAlphabeticalOrder.IndexOf(a) + 1);
+							if (!preppedIdxes.Contains(8))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Using the modified alphabet the number string obtained from this should be: \"{2}\"", loggingModID, sumSerNumDigits, numberSet.Join(""));
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingMyszkowskiTransposition(currentString, numberSet));
+							if (!preppedIdxes.Contains(8))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
+							goto default;
+						}
+					case 9:
+						{// Anagram Shuffler
+							if (!preppedIdxes.Contains(9))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--------Anagram Shuffler Preparations--------+-", loggingModID);
+							int selectedRow = (swapPigpenAndStandard ? 1 : 0) + (swapStandardKeys ? 2 : 0);
+							int baseColIdx = curColorList.IndexOf("Green"), encryptColIdx = curColorList.IndexOf("Magenta");
+							if (!preppedIdxes.Contains(9))
+							{
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row Used: {1} ({2}, {3})", loggingModID, selectedRow + 1, swapPigpenAndStandard ? "Pigpen Set above the Autokey/Col Trans key" : "Pigpen Set below the Autokey/Col Trans key", swapStandardKeys ? "Columnar Transposition key is to the right of the Autokey Cipher false keyword" : "Columnar Transposition key is to the left of the Autokey Cipher false keyword");
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Green button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[baseColIdx], anagramValues[selectedRow][baseColIdx]);
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The Magenta button is on the {1} which corresponds to base set \"{2}.\"", loggingModID, directionSamples[encryptColIdx], anagramValues[selectedRow][encryptColIdx]);
+							}
+							string[] baseWord = anagramValues[selectedRow][baseColIdx].Split(), encryptWord = anagramValues[selectedRow][encryptColIdx].Split();
+
+							if (baseWord.Length == 2 && !bombInfo.GetSerialNumberLetters().Any(a => "AEIOU".Contains(a)))
+							{
+								if (!preppedIdxes.Contains(9))
+									Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The base key consists of 2 words and there is no vowel in the serial number.", loggingModID);
+								baseWord = baseWord.Reverse().ToArray();
+							}
+							if (encryptWord.Length == 2 && bombInfo.GetBatteryHolderCount() % 2 == 1)
+							{
+								if (!preppedIdxes.Contains(9))
+									Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The encryption key consists of 2 words and there is an odd number of battery holders.", loggingModID);
+								encryptWord = encryptWord.Reverse().ToArray();
+							}
+							string baseWordFinal = baseWord.Join(""), encryptWordFinal = encryptWord.Join("");
+							if (!preppedIdxes.Contains(9))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Anagram Shuffler, the base key used is {1} and the encryption key used is {2}", loggingModID, baseWordFinal, encryptWordFinal);
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingAnagramShuffler(currentString, baseWordFinal, encryptWordFinal));
+							if (!preppedIdxes.Contains(9))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
+							goto default;
+						}
+					case 10:
+						{// Scytale Transposition
+							int portCount = bombInfo.GetPortCount();
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingScytaleTransposition(currentString, portCount % 4 + 2));
+							goto default;
+						}
+					case 11:
+						{// Autokey Mech Cipher
+							string encryptionKey = useEven ? wordSearchWordsEven[randomIdx] : wordSearchWordsOdd[randomIdx];
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingAutoKeyMechCipher(currentString, encryptionKey, !preppedIdxes.Contains(11)));
+							goto default;
+						}
+					case 12:
+						{// Four Square Cipher
+							if (!preppedIdxes.Contains(12))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-------- Substitution Four Square Cipher --------+-", loggingModID);
+							// Modify the string by substituting the 10th letters
+							string modifiedString = "";
+							var idx10thLetters = new List<int>();
+							for (var y = 0; y < currentString.Length; y++)
+							{
+								var curChar = currentString[y];
+								if (curChar == baseAlphabet[9])
+								{
+									modifiedString += curSubstitutionLetters[y];
+									idx10thLetters.Add(y);
+								}
+								else
+									modifiedString += curChar;
+							}
+							var resultingEncryption = EncryptUsingFourSquare(modifiedString, keyAString, keyBString, keyCString, fourSquareKey, !preppedIdxes.Contains(12));
+							var resultToAdd = "";
+							for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
+							{
+								if (idx10thLetters.Contains(y))
+								{
+									resultToAdd += baseAlphabet[9];
+									resultingFinalSubstitutionString += resultingEncryption[y];
+								}
+								else
+								{
+									resultToAdd += resultingEncryption[y];
+									resultingFinalSubstitutionString += curSubstitutionLetters[y];
+								}
+							}
+							groupedEncryptedResults[curIdxSelected].Add(resultToAdd);
+							shuffleSubstitutionKeys = false;
+							if (!preppedIdxes.Contains(12))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-------------------------------------------------+-", loggingModID);
+							goto default;
+						}
+					case 13:
+						{// Redefence Transposition
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingRedefenceTranspositon(currentString, columnalTranspositionLst, !preppedIdxes.Contains(13)));
+							goto default;
+						}
+					case 14:
+						{// Monoalphabetic Substitution
+							if (!preppedIdxes.Contains(14))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--+--+--+--Monoalphabetic Substitution Preparations--+--+--+--+-", loggingModID);
+							var monoalphabeticEncryptString = uCipherWord.Distinct().Join("");
+							if (!preppedIdxes.Contains(14))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Starting word without duplicates: {1}", loggingModID, monoalphabeticEncryptString);
+							if (idxColorList[2] == 1)
+							{
+								monoalphabeticEncryptString = baseAlphabet.Where(a => !uCipherWord.Contains(a)).Join("") + monoalphabeticEncryptString;
+								if (!preppedIdxes.Contains(14))
+									Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The {1} button is Yellow.", loggingModID, directionSamples[2]);
+							}
+							else
+							{
+								monoalphabeticEncryptString += baseAlphabet.Where(a => !uCipherWord.Contains(a)).Join("");
+								if (!preppedIdxes.Contains(14))
+									Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The {1} button is not Yellow.", loggingModID, directionSamples[2]);
+
+							}
+							if (!preppedIdxes.Contains(14))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: As a result, you should get the key: {1}", loggingModID, monoalphabeticEncryptString);
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingMonoalphabeticSubstitution(currentString, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", monoalphabeticEncryptString));
+							if (!preppedIdxes.Contains(14))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-", loggingModID);
+							goto default;
+						}
+					case 15:
+						{// Running Key Alberti Cipher
+							if (!preppedIdxes.Contains(15))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--+--+--+-Running Key Alberti Cipher Preparations-+--+--+--+-", loggingModID);
+							var passageWords = new string[][] {
+							new[] { "THIS","CIPHER","MAY","BE","COMPLICATED","TO","MASTER","THE","FIRST","TIME","AROUND","YOU","WILL",
+								"NEED","TO","USE","THESE","PARAGRAPHS","TO","OBTAIN","THE","KEY","THAT","ENCRYPTED","YOUR","MESSAGE" },
+							new[] { "THE","ALBERTI","WHEEL","WHICH","YOU","WILL","CREATE","CONSISTS","OF","TWO","PARTS","THE","STATIONARY",
+								"WHEEL","OR","STABILIS","AND","THE","MOVING","WHEEL","OR","MOBILIS","TO","CREATE","THE","WHEEL" },
+							new[] { "MAKE","THE","STABILIS","WITH","THE","ENGLISH","ALPHABET","IN","ORDER","THEN","TO","MAKE","THE",
+								"MOBILIS","SEPARATE","THE","MODIFIED","ALPHABET","BY","EVERY","OTHER","LETTER","TO","OBTAIN","TWO","HALVES" },
+							new[] { "IF","RED","IS","DIAMETRICALLY","OPPOSITE","TO","CYAN","REVERSE","THE","FIRST","HALF","AND","SWAP",
+								"THOSE","HALVES","OTHERWISE","SWAP","THE","SECOND","HALF","AND","THEN","COCATENATE","THE","HALVES","TOGETHER" },
+							new[] { "MARK","YOUR","ANCHOR","LETTER","IN","YOUR","MOBILIS","THE","FIRST","LETTER","IN","THE","SERIAL",
+								"NUMBER","IF","THERE","ARE","ANY","OTHERWISE","MARK","A","AS","YOUR","ANCHOR","LETTER","INSTEAD" },
+							new[] { "NOW","TAKE","THE","FIRST","TWO","LETTERS","IN","THE","TWELVE","LETTER","PIGPEN","TEXT","AND",
+								"CONVERT","THEM","INTO","THEIR","ALPHABETICAL","EQUIVALENTS","USING","STEP","TWO","FROM","THIS","MANUAL","PROVIDED" },
+							new[] { "CONVERT","THESE","INTO","THEIR","POSITIONS","IN","THE","MODIFIED","ALPHABET","START","ON","THE","PARAGRAPH",
+								"FROM","THE","FIRST","NUMBER","OBTAINED","WHERE","ONE","OR","FOURTEEN","IS","THE","TOP","PARAGRAPH" },
+							new[] { "USING","THE","SECOND","NUMBER","COUNT","THAT","MANY","WORDS","FROM","THE","PARAGRAPH","YOU","OBTAINED",
+							"EARLIER","TO","OBTAIN","THE","START","OF","YOUR","RUNNING","KEY","ADD","THE","STARTING","WORD" },
+							new[] { "IGNORE","PUNCTUATION","AND","FONT","STYLES","FOR","EACH","WORD","YOU","APPEND","ONTO","YOUR","KEY",
+							"REPEAT","UNTIL","THE","KEY","IS","AS","LONG","OR","LONGER","THAN","YOUR","ENCRYPTED","MESSAGE" },
+							new[] { "EACH","RELEVANT","PARAGRAPH","IN","THIS","PAGE","IS","EXACTLY","TWENTY","SIX","WORDS","LONG","CONTINUE",
+							"TO","THE","FIRST","WORD","OF","THE","NEXT","PARAGRAPH","IF","YOU","REACH","THE","END" },
+							new[] { "TO","DECRYPT","YOUR","MESSAGE","ROTATE","THE","MOBILIS","SO","THAT","THE","ANCHOR","LETTER","IS",
+							"DIRECTLY","BELOW","THE","LETTER","IN","THE","STABILIS","FOR","EACH","LETTER","IN","THE","KEY" },
+							new[] { "EXAMINE","THE","ENCRYPTED","LETTER","IN","YOUR","MOBILIS","TO","GET","YOUR","DECRYPTED","LETTER","IN",
+							"YOUR","STABILIS","IN","THE","SAME","POSITION","REPEAT","UNTIL","YOU","HAVE","YOUR","DECRYPTED","STRING" },
+							new[] { "WHEN","OBTAINING","YOUR","KEY","IF","YOU","REACH","THE","END","OF","THE","LAST","PARAGRAPH",
+							"WRAP","AROUND","TO","THE","FIRST","WORD","OF","THE","FIRST","PARAGRAPH","UPON","REACHING","THIS" },
+							}; // The entire page in the manual on how to decrypt Running Key Alberti Cipher, excluding titles and flavor text.
+							int currentParaIdx = baseAlphabet.IndexOf(fourSquareKey[0]), currentWordIdx = baseAlphabet.IndexOf(fourSquareKey[1]);
+							if (!preppedIdxes.Contains(15))
+							{
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The first letter in the Four Square Key is {1} (Pos {2} in the modified alphabet)", loggingModID, fourSquareKey[0], currentParaIdx + 1);
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The second letter in the Four Square Key is {1} (Pos {2} in the modified alphabet)", loggingModID, fourSquareKey[1], currentWordIdx + 1);
+							}
+							currentParaIdx %= passageWords.Length;
+							if (!preppedIdxes.Contains(15))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Count {1} paragraph(s) and then {2} word(s) in that paragraph to get the start of the running key.", loggingModID, currentParaIdx + 1, currentWordIdx + 1);
+							string encryptedMessage = "";
+							while (encryptedMessage.Length < currentString.Length)
+							{
+
+								encryptedMessage += passageWords[currentParaIdx][currentWordIdx];
+								currentWordIdx++;
+								if (currentWordIdx >= passageWords[currentParaIdx].Length)
+								{
+									currentWordIdx = 0;
+									currentParaIdx++;
+									if (currentParaIdx >= passageWords.Length)
+										currentParaIdx = 0;
+								}
+							}
+							if (!preppedIdxes.Contains(15))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: You should get \"{1}\" as the result of your Running Key.", loggingModID, encryptedMessage);
+							var baseAlphabetHalves = new List<string>();
+							for (var y = 0; y < 2; y++)
+							{
+								string givenHalf = "";
+								var curIdx = y;
+								while (curIdx < baseAlphabet.Length)
+								{
+									givenHalf += baseAlphabet[curIdx];
+									curIdx += 2;
+								}
+								baseAlphabetHalves.Add(givenHalf);
+							}
+							if (Mathf.Abs(curColorList.IndexOf("Red") - curColorList.IndexOf("Cyan")) == 3)
+							{
+								if (!preppedIdxes.Contains(15))
+									Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red and Cyan are diametrically opposite to each other.", loggingModID);
+								baseAlphabetHalves.Reverse();
+							}
+							else if (!preppedIdxes.Contains(15))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red and Cyan are not diametrically opposite to each other.", loggingModID);
+
+							baseAlphabetHalves[1] = baseAlphabetHalves[1].Reverse().Join("");
+							var combinedMobius = baseAlphabetHalves.Join("");
+							var serialNoLetters = bombInfo.GetSerialNumberLetters();
+							if (!preppedIdxes.Contains(15))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Your Mobilis wheel should be: \"{1}\"", loggingModID, combinedMobius);
+							groupedEncryptedResults[curIdxSelected].Add(EncryptUsingAlbertiCipher(currentString, encryptedMessage, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", combinedMobius, combinedMobius.IndexOf(serialNoLetters.Any() ? serialNoLetters.First() : 'A')));
+							if (!preppedIdxes.Contains(15))
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-", loggingModID);
+							goto default;
+						}
+					default:
+                        {
+							Debug.Log(curSubstitutionLetters);
+							Debug.Log(groupedEncryptedResults[curIdxSelected].LastOrDefault());
+							for (var y = 0; y < currentString.Length; y++)
+							{
+								resultingFinalSubstitutionString += curSubstitutionLetters[y];
+							}
+							break;
+                        }
+				}
+				if (!preppedIdxes.Contains(curCipherIdx))
+					preppedIdxes.Add(curCipherIdx);
+				
+			}
+
+		}
+		for (int y = 0; y < groupedEncryptedResults.Length; y++)
 		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After {2}: {1}", loggingModID, encryptedResults[y], baseCipherList[firstCiphersIdx[y]]);
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Part {1}/{2}:", loggingModID, y + 1, groupedEncryptedResults.Length);
+			for (int x = groupedEncryptedResults[y].Count - 1; x >= 0; x--)
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After {2}: {1}", loggingModID, groupedEncryptedResults[y][x], baseCipherList[cipherIdxesAll[y][x]]);
+			}
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Original Message Part {2}: {1}", loggingModID, splittedMessages[y], y + 1);
 		}
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
-		displayPigpenText = FitToScreen(encryptedResults.Any() ? encryptedResults.Last() : splittedInstructions.Join(""), 13);
-		StartCoroutine(TypePigpenText(encryptedResults.Any() ? encryptedResults.Last() : splittedInstructions.Join("")));
+		var displayResult = groupedEncryptedResults.Select(a => a.LastOrDefault()).Join("");
+
+		displayPigpenText = FitToScreen(string.IsNullOrEmpty(displayResult) ? splittedInstructions.Join("") : displayResult, 13);
+		StartCoroutine(TypePigpenText(string.IsNullOrEmpty(displayResult) ? splittedInstructions.Join("") : displayResult));
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: --------------------------------------------------------", loggingModID);
 		// Section for testing purposes. To ensure ciphers and transpositions work as intended
 		/*
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ---------------------Test Encryptions---------------------", loggingModID);
-		string playfairEncryptedString = EncryptUsingPlayfair(baseString, keyCString, true),
-          affineEncryptedString = EncryptUsingAffine(baseString, valueX),
-          caesarEncryptedString = EncryptUsingCaesar(baseString, valueA),
-          columnarTransposedString = EncryptUsingBasicColumnar(baseString, columnalTranspositionLst),
-          scytaleTransposedString = EncryptUsingScytaleTransposition(baseString, 6),
-          myszowkTransposedString = EncryptUsingMyszkowskiTransposition(baseString, "BANANA"),
-          fourSquareString = EncryptUsingFourSquare(baseString, "ALPHA", "BRAVO", "YANKEE", "ZULU", true),
-          anagramShuffledString = EncryptUsingAnagramShuffler(baseString, "EAT", "ATE"),
-          autoKeyEncryptedString = EncryptUsingAutoKeyCipher(baseString, "OMEGA", true),
+		string playfairEncryptedString = EncryptUsingPlayfair(baseString.Replace(baseAlphabet[9], baseAlphabet[8]), keyCString, true),
+		  affineEncryptedString = EncryptUsingAffine(baseString, valueX),
+		  caesarEncryptedString = EncryptUsingCaesar(baseString, valueA),
+		  columnarTransposedString = EncryptUsingBasicColumnar(baseString, columnalTranspositionLst),
+		  scytaleTransposedString = EncryptUsingScytaleTransposition(baseString, 6),
+		  myszowkTransposedString = EncryptUsingMyszkowskiTransposition(baseString, "BANANA"),
+		  myszowkNumberTransposedString = EncryptUsingMyszkowskiTransposition(baseString, new[] { 3, 2, 2, 1 }),
+		  fourSquareString = EncryptUsingFourSquare(baseString.Replace(baseAlphabet[9], baseAlphabet[8]), "ALPHA", "BRAVO", "YANKEE", "ZULU", true),
+		  anagramShuffledString = EncryptUsingAnagramShuffler(baseString, "EAT", "ATE"),
+		  autoKeyEncryptedString = EncryptUsingAutoKeyMechCipher(baseString, "OMEGA", true),
 		  atbashEncryptedString = EncryptUsingAtbash(baseString),
-		  redefenceEncryptedString = EncryptUsingRedefenceTranspositon(baseString, columnalTranspositionLst);
+		  redefenceEncryptedString = EncryptUsingRedefenceTranspositon(baseString, columnalTranspositionLst),
+		  monoalphabeticEncryptedString = EncryptUsingMonoalphabeticSubstitution(baseString, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "QAZWSXEDCRFVTGBYHNUJMIKOLP"),
+		  albertiEncryptedString = EncryptUsingAlbertiCipher(baseString, "HELPMEIMLOSTINVOID", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ACEGIKMOQSUWYZXVTRPNLJHFDB", 10);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Myszkowski Transposed String: {1}", loggingModID, myszowkTransposedString);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Myszkowski Transposed String (With Numbers): {1}", loggingModID, myszowkNumberTransposedString);
         Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Scytale Transposed String: {1}", loggingModID, scytaleTransposedString);
         Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Columnar Transposed String: {1}", loggingModID, columnarTransposedString);
         Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Caesar Encrypted String: {1}", loggingModID, caesarEncryptedString);
@@ -849,10 +1638,117 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
         Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Four Square Encrypted String: {1}", loggingModID, fourSquareString);
         Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Autokey Encrypted String: {1}", loggingModID, autoKeyEncryptedString);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Redefence Encrypted String: {1}", loggingModID, redefenceEncryptedString);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Monoalphabetic Substitution Encrypted String: {1}", loggingModID, monoalphabeticEncryptedString);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Alberti Cipher Encrypted String: {1}", loggingModID, albertiEncryptedString);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------------------", loggingModID);
 		*/
 	}
+	readonly int[] primeFactors = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997 };
+	IEnumerable<int> GetDistinctFactors(int value)
+	{
+		var output = new List<int>();
+		while (value > 1)
+		{
+			var primeDetected = true;
+			if (primeFactors.Contains(value))
+			{
+				output.Add(value);
+				break;
+			}
+			var inRangePrimes = primeFactors.Where(a => a < value);
+			for (var x = 0; x < inRangePrimes.Count(); x++)
+			{
+				var curPrime = inRangePrimes.ElementAt(x);
+				if (value % curPrime == 0)
+				{
+					value /= curPrime;
+					primeDetected = false;
+					output.Add(curPrime);
+					break;
+				}
+			}
+			if (primeDetected)
+			{
+				output.Add(value);
+				break;
+			}
+		}
 
+		return output.Distinct();
+	}
+	string EncryptUsingAlbertiCipher(string input, string key, string stationaryAlphabet, string movableAlphabet, int anchorIdx = 0)
+    {
+		/* 
+		 * Example:
+		 * 
+		 * ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		 * ACEGIKMOQSUWYZXVTRPNLJHFDB
+		 * ^
+		 * Message: ALONEINTHEDARK
+		 * Key:     NIGHTTIMEHOWLS
+		 * 
+		 * Shift the bottom string until the anchor is lined up with the letter of reference above
+		 * ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		 * ZXVTRPNLJHFDBACEGIKMOQSUWY
+		 *              ^
+		 * Alternatively, grab the index of the key letter and move X units left to the alphabet
+		 * after obtaining the position of that letter 
+		 * where X is the distance between the anchor letter in the wheel in the initial state and the referenced letter in the stationary key
+		 * 
+		 * ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		 * ACEGIKMOQSUWYZXVTRPNLJHFDB
+		 * ^ - - - - - -|
+		 * =            ! - - - - - -
+		 * Result of first letter: Z
+		 * 
+		 * ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		 * ACEGIKMOQSUWYZXVTRPNLJHFDB
+		 * ^ - - - |
+		 *    ! - - - =
+		 * ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		 * PNLJHFDBACEGIKMOQSUWYZXVTR
+		 *         ^
+		 * Result of the second letter: G
+		 * 
+		 * ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		 * ACEGIKMOQSUWYZXVTRPNLJHFDB
+		 * ^ - - | ! - - =
+		 * 
+		 * ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		 * LJHFDBACEGIKMOQSUWYZXVTRPN
+		 *       ^
+		 * Result of the third letter: Q
+		 */
+		if (stationaryAlphabet.Length != movableAlphabet.Length)
+			throw new FormatException(string.Format("The unencrypted alphabet and the encrypted alphabet do not have the same length of characters!"));
+
+		string modifiedKey = key.ToString();
+		while (modifiedKey.Length < input.Length)
+		{
+			modifiedKey = (modifiedKey + key).Substring(0, input.Length);
+		}
+		string output = "";
+		for (var x = 0; x < input.Length; x++)
+        {
+
+			output += movableAlphabet[
+				(movableAlphabet.Length + stationaryAlphabet.IndexOf(input[x]) + anchorIdx - stationaryAlphabet.IndexOf(modifiedKey[x]))
+				% movableAlphabet.Length];
+        }
+
+		return output;
+	}
+	string EncryptUsingMonoalphabeticSubstitution(string input, string unencryptedAlphabet, string encryptedAlphabet)
+    {
+		if (unencryptedAlphabet.Length != encryptedAlphabet.Length)
+			throw new FormatException(string.Format("The unencrypted alphabet and the encrypted alphabet do not have the same length of characters!"));
+        string output = "";
+        for (var x = 0; x < input.Length; x++)
+        {
+			output += encryptedAlphabet[unencryptedAlphabet.IndexOf(input[x])];
+        }
+		return output;
+    }
 	string EncryptUsingCaesar(string input, int valueA = 0)
 	{// Encrypt the string with the given valueA. Example: "ABCDEFG" + 7 -> "HIJKLMN"
 		int[] stringInputs = input.Select(a => baseAlphabet.IndexOf(a)).ToArray();
@@ -860,8 +1756,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{
 			stringInputs[x] += valueA;
 			while (stringInputs[x] < 0)
-				stringInputs[x] += 26;
-			stringInputs[x] %= 26;
+				stringInputs[x] += baseAlphabet.Length;
+			stringInputs[x] %= baseAlphabet.Length;
 		}
 
 		return stringInputs.Select(a => baseAlphabet[a]).Join("");
@@ -873,10 +1769,24 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		for (int x = 0; x < stringInputs.Length; x++)
 		{
 			stringInputs[x] *= multiplier;
-			while (stringInputs[x] > 26)
-				stringInputs[x] -= 26;
+			while (stringInputs[x] > baseAlphabet.Length)
+				stringInputs[x] -= baseAlphabet.Length;
 			stringInputs[x]--;
 		}
+		return stringInputs.Select(a => baseAlphabet[a]).Join("");
+	}
+	string DecryptUsingAffine(string input, int valueX = 0)
+	{
+		int[] stringInputs = input.Select(a => baseAlphabet.IndexOf(a) + 1).ToArray();
+		int multiplier = valueX * 2 + 1;
+		if (!GetDistinctFactors(baseAlphabet.Length).Contains(multiplier))
+			for (int x = 0; x < stringInputs.Length; x++)
+			{
+				while (stringInputs[x] % multiplier != 0 )
+					stringInputs[x] += baseAlphabet.Length;
+				stringInputs[x] /= multiplier;
+				stringInputs[x]--;
+			}
 		return stringInputs.Select(a => baseAlphabet[a]).Join("");
 	}
 	string EncryptUsingAtbash(string input)
@@ -886,9 +1796,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{
 			stringInputs[x] = baseAlphabet.Length - stringInputs[x];
 			while (stringInputs[x] < 1)
-				stringInputs[x] += 26;
+				stringInputs[x] += baseAlphabet.Length;
 			stringInputs[x]--;
-			stringInputs[x] %= 26;
+			stringInputs[x] %= baseAlphabet.Length;
 		}
 		return stringInputs.Select(a => baseAlphabet[a]).Join("");
 	}
@@ -917,14 +1827,17 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		 * 
 		 */
 
-		string modifiedKeyword = keyword.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Join(""), playfairGridBase = modifiedKeyword + baseAlphabet.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Where(a => !modifiedKeyword.Distinct().Contains(a)).Join("");
+		string modifiedKeyword = keyword.Replace(baseAlphabet[9].ToString(), "").Distinct().Join(""),
+			playfairGridBase = modifiedKeyword + baseAlphabet.Replace(baseAlphabet[9].ToString(), "").Distinct().Where(a => !modifiedKeyword.Distinct().Contains(a)).Join("");
 		if (logSquares)
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Given Playfair set: {1}", loggingModID, playfairGridBase);
 		if (input.Length % 2 != 0) input += baseAlphabet[23];
 		string output = "";
 		for (int y = 0; y < input.Length; y += 2)
 		{
-			string currentSet = input.Substring(y, 2).Replace(baseAlphabet[9], baseAlphabet[8]);
+			string currentSet = input.Substring(y, 2);
+			if (currentSet.Contains(baseAlphabet[9]))
+				throw new IndexOutOfRangeException(string.Format("The current set of letters {0} contains the 10th letter in the alphabet which cannot be used for encrypting!", currentSet));
 			if (currentSet.Distinct().Count() == 1)
 			{
 				output += currentSet;
@@ -954,7 +1867,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		}
 		return output;
 	}
-	string EncryptUsingBasicColumnar(string input, int[] key)
+	string EncryptUsingBasicColumnar(string input, int[] key, bool logColumnarKey = false)
 	{
 		/* Example:
 		 * 
@@ -965,7 +1878,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		 * Expected Result:	GTM ABE RJA EOT
 		 * 
 		 */
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Given Columnar Set: {1}", loggingModID, key.Select(a => a + 1).Join(""));
+		if (logColumnarKey)
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Given Columnar Set: {1}", loggingModID, key.Select(a => a + 1).Join(""));
 		List<string> splittedInput = new List<string>();
 		for (int x = 0; x < key.Length; x++)
 		{
@@ -1047,16 +1961,66 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		}
 		return output;
 	}
+	string EncryptUsingMyszkowskiTransposition(string input, IEnumerable<int> key)
+	{
+		/* Example:
+		 * 
+		 * To Encrypt:		GREATJOBMATE
+		 * Keyword:			1223
+		 * Process:			GREA TJOB MATE
+		 * 
+		 * Expected Result:	GTM RE JO AT ABE
+		 * 
+		 */
+		if (!key.Any())
+			throw new FormatException(string.Format("The key has no numbers for encrypting with Myszkowski Transposition!", key));
+		List<string> separatedSets = new List<string>();
+		for (int x = 0; x < key.Count(); x++)
+		{
+			int curPos = x;
+			string curVal = "";
+			while (curPos < input.Length)
+			{
+				curVal += input[curPos];
+				curPos += key.Count();
+			}
+			separatedSets.Add(curVal);
+		}
+		string output = "";
+		var sortedValues = key.OrderBy(a => a).Distinct().ToArray();
+		var tempList = new List<int>();
+        for (var x = 0; x < separatedSets.Count; x++) { tempList.Add(x); }
+		foreach (var aValue in sortedValues)
+        {
+			List<string> currentSet = new List<string>();
+			for (int y = 0; y < key.Count(); y++)
+			{
+				if (key.ElementAt(y) == aValue)
+					currentSet.Add(separatedSets[y]);
+			}
+
+			for (int pos = 0; pos < currentSet.Select(a => a.Length).Max(); pos++)
+			{
+				for (int y = 0; y < currentSet.Count(); y++)
+				{
+					if (pos < currentSet[y].Length)
+						output += currentSet[y][pos];
+				}
+			}
+		}
+
+		return output;
+	}
 	string EncryptUsingFourSquare(string input, string keywordA = "", string keywordB = "", string keywordC = "", string keywordD = "", bool logSquares = false)
 	{
-		string modifiedKeywordA = keywordA.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Join(""),
-			modifiedKeywordB = keywordB.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Join(""),
-			modifiedKeywordC = keywordC.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Join(""),
-			modifiedKeywordD = keywordD.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Join("");
-		string gridA = modifiedKeywordA + baseAlphabet.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Where(a => !modifiedKeywordA.Distinct().Contains(a)).Join("");
-		string gridB = modifiedKeywordB + baseAlphabet.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Where(a => !modifiedKeywordB.Distinct().Contains(a)).Join("");
-		string gridC = modifiedKeywordC + baseAlphabet.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Where(a => !modifiedKeywordC.Distinct().Contains(a)).Join("");
-		string gridD = modifiedKeywordD + baseAlphabet.Replace(baseAlphabet[9], baseAlphabet[8]).Distinct().Where(a => !modifiedKeywordD.Distinct().Contains(a)).Join("");
+		string modifiedKeywordA = keywordA.Replace(baseAlphabet[9].ToString(), "").Distinct().Join(""),
+			modifiedKeywordB = keywordB.Replace(baseAlphabet[9].ToString(), "").Distinct().Join(""),
+			modifiedKeywordC = keywordC.Replace(baseAlphabet[9].ToString(), "").Distinct().Join(""),
+			modifiedKeywordD = keywordD.Replace(baseAlphabet[9].ToString(), "").Distinct().Join("");
+		string gridA = modifiedKeywordA + baseAlphabet.Replace(baseAlphabet[9].ToString(), "").Distinct().Where(a => !modifiedKeywordA.Distinct().Contains(a)).Join(""),
+			gridB = modifiedKeywordB + baseAlphabet.Replace(baseAlphabet[9].ToString(), "").Distinct().Where(a => !modifiedKeywordB.Distinct().Contains(a)).Join(""),
+			gridC = modifiedKeywordC + baseAlphabet.Replace(baseAlphabet[9].ToString(), "").Distinct().Where(a => !modifiedKeywordC.Distinct().Contains(a)).Join(""),
+			gridD = modifiedKeywordD + baseAlphabet.Replace(baseAlphabet[9].ToString(),"").Distinct().Where(a => !modifiedKeywordD.Distinct().Contains(a)).Join("");
 		if (logSquares)
 		{
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Grid A: {1}", loggingModID, gridA);
@@ -1068,7 +2032,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		string output = "";
 		for (int y = 0; y < input.Length; y += 2)
 		{
-			string currentSet = input.Substring(y, 2).Replace(baseAlphabet[9], baseAlphabet[8]);
+			string currentSet = input.Substring(y, 2);
+			if (currentSet.Contains(baseAlphabet[9]))
+				throw new IndexOutOfRangeException(string.Format("The current set of letters {0} contains the 10th letter in the alphabet which cannot be used for encrypting!",currentSet));
             int[] rowIdxs = new int[] { gridA.IndexOf(currentSet[0]) / 5, gridD.IndexOf(currentSet[1]) / 5 };
             int[] colIdxs = new int[] { gridD.IndexOf(currentSet[1]) % 5, gridA.IndexOf(currentSet[0]) % 5 };
 			output += gridB[rowIdxs[0] * 5 + colIdxs[0]].ToString() + gridC[rowIdxs[1] * 5 + colIdxs[1]].ToString();
@@ -1104,23 +2070,71 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
         }
 		return output;
 	}
-	string EncryptUsingAutoKeyCipher(string input, string keyword = "", bool logModifiedKeyword = false)
+	string alphabetColTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	string[] mechtable = new[] {
+		"TJONXAKIPCZDWUSRQMYEBHFVGL",
+		"NXAKIPCZDWUSRQMYEBHFVGLTJO",
+		"VGLTJONXAKIPCZDWUSRQMYEBHF",
+		"KIPCZDWUSRQMYEBHFVGLTJONXA",
+		"BHFVGLTJONXAKIPCZDWUSRQMYE",
+		"JONXAKIPCZDWUSRQMYEBHFVGLT",
+		"LTJONXAKIPCZDWUSRQMYEBHFVG",
+		"WUSRQMYEBHFVGLTJONXAKIPCZD",
+		"FVGLTJONXAKIPCZDWUSRQMYEBH",
+		"PCZDWUSRQMYEBHFVGLTJONXAKI",
+		"YEBHFVGLTJONXAKIPCZDWUSRQM",
+		"ONXAKIPCZDWUSRQMYEBHFVGLTJ",
+		"EBHFVGLTJONXAKIPCZDWUSRQMY",
+		"CZDWUSRQMYEBHFVGLTJONXAKIP",
+		"XAKIPCZDWUSRQMYEBHFVGLTJON",
+		"MYEBHFVGLTJONXAKIPCZDWUSRQ",
+		"QMYEBHFVGLTJONXAKIPCZDWUSR",
+		"USRQMYEBHFVGLTJONXAKIPCZDW",
+		"GLTJONXAKIPCZDWUSRQMYEBHFV",
+		"RQMYEBHFVGLTJONXAKIPCZDWUS",
+		"AKIPCZDWUSRQMYEBHFVGLTJONX",
+		"SRQMYEBHFVGLTJONXAKIPCZDWU",
+		"ZDWUSRQMYEBHFVGLTJONXAKIPC",
+		"DWUSRQMYEBHFVGLTJONXAKIPCZ",
+		"HFVGLTJONXAKIPCZDWUSRQMYEB",
+		"IPCZDWUSRQMYEBHFVGLTJONXAK",
+	};
+	string EncryptUsingAutoKeyCaesarCipher(string input, string keyword = "", bool logModifiedKeywordAndPositions = false)
+	{
+		string appendedKeyword = keyword + (keyword.Length >= input.Length ? "" : input.Substring(0, input.Length - keyword.Length));
+		if (logModifiedKeywordAndPositions)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: AutoKey Cipher Keyword + PlainText: {1}", loggingModID, appendedKeyword);
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Converting all of the letters in the key to their alphabetical positions results in this set of numbers: {1}", loggingModID, appendedKeyword.Select(a => baseAlphabet.IndexOf(a) + 1).Join(","));
+		}
+		string output = "";
+		for (int x = 0; x < input.Length; x++)
+		{
+			int idxInput = baseAlphabet.IndexOf(input[x]), idxKey = baseAlphabet.IndexOf(appendedKeyword[x]);
+			output += baseAlphabet[(idxInput + idxKey) % 26];
+		}
+		return output;
+	}
+	string EncryptUsingAutoKeyMechCipher(string input, string keyword = "", bool logModifiedKeywordAndPositions = false)
     {
 		string appendedKeyword = keyword + (keyword.Length >= input.Length ? "" : input.Substring(0, input.Length - keyword.Length));
-		if (logModifiedKeyword)
+		if (logModifiedKeywordAndPositions)
+		{
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: AutoKey Cipher Keyword + PlainText: {1}", loggingModID, appendedKeyword);
-
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Converting all of the letters in the key to their alphabetical positions results in this set of numbers: {1}", loggingModID, appendedKeyword.Select(a => baseAlphabet.IndexOf(a) + 1).Join(","));
+		}
 		string output = "";
         for (int x = 0; x < input.Length; x++)
         {
-			int idxInput = baseAlphabet.IndexOf(input[x]), idxKey = baseAlphabet.IndexOf(appendedKeyword[x]);
-			output += baseAlphabet[(idxInput + idxKey) % 26];
+			int idxInput = alphabetColTable.IndexOf(input[x]), idxKey = baseAlphabet.IndexOf(appendedKeyword[x]);
+            output += mechtable[idxKey][idxInput];
         }
 		return output;
     }
-	string EncryptUsingRedefenceTranspositon (string input, int[] key)
+	string EncryptUsingRedefenceTranspositon(string input, int[] key, bool logValues = false)
     {
 		string[] separtedSets = new string[key.Length];
+		if (logValues) Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Redefence Transposition Key: {1}", loggingModID, key.Join(""));
 		int curPos = 1;
 		bool dirBack = true;
         for (int x = 0; x < input.Length; x++)
@@ -1160,19 +2174,72 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{'U', 21 }, {'V', 22 }, {'W', 23 }, {'X', 24 }, {'Y', 25 }, {'Z', 26 },
 	}*/
 	;
+	string ObtainKeyALegacy()
+	{
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
+		string returningString = "";
+		string hexDecimalString = "0123456789ABCDEF";
+		string base36DigitFull = bombInfo.GetSerialNumber();
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Starting Base-36 Value (Serial Number): {1}", loggingModID, base36DigitFull);
+		long givenValue = 0;
+		for (int x = 0; x < base36DigitFull.Length; x++)
+		{
+			givenValue *= 36;
+			givenValue += base36Reference.ContainsKey(base36DigitFull[x]) ? base36Reference[base36DigitFull[x]] : 12;
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Base-10 Value: {1}", loggingModID, givenValue);
+		while (givenValue > 0)
+		{
+			returningString += hexDecimalString[(int)(givenValue % 16)];
+			givenValue /= 16;
+		}
+		returningString = returningString.Reverse().Join("");
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Converting into Hexadecimal: {1}", loggingModID, returningString);
+		string output = "";
+		string[] listAllPossibilities = new string[] { returningString, selectedModID.ToString(), (bombInfo.GetPortPlateCount() + 1).ToString(), (2 + bombInfo.GetBatteryHolderCount()).ToString() };
+		foreach (string selectedString in listAllPossibilities)
+			for (int x = 0; x < selectedString.Length; x++)
+			{
+				if (x + 1 < selectedString.Length)
+				{
+					string intereptedString = selectedString.Substring(x, 2);
+					if (intereptedString.RegexMatch(@"^(1\d|2[0123456])$"))
+					{
+						int intereptedValue = int.Parse(intereptedString);
+						output += baseAlphabet[intereptedValue - 1];
+						x++;
+						continue;
+					}
+				}
+				if (hexDecimalString.Substring(10).Contains(selectedString[x]))
+				{
+					output += selectedString[x];
+				}
+				else
+				{
+					int intereptedValue = int.Parse(selectedString[x].ToString());
+					if (intereptedValue > 0)
+						output += baseAlphabet[intereptedValue - 1];
+				}
+			}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Intereperation + ModID, Port Plate, Battery Holder appending: {1}", loggingModID, output);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
+		return output;
+	}
 	string ObtainKeyA()
 	{
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
 		string returningString = "";
 		string hexDecimalString = "0123456789ABCDEF";
-		string curSerNo = bombInfo.GetSerialNumber();
+		string base36DigitFull = keyABaseKey;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Starting Base-24 Value: {1}", loggingModID, base36DigitFull);
 		long givenValue = 0;
-		for (int x = 0; x < curSerNo.Length; x++)
+		for (int x = 0; x < base36DigitFull.Length; x++)
 		{
-			givenValue *= 36;
-			givenValue += base36Reference.ContainsKey(curSerNo[x]) ? base36Reference[curSerNo[x]] : 18;
+			givenValue *= 24;
+			givenValue += base36Reference.ContainsKey(base36DigitFull[x]) ? base36Reference[base36DigitFull[x]] : 12;
 		}
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Base-36 Conversion: {1}", loggingModID, givenValue);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Base-10 Value: {1}", loggingModID, givenValue);
 		while (givenValue > 0)
 		{
 			returningString += hexDecimalString[(int)(givenValue % 16)];
@@ -1212,9 +2279,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		return output;
 	}
 
-	string ObtainKeyD()
+	string ObtainKeyCNew()
 	{
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key D Calculations------------", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key C Calculations------------", loggingModID);
 		string[] allPossibleStrings = {
 			"WLUAZVHEJDNQSYFPGMBOIRCXTK",
 			"MVFBXJQNHWZTAKPEOCURISDYLG",
@@ -1249,7 +2316,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			bombInfo.GetModuleIDs().Count() > 30,
 			bombInfo.GetIndicators().Count() < 4,
 		};
-		int[] loggingSet = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }.Where(a => trueConditions[a]).ToArray();
+		int[] loggingSet = Enumerable.Range(0, 15).Where(a => trueConditions[a]).ToArray();
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The following rules from Alphabetize (At 0 solves, 0 strikes) are true: [ {1} ]", loggingModID, loggingSet.Select(a => a + 1).Join(", "));
 		int sum = 0;
 		for (int x = 0;x<trueConditions.Length;x++)
@@ -1258,12 +2325,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		}
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The sum of all of the false rules is {1}", loggingModID, sum);
 		string output = sum % trueConditions.Where(a => !a).Count() == 0 ? allPossibleStrings[sum / trueConditions.Count(a => !a) - 1] : allPossibleStrings[14];
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row used for Key D: {1}", loggingModID, sum % trueConditions.Count(a => !a) == 0 ? (sum / trueConditions.Count(a => !a)) : 15);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row used for Key C: {1}", loggingModID, sum % trueConditions.Count(a => !a) == 0 ? (sum / trueConditions.Count(a => !a)) : 15);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
 		return output;
 	}
 
-	void ModifyBaseAlphabet()
+	void ModifyBaseAlphabetLegacy()
 	{
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ---------------Alphabet Modifications---------------", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Base Alphabet: {1}", loggingModID, baseAlphabet);
@@ -1361,6 +2428,333 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Final Modified Alphabet String: {1}", loggingModID, baseAlphabet);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------------", loggingModID);
 	}
+	void ModifyBaseAlphabet()
+	{
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ---------------Alphabet Modifications---------------", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Base Alphabet: {1}", loggingModID, baseAlphabet);
+		string valueToChange = baseAlphabet.ToString();
+		int valueModifier = bombInfo.GetSerialNumberNumbers().Any() ? 1 + bombInfo.GetSerialNumberNumbers().Last() : 11;
+		valueToChange = valueToChange.Substring(26 - valueModifier) + valueToChange.Substring(0, 26 - valueModifier);
+
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Serial Number Digit Shift ({2}): {1}", loggingModID, valueToChange, valueModifier);
+		if (bombInfo.GetSerialNumberLetters().Any())
+		{
+			char curLetter = bombInfo.GetSerialNumberLetters().Last();
+			int idxCurLetter = valueToChange.IndexOf(curLetter);
+
+			if (idxCurLetter == 0)
+				valueToChange = valueToChange.Substring(1) + curLetter;
+			else
+			{
+				valueToChange = curLetter + valueToChange.Substring(0, idxCurLetter) + (idxCurLetter + 1 >= 26 ? "" : valueToChange.Substring(idxCurLetter + 1));
+			}
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Serial Number Letter Shifting: {1}", loggingModID, valueToChange);
+		string lastEncryptedString = baseAlphabet;
+		var appliedConditions = new List<int>();
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Conditions Taken:", loggingModID, valueToChange);
+		bool containsLitBOB = bombInfo.IsIndicatorOn(Indicator.BOB);
+		if (containsLitBOB && bombInfo.GetBatteryCount() == 0 && bombInfo.GetPortPlateCount() == 0 && !bombInfo.GetOffIndicators().Any() && bombInfo.GetSerialNumberLetters().Any(a => "AEIOU".Contains(a)))
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There is exactly all of these: Lit BOB, no batteries, no port plates, no unlit indicators, at least a vowel in the serial number", loggingModID);
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Threw away the modified alphabet to use the base alphabet instead.", loggingModID);
+			//Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------------", loggingModID);
+			
+		}
+		else
+		{
+			if (containsLitBOB)
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There is a Lit BOB", loggingModID);
+				valueToChange = valueToChange.Reverse().Join("");
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(2);
+			}
+			if (bombInfo.GetBatteryHolderCount() % 2 == 1)
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There is an odd number of battery holders.", loggingModID);
+				List<char> vowelList = new List<char>() { 'A', 'E', 'I', 'O', 'U' };
+				if (bombInfo.GetSerialNumberLetters().Contains('W'))
+				{
+					Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: 'W' is present in the serial number.", loggingModID);
+					vowelList.Add('W');
+				}
+				valueToChange = valueToChange.OrderBy(a => vowelList.Contains(a) ? 1 : 0).Join("");
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(3);
+			}
+			if (bombInfo.GetBatteryCount() % 3 == 0)
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The number of batteries is 3n.", loggingModID);
+				List<int> usablePositions = new List<int> { 4, 6, 8, 9, 10, 14, 15, 21, 22, 25, 26 };
+				string stationaryString = "", modifyingString = "";
+				for (int x = 1; x <= 26; x++)
+				{
+					if (usablePositions.Contains(x))
+						modifyingString += valueToChange[x - 1];
+					else
+						stationaryString += valueToChange[x - 1];
+				}
+				valueToChange = stationaryString + modifyingString.Reverse().Join("");
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(4);
+			}
+			List<string> detectableModIDs = new List<string>() { "sphere", "yellowArrowsModule", "greenArrowsModule", },
+				allModIDs = bombInfo.GetModuleIDs();
+			if (allModIDs.Any(a => detectableModIDs.Contains(a)))
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At least 1 of the following modules are present: Green Arrows, Yellow Arrows, The Sphere", loggingModID);
+				valueToChange = "LAZYDOG" + valueToChange;
+				valueToChange = valueToChange.Distinct().Join("");
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(5);
+			}
+			if (allModIDs.Any(a => a.Equals("unfairsRevenge")))
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Unfair's Revenge is present", loggingModID);
+				valueToChange = valueToChange.Substring(0, 13) + valueToChange.Substring(13).Reverse().Join("");
+				valueToChange = valueToChange.OrderBy(a => "THEQUICK".IndexOf(a)).Join("");
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(6);
+			}
+			if (bombInfo.IsPortPresent(Port.DVI))
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There is a DVI port.", loggingModID);
+				valueToChange = valueToChange.Substring(0, 13).Reverse().Join("") + valueToChange.Substring(13);
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(7);
+			}
+			if (!bombInfo.IsPortPresent(Port.StereoRCA))
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There is not a Stereo RCA port.", loggingModID);
+				List<char> modifiedList = new List<char>() { 'R', 'C', 'A' };
+				valueToChange = valueToChange.OrderBy(a => modifiedList.IndexOf(a)).Join("");
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(8);
+			}
+			if (allModIDs.Count(a => a.Equals(modSelf.ModuleType)) > 1)
+			{
+				lastEncryptedString = valueToChange.ToString();
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Duplicate Unfair's Cruel Revenge are present.", loggingModID);
+				var ucrCount = allModIDs.Count(a => a.Equals(modSelf.ModuleType));
+				for (int x = 0; x < ucrCount - 1; x++)
+				{
+					valueToChange = valueToChange.Substring(10) + valueToChange.Substring(0, 10);
+				}
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(9);
+			}
+			if (appliedConditions.Count() % 2 == 1)
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Up to this condition, an odd number of conditions were met.", loggingModID);
+				var temp = valueToChange;
+				valueToChange = lastEncryptedString;
+				lastEncryptedString = temp;
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(10);
+			}
+			var solvableDisplayNames = bombInfo.GetModuleNames();
+			var serialNoNumbers = bombInfo.GetSerialNumberNumbers();
+			if (bombInfo.GetPortPlates().Any(a => a.Length == 0))
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There is an empty port plate present.", loggingModID);
+				lastEncryptedString = valueToChange.ToString();
+				List<int> usablePositions = new List<int> { 6, 12, 18, 24 };
+				string stationaryString = "", modifyingString = "";
+				for (int x = 1; x <= 26; x++)
+				{
+					if (usablePositions.Contains(x))
+						modifyingString += valueToChange[x - 1];
+					else
+						stationaryString += valueToChange[x - 1];
+				}
+				valueToChange = modifyingString + stationaryString.Substring(stationaryString.Length - 6) + stationaryString.Substring(0, stationaryString.Length - 6);
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(11);
+			}
+			else if (allModIDs.Any(a => new[] { "WhosOnFirst", "WhatsOnSecond" }.Contains(a)))
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Who's on First or What's on Second is present and the 11th condition is not met.", loggingModID);
+				lastEncryptedString = valueToChange.ToString();
+				var idxUH = new[] { valueToChange.IndexOf('U'), valueToChange.IndexOf('H'), };
+				string stationaryString = "", modifyingString = "";
+				if (Mathf.Abs(idxUH.Min() - idxUH.Max()) == 1)
+				{
+					Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: \"U\" and \"H\" are adjacent.", loggingModID);
+					valueToChange = valueToChange.OrderBy(a => "UH".Contains(a) ? 0 : 1).Join("");
+				}
+				else
+				{
+					for (var x = 0; x < valueToChange.Length; x++)
+					{
+						if (x < idxUH.Max() && x > idxUH.Min())
+							modifyingString += valueToChange[x];
+						else
+							stationaryString += valueToChange[x];
+					}
+					valueToChange = modifyingString + stationaryString;
+				}
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(12);
+			}
+			if (allModIDs.Contains("blueArrowsModule") && appliedConditions.Any())
+			{
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Blue Arrows is present and there was at least 1 previously met condition.", loggingModID);
+				if (appliedConditions.Last() == 10)
+				{
+					Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The last applied condition was the 10th condition. Applying the action from the 12th condition.", loggingModID);
+					lastEncryptedString = valueToChange.ToString();
+					var idxUH = new[] { valueToChange.IndexOf('U'), valueToChange.IndexOf('H'), };
+					string stationaryString = "", modifyingString = "";
+					if (Mathf.Abs(idxUH.Min() - idxUH.Max()) == 1)
+					{
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: \"U\" and \"H\" are adjacent.", loggingModID);
+						valueToChange = valueToChange.OrderBy(a => "UH".Contains(a) ? 0 : 1).Join("");
+					}
+					else
+					{
+						for (var x = 0; x < valueToChange.Length; x++)
+						{
+							if (x < idxUH.Max() && x > idxUH.Min())
+								modifyingString += valueToChange[x];
+							else
+								stationaryString += valueToChange[x];
+						}
+						valueToChange = modifyingString + stationaryString;
+					}
+				}
+				else
+				{
+					var temp = valueToChange;
+					valueToChange = lastEncryptedString;
+					lastEncryptedString = temp;
+				}
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
+				appliedConditions.Add(13);
+			}
+			else if (!appliedConditions.Any())
+            {
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: No other conditions were met.", loggingModID);
+				valueToChange = EncryptUsingCaesar(valueToChange, 13);
+				var serialNoFirstDigit = serialNoNumbers.Any() ? serialNoNumbers.First() : 1;
+                int[] conditionList = new[] { 2, 3, 4, 5, 6, 7, 8, 9, 11, 12 };
+				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Applying the action from condition {1}", loggingModID, conditionList[serialNoFirstDigit]);
+				switch (serialNoFirstDigit)
+                    {
+					case 0:
+						{
+							valueToChange = valueToChange.Reverse().Join("");
+						}
+						break;
+					case 1:
+						List<char> vowelList = new List<char>() { 'A', 'E', 'I', 'O', 'U' };
+						if (bombInfo.GetSerialNumberLetters().Contains('W'))
+						{
+							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: 'W' is present in the serial number.", loggingModID);
+							vowelList.Add('W');
+						}
+						valueToChange = valueToChange.OrderBy(a => vowelList.Contains(a) ? 1 : 0).Join("");
+						break;
+					case 2:
+						{
+							List<int> usablePositions = new List<int> { 4, 6, 8, 9, 10, 14, 15, 21, 22, 25, 26 };
+							string stationaryString = "", modifyingString = "";
+							for (int x = 1; x <= 26; x++)
+							{
+								if (usablePositions.Contains(x))
+									modifyingString += valueToChange[x - 1];
+								else
+									stationaryString += valueToChange[x - 1];
+							}
+							valueToChange = stationaryString + modifyingString.Reverse().Join("");
+						}
+						break;
+					case 3:
+						{
+							valueToChange = "LAZYDOG" + valueToChange;
+							valueToChange = valueToChange.Distinct().Join("");
+						}
+						break;
+					case 4:
+						{
+							valueToChange = valueToChange.Substring(0, 13) + valueToChange.Substring(13).Reverse().Join("");
+							valueToChange = valueToChange.OrderBy(a => "THEQUICK".IndexOf(a)).Join("");
+						}
+						break;
+					case 5:
+						{
+							valueToChange = valueToChange.Substring(0, 13).Reverse().Join("") + valueToChange.Substring(13);
+						}
+						break;
+					case 6:
+						{
+							List<char> modifiedList = new List<char>() { 'R', 'C', 'A' };
+							valueToChange = valueToChange.OrderBy(a => modifiedList.IndexOf(a)).Join("");
+						}
+						break;
+                    case 7:
+						{
+							var ucrCount = allModIDs.Count(a => a.Equals(modSelf.ModuleType));
+							for (int x = 0; x < ucrCount - 1; x++)
+							{
+								valueToChange = valueToChange.Substring(10) + valueToChange.Substring(0, 10);
+							}
+						}
+						break;
+					case 8:
+						{
+							List<int> usablePositions = new List<int> { 6, 12, 18, 24 };
+							string stationaryString = "", modifyingString = "";
+							for (int x = 1; x <= 26; x++)
+							{
+								if (usablePositions.Contains(x))
+									modifyingString += valueToChange[x - 1];
+								else
+									stationaryString += valueToChange[x - 1];
+							}
+							valueToChange = modifyingString + stationaryString.Substring(stationaryString.Length - 6) + stationaryString.Substring(0, stationaryString.Length - 6);
+						}
+						break;
+					case 9:
+						{
+							var idxUH = new[] { valueToChange.IndexOf('U'), valueToChange.IndexOf('H'), };
+							string stationaryString = "", modifyingString = "";
+							if (Mathf.Abs(idxUH.Min() - idxUH.Max()) == 1)
+							{
+								Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: \"U\" and \"H\" are adjacent.", loggingModID);
+								valueToChange = valueToChange.OrderBy(a => "UH".Contains(a) ? 0 : 1).Join("");
+							}
+							else
+							{
+								for (var x = 0; x < valueToChange.Length; x++)
+								{
+									if (x < idxUH.Max() && x > idxUH.Min())
+										modifyingString += valueToChange[x];
+									else
+										stationaryString += valueToChange[x];
+								}
+								valueToChange = modifyingString + stationaryString;
+							}
+						}
+						break;
+					default:
+						break;
+					}
+				appliedConditions.Add(14);
+			}				
+			baseAlphabet = valueToChange;
+		}
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Final Modified Alphabet String: {1}", loggingModID, baseAlphabet);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: From the following applied condition(s): {1}", loggingModID, appliedConditions.Join(", "));
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------------", loggingModID);
+	}
 
 	private Dictionary<int, string> romanValues = new Dictionary<int, string>() {
 		{1,"I" },{5,"V" },{10,"X" },{50,"L" },{100,"C" },{500,"D" },{1000,"M" },{5000,"V_" },{10000,"X_" }
@@ -1439,11 +2833,11 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	}
 	public void GenerateInstructions()
 	{
-		string[] lastCommand = { "FIN", "ISH" };
-		List<string> instructionsToShuffle = GrabNonOverlappingInstructions(hardModeInstructions);
+		string[] lastCommand = { "FIN", "ISH", "ALE" };
+		List<string> instructionsToShuffle = GrabNonOverlappingInstructions(legacyUCR ? legacyInstructions : hardModeInstructions);
 		instructionsToShuffle.Shuffle();
 		splittedInstructions.AddRange(instructionsToShuffle.Take(5));
-		splittedInstructions.Add(lastCommand.PickRandom());
+		splittedInstructions.Add(legacyUCR ? lastCommand.Take(2).PickRandom() : lastCommand.PickRandom());
 		
 	}
 	IEnumerator HandleFlashingAnim(int btnIdx)
@@ -1494,6 +2888,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		StartCoroutine(indicatorCoreHandlerEX.HandleCollaspeAnim());
 		yield return null;
 	}
+	/*
 	IEnumerator HandleSpecialSolveAnim()
     {
 		isplayingSolveAnim = true;
@@ -1548,15 +2943,21 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.5f;
 		}
 		yield break;
-    }
+    }*/
 	IEnumerator HandleSolveAnim()
 	{
 		mAudio.PlaySoundAtTransform("submitstart", transform);
 		isplayingSolveAnim = true;
+		StartCoroutine(IndicatorCoreHandlerExtraScreen.HandleCollaspeAnim());
+		for (var x = 0; x < statusIndicatorsExtra.Length; x++)
+		{
+			statusIndicatorsExtra[x].material.color = Color.black;
+		}
 		StartCoroutine(HandleFlickerSolveAnim());
 		if (autoCycleEnabled)
 			StartCoroutine(HandleAutoCycleAnim(false));
-		for (int y = 9; y > 0; y -= 2)
+        var solveDelayArray = new[] { 9, 7, 5, 3, 1 }.Shuffle();
+		foreach (int y in solveDelayArray)
 		{
 			for (int x = 0; x < y; x++)
 			{
@@ -1615,7 +3016,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{"It was never fair", "in the first place." },
 			{"Do defusers even\nread these?", "I guess not as much." },
 			{"Landing Sequence...", "ERROR" },
-			{"Contains TheFatRat", " - The Calling" },
+			{"How fast can your", "team disarm it?" },
 			{"Funny Text", "Side Text" },
 			{"You have time...", "Right?" },
 			{"Where did he go?", "Is it there?" },
@@ -1644,18 +3045,19 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		entireCircle.transform.localScale = Vector3.zero;
 		entireCircle.transform.localPosition = 5 * Vector3.up;
 		yield return new WaitForSeconds(uernd.Range(0f, 2f));
-		int animLength = 60;
-		for (float x = 0; x <= animLength; x++)
+		for (float x = 0; x <= 1f; x += Time.deltaTime)
 		{
-			float curScale = Mathf.Pow(x / animLength, 1);
+			float curScale = Mathf.Pow(x, 1);
 			entireCircle.transform.localScale = new Vector3(curScale, curScale, curScale);
-			if (x != animLength)
-				entireCircle.transform.Rotate(Vector3.up * (360 / Mathf.Max(animLength, 0.5f)));
-			float currentOffset = Mathf.Pow((x - animLength) / animLength, 2f);
+			entireCircle.transform.localEulerAngles = Vector3.up * 720 * (1f - x);
+			float currentOffset = Mathf.Pow(x - 1, 2f);
 			entireCircle.transform.localPosition = new Vector3(0, 5 * currentOffset, 0);
-			yield return new WaitForSeconds(Time.deltaTime);
+			yield return null;
 		}
 		mAudio.PlaySoundAtTransform("werraMetallicTrimmed", entireCircle.transform);
+		entireCircle.transform.localEulerAngles = Vector3.zero;
+		entireCircle.transform.localPosition = Vector3.zero;
+		entireCircle.transform.localScale = Vector3.one;
 		outerSelectable.AddInteractionPunch(3f);
 		for (int i = 0; i < colorLights.Length; i++)
 		{
@@ -1673,6 +3075,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{
 				statusIndicators[a].material.color = Color.red;
 				pigpenDisplay.color = Color.red;
+				mainDisplay.color = Color.red;
 			}
 			mAudio.PlaySoundAtTransform("wrong", transform);
 			yield return new WaitForSeconds(0.1f);
@@ -1680,6 +3083,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{
 				statusIndicators[a].material.color = Color.black;
 				pigpenDisplay.color = Color.white;
+				mainDisplay.color = Color.white;
 			}
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
@@ -1732,7 +3136,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				if (!lastCorrectInputs.Any())
 					toLog = "There were no previous inputs. Press Inner Center.";
 				else
-					toLog = string.Format("The last input was {0}, so press that.", lastCorrectInputs[currentInputPos - 1]);
+					toLog = string.Format("The last input was {0}, so press that.", lastCorrectInputs.Last());
 				break;
 			case "STR":
 			case "IKE":
@@ -1742,7 +3146,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					break;
 				}
 			case "SKP":
-				string[] finaleInstructions = { "FIN", "ISH" };
+				string[] finaleInstructions = { "FIN", "ISH", "ALE" };
 				toLog = "Press Inner Center.";
 				if (currentInputPos + 1 < splittedInstructions.Count && !finaleInstructions.Contains(splittedInstructions[currentInputPos + 1]))
 					toLog += " The next instruction is skippable, so press Outer Center in replacement for the next instruction.";
@@ -1799,23 +3203,30 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				if (!lastCorrectInputs.Any())
 					toLog = "There were no previous inputs. Press Outer Center.";
 				else
-					toLog = string.Format("The last input was {0}, so press {1}.", lastCorrectInputs[currentInputPos - 1],
-						lastCorrectInputs[currentInputPos - 1] == "Outer" ? "Inner Center" :
-						lastCorrectInputs[currentInputPos - 1] == "Inner" ? "Outer Center" :
-						rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs[currentInputPos - 1])) % 6]);
+					toLog = string.Format("The last input was {0}, so press {1}.", lastCorrectInputs.Last(),
+						lastCorrectInputs.Last() == "Outer" ? "Inner Center" :
+						lastCorrectInputs.Last() == "Inner" ? "Outer Center" :
+						rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last())) % 6]);
 				break;
 			case "FIN":
 			case "ISH":
+			case "ALE":
 				toLog = "This instruction is complicated. Refer to the manual for how to press this last command.";
 				break;
 			case "INV":
 			case "ERT":
-				toLog = "";
+				toLog = string.Format("There was an {0} number of previous inputs. Press {1}. Be prepared to swap the button presses for the next set of instructions.", lastCorrectInputs.Count % 2 == 0 ? "even" : "odd", lastCorrectInputs.Count % 2 == 0 ? "Inner Center" : "Outer Center");
 				break;
 			case "SWP":
-				toLog = "";
+				if (!lastCorrectInputs.Any(a => baseColorList.Contains(a)))
+					toLog = "There were no previous colored inputs. Press the NW button.";
+				else
+					toLog = string.Format("The last colored button input was {0}, so press that.", lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last());
+				toLog += " Be prepared to swap the button presses for the next set of instructions.";
 				break;
 		}
+		if (swapInnerOuterPresses || invertColorButtonPresses && !new[] { "FIN", "ISH", "ALE" }.Contains(splittedInstructions[currentInputPos]))
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Account for the modifiers that are currently active for the this instruction.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Instruction {2} (\"{3}\"): {1}", loggingModID, toLog, currentInputPos + 1, splittedInstructions[currentInputPos]);
 	}
 	bool canSkip = false, swapInnerOuterPresses = false, invertColorButtonPresses = false;
@@ -1827,6 +3238,194 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{ "Blue", "Yellow" },
 		{ "Magenta", "Green" },
 	};
+	bool isCurInstructionCorrect(string input)
+    {
+		string[] rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToArray();
+		bool isCorrect = true;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Pressing the {1} button at {2} on the countdown timer...", loggingModID, input, bombInfo.GetFormattedTime());
+		int secondsTimer = (int)bombInfo.GetTime() % 60;
+		int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
+		int solvableCount = bombInfo.GetSolvableModuleIDs().Count();
+		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
+		string[] finaleInstructions = { "FIN", "ISH", "ALE" };
+		if (canSkip)
+		{
+			isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer");
+			canSkip = false;
+		}
+		else
+			switch (splittedInstructions[currentInputPos])
+			{
+				case "PCR":
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[0]] : baseColorList[0]);
+					break;
+				case "PCG":
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[2]] : baseColorList[2]);
+					break;
+				case "PCB":
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[4]] : baseColorList[4]);
+					break;
+				case "SCC":
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[3]] : baseColorList[3]);
+					break;
+				case "SCM":
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[5]] : baseColorList[5]);
+					break;
+				case "SCY":
+					isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[baseColorList[1]] : baseColorList[1]);
+					break;
+				case "SUB":
+					isCorrect = input == (swapInnerOuterPresses ? "Outer" : "Inner") && secondsTimer % 11 == 0;
+					break;
+				case "MOT":
+					isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer") && secondsTimer % 10 == (selectedModID + (5 - (1 + currentInputPos)) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10;
+					break;
+				case "PRN":
+					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ^ swapInnerOuterPresses ? "Inner" : "Outer");
+					break;
+				case "CHK":
+					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ^ swapInnerOuterPresses ? "Outer" : "Inner");
+					break;
+				case "BOB":
+					isCorrect = input == "Inner";
+					break;
+				case "REP":
+				case "EAT":
+					if (!lastCorrectInputs.Any())
+						isCorrect = input == "Inner";
+					else
+					{
+						var lastInput = lastCorrectInputs.Last();
+						isCorrect = input == (baseColorList.Contains(lastInput) ?
+							invertColorButtonPresses ? complementaryCounterparts[lastInput] : lastInput
+							: swapInnerOuterPresses ^ lastInput == "Outer" ? "Outer" : "Inner");
+					}
+					break;
+				case "STR":
+				case "IKE":
+					{
+						int strikeCount = TimeModeActive ? localStrikeCount : bombInfo.GetStrikes();
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : Array.IndexOf(rearrangedColorList, baseColorList[0]);
+						curIdx -= strikeCount % 6;
+						string resultingButton = rearrangedColorList[(curIdx + 6) % 6];
+						//Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} strike(s) the resulting button should be {2}.", loggingModID, strikeCount, resultingButton);
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[resultingButton] : resultingButton);
+						break;
+					}
+				case "SKP":
+					{
+						isCorrect = input == (swapInnerOuterPresses ? "Outer" : "Inner");
+						break;
+					}
+				case "PVP":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
+						do
+						{
+							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
+						}
+						while (!primaryList.Contains(rearrangedColorList[curIdx]));
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
+						break;
+					}
+				case "NXP":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
+						do
+						{
+							curIdx = (curIdx + 1) % 6;
+						}
+						while (!primaryList.Contains(rearrangedColorList[curIdx]));
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
+						break;
+					}
+				case "PVS":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
+						do
+						{
+							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
+						}
+						while (primaryList.Contains(rearrangedColorList[curIdx]));
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
+						break;
+					}
+				case "NXS":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
+						do
+						{
+							curIdx = (curIdx + 1) % 6;
+						}
+						while (primaryList.Contains(rearrangedColorList[curIdx]));
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
+						break;
+					}
+				case "OPP":
+					{
+						if (!lastCorrectInputs.Any() || lastCorrectInputs.Last() == "Inner")
+							isCorrect = input == "Outer";
+						else if (lastCorrectInputs.Last() == "Outer")
+							isCorrect = input == "Inner";
+						else
+							isCorrect = input == rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs[currentInputPos - 1])) % 6];
+						break;
+					}
+				case "FIN":
+					{
+						if (legacyUCR) goto case "LEGACY";
+						isCorrect = input == (solvedCount % 2 == 0 ? "Inner" : "Outer") && (solvableCount - solvedCount) % 10 == secondsTimer % 10;
+					}
+					break;
+				case "ISH":
+					{
+						if (legacyUCR) goto case "LEGACY";
+						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
+						isCorrect = input == rearrangedColorList[curIdx] && (solvableCount - solvedCount) % 10 == secondsTimer % 10;
+					}
+					break;
+				case "ALE":
+					{
+
+						var lastColoredButtonInputs = lastCorrectInputs.Where(a => baseColorList.Contains(a));
+						int lastColoredIdx = lastColoredButtonInputs.Any() ? Array.IndexOf(rearrangedColorList, lastColoredButtonInputs.Last()) : 0;
+						string goalButton = lastColoredButtonInputs.Count() % 2 == 0 ? rearrangedColorList[(lastColoredIdx + 3) % 6] : complementaryCounterparts[rearrangedColorList[lastColoredIdx]];
+						isCorrect = secondsTimer % 10 == solvedCount % 10 && input == goalButton;
+
+					}
+					break;
+				case "SWP":
+					{
+						var lastColoredButtonInputs = lastCorrectInputs.Where(a => baseColorList.Contains(a));
+						int lastColoredIdx = lastColoredButtonInputs.Any() ? Array.IndexOf(rearrangedColorList, lastColoredButtonInputs.Last()) : 0;
+						isCorrect = input == rearrangedColorList[lastColoredIdx];
+					}
+					break;
+				case "INV":
+				case "ERT":
+					{
+						isCorrect = input == (lastCorrectInputs.Count % 2 == 0 ? "Inner" : "Outer");
+					}
+					break;
+				case "LEGACY":
+                    {// The old UCR instruction set
+						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
+						curIdx -= solvedCount % 6;
+						while (curIdx < 0)
+							curIdx += 6;
+						isCorrect = input == rearrangedColorList[curIdx] && (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10 == secondsTimer % 10;
+						break;
+					}
+			}
+		return isCorrect;
+	}
+
 	void ProcessInstruction(string input)
 	{
 		if (isFinished) return;
@@ -1834,8 +3433,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		bool isCorrect = true;
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Pressing the {1} button at {2} on the countdown timer...", loggingModID, input, bombInfo.GetFormattedTime());
 		int secondsTimer = (int)bombInfo.GetTime() % 60;
+		int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
+		int solvableCount = bombInfo.GetSolvableModuleIDs().Count();
 		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
-		string[] finaleInstructions = { "FIN", "ISH" };
+		string[] finaleInstructions = { "FIN", "ISH", "ALE" };
 		if (canSkip)
 		{
 			isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer");
@@ -1887,93 +3488,146 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					if (!lastCorrectInputs.Any())
 						isCorrect = input == "Inner";
 					else
-						isCorrect = input == lastCorrectInputs[lastCorrectInputs.Count - 1];
+					{
+						var lastInput = lastCorrectInputs.Last();
+						isCorrect = input == (baseColorList.Contains(lastInput) ?
+							invertColorButtonPresses ? complementaryCounterparts[lastInput] : lastInput
+							: swapInnerOuterPresses ^ lastInput == "Outer" ? "Outer" : "Inner");
+                    }
 					break;
 				case "STR":
 				case "IKE":
 					{
 						int strikeCount = TimeModeActive ? localStrikeCount : bombInfo.GetStrikes();
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : Array.IndexOf(rearrangedColorList, baseColorList[0]);
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : Array.IndexOf(rearrangedColorList, baseColorList[0]);
 						curIdx -= strikeCount % 6;
 						string resultingButton = rearrangedColorList[(curIdx + 6) % 6];
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} strike(s) the resulting button should be {2}.", loggingModID, strikeCount, resultingButton);
-						isCorrect = input == resultingButton;
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[resultingButton] : resultingButton);
 						break;
 					}
 				case "SKP":
 					{
-						isCorrect = input == "Inner";
+						isCorrect = input == (swapInnerOuterPresses ? "Outer" : "Inner");
 						if (currentInputPos + 1 < splittedInstructions.Count && !finaleInstructions.Contains(splittedInstructions[currentInputPos + 1]))
 							canSkip = true;
 						break;
 					}
 				case "PVP":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
 						}
 						while (!primaryList.Contains(rearrangedColorList[curIdx]));
-						isCorrect = input == rearrangedColorList[curIdx];
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
 						break;
 					}
 				case "NXP":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = (curIdx + 1) % 6;
 						}
 						while (!primaryList.Contains(rearrangedColorList[curIdx]));
-						isCorrect = input == rearrangedColorList[curIdx];
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
 						break;
 					}
 				case "PVS":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
 						}
 						while (primaryList.Contains(rearrangedColorList[curIdx]));
-						isCorrect = input == rearrangedColorList[curIdx];
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
 						break;
 					}
 				case "NXS":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = (curIdx + 1) % 6;
 						}
 						while (primaryList.Contains(rearrangedColorList[curIdx]));
-						isCorrect = input == rearrangedColorList[curIdx];
+						var selectedColor = rearrangedColorList[curIdx];
+						isCorrect = input == (invertColorButtonPresses ? complementaryCounterparts[selectedColor] : selectedColor);
 						break;
 					}
 				case "OPP":
 					{
-						if (!lastCorrectInputs.Any() || lastCorrectInputs[lastCorrectInputs.Count - 1] == "Inner")
+						if (!lastCorrectInputs.Any() || lastCorrectInputs.Last() == "Inner")
 							isCorrect = input == "Outer";
-						else if (lastCorrectInputs[lastCorrectInputs.Count - 1] == "Outer")
+						else if (lastCorrectInputs.Last() == "Outer")
 							isCorrect = input == "Inner";
 						else
 							isCorrect = input == rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs[currentInputPos - 1])) % 6];
 						break;
 					}
 				case "FIN":
+					{
+						if (legacyUCR) goto case "LEGACY";
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} solved, {2} unsolved, {3} must be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, solvableCount - solvedCount, solvedCount % 2 == 0 ? "Inner Center" : "Outer Center", (solvableCount - solvedCount) % 10);
+						isCorrect = input == (solvedCount % 2 == 0 ? "Inner" : "Outer") && (solvableCount - solvedCount) % 10 == secondsTimer % 10;
+					}
+					break;
 				case "ISH":
 					{
+						if (legacyUCR) goto case "LEGACY";
+						else
+						{
+							int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+							curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
+							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} unsolved, the resulting button should be {2} which much be pressed when the last seconds digit is {3}.", loggingModID, solvableCount - solvedCount, rearrangedColorList[curIdx], (solvableCount - solvedCount) % 10);
+							isCorrect = input == rearrangedColorList[curIdx] && (solvableCount - solvedCount) % 10 == secondsTimer % 10;
+						}
+					}
+					break;
+				case "ALE":
+                    {
+						
+						var lastColoredButtonInputs = lastCorrectInputs.Where(a => baseColorList.Contains(a));
+						int lastColoredIdx = lastColoredButtonInputs.Any() ? Array.IndexOf(rearrangedColorList, lastColoredButtonInputs.Last()) : 0;
+						string goalButton = lastColoredButtonInputs.Count() % 2 == 0 ? rearrangedColorList[(lastColoredIdx + 3) % 6] : complementaryCounterparts[rearrangedColorList[lastColoredIdx]];
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} solved, the resulting button should be {2} which much be pressed when the last seconds digit is {3}.", loggingModID, solvedCount, goalButton, solvedCount % 10);
+						isCorrect = secondsTimer % 10 == solvedCount % 10 && input == goalButton;
+
+					}
+					break;
+				case "SWP":
+                    {
+						var lastColoredButtonInputs = lastCorrectInputs.Where(a => baseColorList.Contains(a));
+						int lastColoredIdx = lastColoredButtonInputs.Any() ? Array.IndexOf(rearrangedColorList, lastColoredButtonInputs.Last()) : 0;
+						isCorrect = input == rearrangedColorList[lastColoredIdx];
+						swapInnerOuterPresses = !swapInnerOuterPresses;
+                    }
+					break;
+				case "INV":
+				case "ERT":
+                    {
+						isCorrect = input == (lastCorrectInputs.Count % 2 == 0 ? "Inner" : "Outer");	
+
+						invertColorButtonPresses = !invertColorButtonPresses;
+                    }
+					break;
+				case "LEGACY":
+					{// The old UCR finale instruction set
 						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
 						curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
-						int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
 						curIdx -= solvedCount % 6;
 						while (curIdx < 0)
 							curIdx += 6;
 						isCorrect = input == rearrangedColorList[curIdx] && (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10 == secondsTimer % 10;
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10);
+						break;
 					}
-					break;
 			}
 		if (isCorrect)
 		{
@@ -1986,13 +3640,15 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: All instructions are handled correctly. You're done.", loggingModID);
 				isFinished = true;
 				modSelf.HandlePass();
-
+				// Comment out the special solve animation since it was not properly animated. (And the fact that it's not worth.)
+				/*
 				if (bombInfo.GetSolvableModuleIDs().Count == bombInfo.GetSolvedModuleIDs().Count && !noCopyright)
 				{
 					mAudio.PlaySoundAtTransform("TheFatRat-TheCalling-Loop", transform);
 					StartCoroutine(HandleSpecialSolveAnim());
 				}
 				else
+				*/
 					StartCoroutine(HandleSolveAnim());
 
 				return;
@@ -2016,6 +3672,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			lastCorrectInputs.Clear();
 			currentInputPos = 0;
 			canSkip = false;
+			swapInnerOuterPresses = false;
+			invertColorButtonPresses = false;
 			localStrikeCount += TimeModeActive ? 1 : 0;
 			StartCoroutine(HandleStrikeAnim());
 			LogCurrentInstruction();
@@ -2053,7 +3711,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			if (progressHandler.curProgress >= progressHandler.maxProgress)
 			{
 				progressHandler.curProgress = 0;
-				currentScreenVal = (currentScreenVal + 1) % 3;
+				currentScreenVal = (currentScreenVal + (inverseAutoCycle ? 3 : 1)) % 4;
 				UpdateSecondaryScreen();
 			}
 		}
@@ -2065,7 +3723,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 	public class UnfairsCruelRevengeSettings
     {
-		public bool noCopyright = true;
+		public bool enableLegacyUCR = false;
+		public string version = "1.3";
     }
 
 	string FormatSecondsToTime(int num)
@@ -2124,7 +3783,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		"Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" " +
 		"To time a specific press, append based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. " +
 		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed.\n"+
-		"Enable autocycle on the screen by using \"!{0} autocycle ##.###\", or turn autocycle off with \"!{0} autocycle off\". Get the colors of the buttons around the module by using \"!{0} colorblind\" or \"!{0} cycle\"";
+		"Enable autocycle on the screen by using \"!{0} autocycle ##.###\", turn autocycle off with \"!{0} autocycle off\", or make the autocycle cycle in the opposite direction with \"!{0} autocycle reverse\". Get the colors of the buttons around the module by using \"!{0} colorblind\" or \"!{0} cycle\"";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string command)
 	{
@@ -2155,10 +3814,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				yield break;
 			}
 		}
-		if (baseCommand.RegexMatch(@"^autocycle (\d+(\.\d+)?|off|disable|deactivate)$"))
+		if (baseCommand.RegexMatch(@"^autocycle (\d+(\.\d+)?|off|disable|deactivate|reverse|flip)$"))
 		{
 			string[] shutoffCommands = { "off", "disable", "deactivate" };
-
+			string[] reverseCommands = { "reverse", "flip"};
 			string curCommand = baseCommand.Split()[1];
 			float cycleSpeed = 0;
 
@@ -2177,6 +3836,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				}
 				yield return null;
 				progressHandler.maxProgress = cycleSpeed;
+				progressHandler.curProgress = 0f;
 				if (!autoCycleEnabled)
 					StartCoroutine(HandleAutoCycleAnim(true));
 				yield return "sendtochat {0}, Auto-Cycle has been enabled/adjusted for Unfair's Cruel Revenge (#{1}) at " + cycleSpeed.ToString("0.00") + " intervals.";
@@ -2192,6 +3852,20 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				yield return null;
 				StartCoroutine(HandleAutoCycleAnim(false));
 				yield return "sendtochat {0}, autocycle has been disabled for Unfair's Cruel Revenge (#{1}).";
+			}
+			else if (reverseCommands.Contains(curCommand))
+			{
+				if (!autoCycleEnabled)
+				{
+					yield return "sendtochaterror Auto-Cycle for Unfair's Cruel Revenge (#{1}) is off.";
+					yield break;
+				}
+				yield return null;
+				inverseAutoCycle = !inverseAutoCycle;
+				progressHandler.curProgress = 0f;
+				if (!autoCycleEnabled)
+					StartCoroutine(HandleAutoCycleAnim(true));
+				yield return "sendtochat {0}, autocycle has been reversed for Unfair's Cruel Revenge (#{1}).";
 			}
 			else
 			{
@@ -2342,7 +4016,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							selectedCommands.Add(outerSelectable);
 							break;
 						case "screen":
-							selectedCommands.Add(idxStrikeSelectable);
+							selectedCommands.Add(idxStrikeSelectableB);
 							break;
 						default:
 							yield return "sendtochaterror You aren't supposed to get this error. If you did, it's a bug, so please contact the developer about this.";

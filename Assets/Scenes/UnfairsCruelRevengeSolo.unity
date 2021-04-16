@@ -188,7 +188,7 @@ Prefab:
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
       propertyPath: AudioClips.Array.size
-      value: 18
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 439642, guid: 8814ea52310d2614a9feda02ec355ae4, type: 2}
       propertyPath: m_LocalPosition.x
@@ -315,7 +315,7 @@ Prefab:
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
       propertyPath: TwitchPlaysMode
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
@@ -416,7 +416,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &2020846808
+--- !u!1001 &2007251624
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -454,13 +454,6 @@ Prefab:
     - target: {fileID: 4168613436998440, guid: 548ecc8579a80174faf45048fdb51c90, type: 2}
       propertyPath: m_RootOrder
       value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 102020130851294860, guid: 548ecc8579a80174faf45048fdb51c90,
-        type: 2}
-      propertyPath: m_Text
-      value: '123456789 | NUMBER
-
-'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 548ecc8579a80174faf45048fdb51c90, type: 2}
