@@ -3037,8 +3037,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				toLog += " Be prepared to swap the button presses for the next set of instructions.";
 				break;
 		}
-		if (swapInnerOuterPresses || invertColorButtonPresses && !new[] { "FIN", "ISH", "ALE" }.Contains(splittedInstructions[currentInputPos]))
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Account for the modifiers that are currently active for the this instruction.", loggingModID);
+		if (swapInnerOuterPresses || invertColorButtonPresses && !lastCommands.Contains(splittedInstructions[currentInputPos]))
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Account for the modifiers that are currently active for this instruction.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Instruction {2} (\"{3}\"): {1}", loggingModID, toLog, currentInputPos + 1, splittedInstructions[currentInputPos]);
 	}
 	bool canSkip = false, swapInnerOuterPresses = false, invertColorButtonPresses = false;
