@@ -116,7 +116,7 @@
                 <p>The module encrypts a string of six distant three-letter-long <span style="text-decoration: underline">instructions</span> with different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
                 <p><strong>ALL ciphers referring to the alphabet refers to the A1Z26 standard for each letter unless stated otherwise. Alphabetical order is ALSO modified for the ciphers!</strong></p>
                 <ul>
-                    <li>The basic order of the given encrypted text is the following: <strong>Original -&gt; Message Splitting (Depending on Time of Activation) -&gt; 1-4x Ciphers For Each -&gt; Concatenated -&gt; Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
+                    <li>The basic order of the given encrypted text is the following: <strong>Original -&gt; 5x Ciphers (Balanced Around 20:00) -&gt; Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
                 </ul>
                 <p><strong>The next pages will go over instruction on how to decrypt the latest version of Unfair's Cruel Revenge. If some information is missing on the module, the defuser may have enabled Legacy Unfair's Cruel Revenge. Check the legacy manual on how to disarm that. You will know if you have legacy Unfair's Cruel Revenge enabled if the following is true: The 4th page is empty except with "=LEGACY=" at the bottom; Page 3 on the module has 2 sets of information dashed out.</strong></p>
             </div>
@@ -143,8 +143,8 @@
                 <p>The positioning of those numbers, the falsely selected word, and the pigpen encrypted letters will vary and may be used to determine how the cipher operates but the base 24 digits and the Ultimate Cipher word will always be in the same position.</p>
                 <p>The fourth page consists of the following in this specific order:</p>
                 <ul>
-                    <li>18 pigpen letters used for encrypting any (10th letters) for Playfair/Four Square Ciphers for the base message</li>
-                    <li>1 to 8 characters used to determine what ciphers were used, surrounded by "=". For the context in the manual, they are referred to as hexadecimal cipher digits.</li>
+                    <li>18 cycling pigpen letters used for encrypting any (10th letters) for Playfair/Four Square Ciphers for the base message. These letters cycle based on the time remaining, with an empty section at 6n+5 seconds remaining denoting the end of the sequence. At 6n seconds remaining, the 1st cipher's substitution letters are shown; 6n+1 seconds, the 2nd cipher's substitution letters, etc.</li>
+                    <li>5 characters used to determine what ciphers were used, surrounded by "=". For the context in the manual, they are referred to as hexadecimal cipher digits.</li>
                 </ul>
                 <img src="img/Unfair's%20Cruel%20Revenge/UCR%20Example%20Mod%20Page.png">
                 <p class="flavour-text">An example of the extra screen is shown here. Here it is showing page 3 with the following in no particular order, the falsely selected word, the consecutive numbers, 12 Pigpen encoded letters, the base-24 number, and the Ultimate Cipher word.</p>
@@ -411,113 +411,68 @@
                 <span class="page-header-section-title">Unfair’s Cruel Revenge</span>
             </div>
             <div class="page-content">
-                <h2>Solving — Step 1: Determining The Selected Ciphers</h2>
+                <h2>Solving — Step 1: Decoding the Selected Ciphers</h2>
                 <table style="margin: auto">
                     <tr>
-                        <th>Countdown Timer<br>Upon Activation</th>
-                        <th>Ciphers Used</th>
-                        <th>Hexadecimal Cipher Length</th>
+                        <th rowspan="2">Encryption Type</th>
+                        <th colspan="3">Character of Reference</th>
                     </tr>
                     <tr>
-                        <th>30:00+&dagger;</th>
-                        <td>1 shared, 2x 3 ciphers</td>
-                        <td>6</td>
+                        <th>Neither</th>
+                        <th>Either</th>
+						<th>Both</th>
                     </tr>
                     <tr>
-                        <th>22:30 - 29:59*</th>
-                        <td>2x 2 ciphers</td>
-                        <td>4</td>
+                        <td>Substitution Playfair Cipher (Key A)</td><td>0</td><td>4</td><td>F</td>
                     </tr>
                     <tr>
-                        <th>15:00 - 22:29</th>
-                        <td>3 ciphers</td>
-                        <td>3</td>
+                        <td>Substitution Playfair Cipher (Key B)</td><td>1</td><td>A</td><td>E</td>
                     </tr>
                     <tr>
-                        <th>7:30 - 14:59</th>
-                        <td>2 ciphers</td>
-                        <td>2</td>
+                        <td>Substitution Playfair Cipher (Key C)</td><td>2</td><td>9</td><td>D</td>
                     </tr>
                     <tr>
-                        <th>0:00 - 7:29</th>
-                        <td>1 cipher</td>
-                        <td>1</td>
-                    </tr>
-                </table>
-                <p>Examine the countdown timer when the bomb has activated. Not to be confused with starting time, which is obtained when the module is loaded in; use that information in the first column and find the cell that fits with that time. Now use that row corresponding to the cell obtained from that time to determine what ciphers are used.</p>
-                <p>&dagger; Use THIS row if the bomb started in Zen/Training Mode. This takes precedence over activation time. You will know when to use this when the strike text's color is <strong style="text-decoration: underline">CYAN</strong> and NOT red.</p>
-                <p>* Use THIS row if the bomb started in Time Mode. This takes precedence over activation time. You will know when to use this when the strike text's color is <strong style="text-decoration: underline">ORANGE</strong> and NOT red.</p>
-                <p>Note: The previous section can be cheated since the length of the hexadecimal cipher number is VERY predictable and easy to determine. Use ONLY the last 2 columns on this table to determine it.</p>
-                <p>If your row obtained from the table contains "#x" for the ciphers that are used, this denotes that the instructions were split and encoded separately before being displayed in Pigpen Cipher as 1 entire message. </p>
-                <p>If you are splitting this into 2 parts, perform a 10-8 split ("ABCDEFGHIJ", "KLMNOPQR") if Blue and Yellow are both on the upper/lower halves of the module or an 8-10 split ("ABCDEFGH", "IJKLMNOPQR") otherwise. Do the same action with the substitution letters.</p>
-                <p>If the defuser has colorblind mode enabled for this module, hovering over the colored button will show the color of that given button for that given position on the top screen.</p>
-            </div>
-            <div class="page-footer relative-footer">Page 4 of 17</div>
-        </div>
-        <div class="page page-bg-02">
-            <div class="page-header">
-                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
-                <span class="page-header-section-title">Unfair’s Cruel Revenge</span>
-            </div>
-            <div class="page-content">
-                <h2>Solving — Step 1.5: Decoding the Selected Ciphers</h2>
-                <table style="margin: auto">
-                    <tr>
-                        <th>Encryption Type</th>
-                        <th>Character of Reference</th>
+                        <td>Caesar Cipher (Value A)</td><td>3</td><td>8</td><td>C</td>
                     </tr>
                     <tr>
-                        <td>Substitution Playfair Cipher (Key A)</td><td>0</td>
+                        <td>ROT13 Cipher</td><td>4</td><td>1</td><td>B</td>
                     </tr>
                     <tr>
-                        <td>Substitution Playfair Cipher (Key B)</td><td>1</td>
+                        <td>Affine Cipher (Value X)</td><td>5</td><td>D</td><td>A</td>
                     </tr>
                     <tr>
-                        <td>Substitution Playfair Cipher (Key C)</td><td>2</td>
+                        <td>Atbash Cipher</td><td>6</td><td>3</td><td>9</td>
                     </tr>
                     <tr>
-                        <td>Caesar Cipher (Value A)</td><td>3</td>
+                        <td>Basic Columnar Transposition</td><td>7</td><td>2</td><td>8</td>
                     </tr>
                     <tr>
-                        <td>ROT13 Cipher</td><td>4</td>
+                        <td>Myszkowski Transposition</td><td>8</td><td>5</td><td>7</td>
                     </tr>
                     <tr>
-                        <td>Affine Cipher (Value X)</td><td>5</td>
+                        <td>Anagram Shuffler</td><td>9</td><td>E</td><td>6</td>
                     </tr>
                     <tr>
-                        <td>Atbash Cipher</td><td>6</td>
+                        <td>Scytale Transposition</td><td>A</td><td>6</td><td>5</td>
                     </tr>
                     <tr>
-                        <td>Basic Columnar Transposition</td><td>7</td>
+                        <td>Autokey Mechanical Cipher</td><td>B</td><td>C</td><td>4</td>
                     </tr>
                     <tr>
-                        <td>Myszkowski Transposition</td><td>8</td>
+                        <td>Substitution Four Square Cipher (Keys ?)</td><td>C</td><td>7</td><td>3</td>
                     </tr>
                     <tr>
-                        <td>Anagram Shuffler</td><td>9</td>
+                        <td>Redefence Transposition</td><td>D</td><td>F</td><td>2</td>
                     </tr>
                     <tr>
-                        <td>Scytale Transposition</td><td>A</td>
+                        <td>Monoalphabetic Substitution</td><td>E</td><td>B</td><td>1</td>
                     </tr>
                     <tr>
-                        <td>Autokey Mechanical Cipher</td><td>B</td>
-                    </tr>
-                    <tr>
-                        <td>Substitution Four Square Cipher (Keys ?)</td><td>C</td>
-                    </tr>
-                    <tr>
-                        <td>Redefence Transposition</td><td>D</td>
-                    </tr>
-                    <tr>
-                        <td>Monoalphabetic Substitution</td><td>E</td>
-                    </tr>
-                    <tr>
-                        <td>Running Key Alberti Cipher</td><td>F</td>
+                        <td>Running Key Alberti Cipher</td><td>F</td><td>0</td><td>0</td>
                     </tr>
 
                 </table>
-                <p>The table above shows all possible ciphers that can be used on Unfair’s Cruel Revenge. The original set of instructions were encrypted by the ciphers determined by the hexadecimal number, from left to right for each set, and then encrypted with Pigpen Cipher to be displayed on the module after combining the encrypted messages together. The expert will need to grab those ciphers that are used on this module, and then decrypt them by reversing the procedure. For example, if the determined ciphers in the list are ROT13 Cipher, Atbash Cipher, Autokey Mechanical Cipher, Anagram Shuffler, and Scytale Transposition, the order to decrypt this is Scytale Transposition, Anagram Shuffler, Autokey Mechanical Cipher, Atbash Cipher, ROT13 Cipher in that order.</p>
-                <p>To do so split the hexadecimal characters into equal parts and decode each of them to get the ciphers used for each set, where the left-most set of ciphers are used for the first set of messages, the right-most set of ciphers are used for the last set of messages, and so on.</p>
+                <p>The table above shows all possible ciphers that can be used on Unfair’s Cruel Revenge. The original set of instructions were encrypted by the ciphers determined by the cipher digits, from left to right, and then encrypted with Pigpen Cipher to be displayed on the module. If both the module ID and the strike counter are shown in Arabic numbers, the "Both" column is used. Otherwise if either the strike counter or the module ID is shown in Arabic numbers, the "Either" column is used. Otherwise the "Neither" column is used. The expert will need to grab those ciphers that are used on this module, and then decrypt them by reversing the procedure. For example, if the determined ciphers in the list are ROT13 Cipher, Atbash Cipher, Autokey Mechanical Cipher, Anagram Shuffler, and Scytale Transposition, the order to decrypt this is Scytale Transposition, Anagram Shuffler, Autokey Mechanical Cipher, Atbash Cipher, ROT13 Cipher in that order.</p>
             </div>
             <div class="page-footer relative-footer">Page 4 of 17</div>
         </div>

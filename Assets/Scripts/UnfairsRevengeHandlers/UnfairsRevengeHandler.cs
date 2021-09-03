@@ -52,7 +52,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	List<string> lastCorrectInputs = new List<string>(), splittedInstructions = new List<string>();
 	void Awake()
 	{
-		
+
 	}
 	// Use this for initialization
 	void Start() {
@@ -75,7 +75,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			StopCoroutine(currentlyRunning);
 
 			PrepModule();
-			
+
 			hasStarted = true;
 			LogCurrentInstruction();
 			UpdateStatusIndc();
@@ -178,8 +178,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		strikeIDDisplay.text = FitToScreen(toDisplay, 5);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Mod ID grabbed: {1} Keep in mind this can differ from the ID used for logging!", loggingModID, selectedModID);
 
-		
-		
+
+
 		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------Caesar Offset Calculations----------", loggingModID);
 		int offset = 0;
 		char[] vowelList = { 'A', 'E', 'I', 'O', 'U' };
@@ -261,7 +261,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		string keyAString = obtainKeyA();
 		string keyBString = keyBTable[idxStartDOW, monthOfStart - 1];
 		string keyCString = EncryptUsingPlayfair(keyAString, keyBString, true);
-		
+
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key A: {1}", loggingModID, keyAString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key B: {1}", loggingModID, keyBString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Key C: {1}", loggingModID, keyCString);
@@ -323,26 +323,26 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	{
 
 		/* Example:
-		 * 
+		 *
 		 * Keyword: UNFAIRCIPHER
 		 * Keyword after removing duplicate letters: UNFAIRCPHE
-		 * 
+		 *
 		 * Grid when using keyword:
 		 * U N F A I
 		 * R C P H E
 		 * B D G K L
 		 * M O Q S T
 		 * V W X Y Z
-		 * 
+		 *
 		 * On a rectangular/square grid, this can be used to grab:
 		 * - The row index of the given letter
 		 * - The col index of the given letter
-		 * 
+		 *
 		 * To Encrypt: BENT ON HER HEELS
 		 * Key Pairs: BE NT ON HE RH EE LS
 		 * Key Pairs after dupe filtering: BE NT ON HE RH EX LS
 		 * Expected Result: LR IO WC ER PZ KT
-		 * 
+		 *
 		 */
 		string playfairGridBase = keyword.Replace('J','I').Distinct().Join("") + baseAlphabet.Replace('J', 'I').Distinct().Where(a => !keyword.Replace('J', 'I').Distinct().Contains(a)).Join("");
 		if (logSquares)
@@ -397,7 +397,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	string obtainKeyA()
 	{
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
-		
+
 		string returningString = "";
 		string hexDecimalString = "0123456789ABCDEF";
 		string curSerNo = bombInfo.GetSerialNumber();
@@ -683,11 +683,11 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		int animLength = 60;
         for (float x = 0; x <= 1f; x += Time.deltaTime)
 		{
-			float curScale = Mathf.Pow(x, 1);
+			float curScale = x;
 			entireCircle.transform.localScale = new Vector3(curScale, curScale, curScale);
 			if (x != animLength)
 				entireCircle.transform.localEulerAngles = Vector3.up * 720 * (1f - x);
-			float currentOffset = Mathf.Pow(x - 1, 2f);
+			float currentOffset = Easing.InOutQuad(1f, 0f, 1f, x);
 			entireCircle.transform.localPosition = new Vector3(0, 5 * currentOffset, 0);
 			yield return null;
 		}
@@ -727,7 +727,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	}
 	void LogCurrentInstruction()
 	{
-		if (isFinished) return;
+		if (isFinished || !hasStarted) return;
 		string[] rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToArray();
 		string toLog = "This is an example of logging a current instruction.";
 		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
@@ -847,10 +847,158 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		}
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Instruction {2} (\"{3}\"): {1}", loggingModID, toLog, currentInputPos + 1, splittedInstructions[currentInputPos]);
 	}
+	bool IsCurInstructionCorrect(string input)
+	{
+		if (isFinished || !hasStarted) return true;
+		string[] rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToArray();
+		bool isCorrect = true;
+		//Debug.LogFormat("[Unfair's Revenge #{0}]: Pressing the {1} button at {2} on the countdown timer...", loggingModID, input, bombInfo.GetFormattedTime());
+		int secondsTimer = (int)bombInfo.GetTime() % 60;
+		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
+		string[] finaleInstructions = { "FIN", "ISH" };
+		if (canSkip)
+		{
+			isCorrect = input == baseColorList[3];
+			canSkip = false;
+		}
+		else
+			switch (splittedInstructions[currentInputPos])
+			{
+				case "PCR":
+					isCorrect = input == baseColorList[0];
+					break;
+				case "PCG":
+					isCorrect = input == baseColorList[2];
+					break;
+				case "PCB":
+					isCorrect = input == baseColorList[4];
+					break;
+				case "SCC":
+					isCorrect = input == baseColorList[3];
+					break;
+				case "SCM":
+					isCorrect = input == baseColorList[5];
+					break;
+				case "SCY":
+					isCorrect = input == baseColorList[1];
+					break;
+				case "SUB":
+					isCorrect = input == "Outer" && secondsTimer % 11 == 0;
+					break;
+				case "MIT":
+					isCorrect = input == "Inner" && secondsTimer % 10 == (selectedModID + 1 + currentInputPos + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10;
+					break;
+				case "PRN":
+					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ? "Inner" : "Outer");
+					break;
+				case "CHK":
+					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ? "Outer" : "Inner");
+					break;
+				case "BOB":
+					isCorrect = input == "Inner";
+					if (bombInfo.IsIndicatorOn(Indicator.BOB) && bombInfo.GetBatteryCount() == 4 && bombInfo.GetBatteryHolderCount() == 2 && bombInfo.GetIndicators().Count() == 1)
+					{
+						//Debug.LogFormat("[Unfair's Revenge #{0}]: BOB is nice today. He will make you skip the rest of the instructions.", loggingModID);
+						currentInputPos = splittedInstructions.Count;
+					}
+					break;
+				case "REP":
+				case "EAT":
+					if (!lastCorrectInputs.Any())
+						isCorrect = input == "Inner";
+					else
+						isCorrect = input == lastCorrectInputs.Last();
+					break;
+				case "STR":
+				case "IKE":
+					{
+						int strikeCount = TimeModeActive ? localStrikeCount : bombInfo.GetStrikes();
+						string resultingButton = rearrangedColorList[(strikeCount + Array.IndexOf(rearrangedColorList, baseColorList[0])) % 6];
+						//Debug.LogFormat("[Unfair's Revenge #{0}]: At {1} strike(s) the resulting button should be {2}.", loggingModID, strikeCount, resultingButton);
+						isCorrect = input == resultingButton;
+						break;
+					}
+				case "SIG":
+					{
+						isCorrect = input == "Inner";
+						if (currentInputPos + 1 < splittedInstructions.Count && !finaleInstructions.Contains(splittedInstructions[currentInputPos + 1]))
+							canSkip = true;
+						break;
+					}
+				case "PVP":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
+						}
+						while (!primaryList.Contains(rearrangedColorList[curIdx]));
+						isCorrect = input == rearrangedColorList[curIdx];
+						break;
+					}
+				case "NXP":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = (curIdx + 1) % 6;
+						}
+						while (!primaryList.Contains(rearrangedColorList[curIdx]));
+						isCorrect = input == rearrangedColorList[curIdx];
+						break;
+					}
+				case "PVS":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
+						}
+						while (primaryList.Contains(rearrangedColorList[curIdx]));
+						isCorrect = input == rearrangedColorList[curIdx];
+						break;
+					}
+				case "NXS":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = (curIdx + 1) % 6;
+						}
+						while (primaryList.Contains(rearrangedColorList[curIdx]));
+						isCorrect = input == rearrangedColorList[curIdx];
+						break;
+					}
+				case "OPP":
+					{
+						if (!lastCorrectInputs.Any() || lastCorrectInputs[lastCorrectInputs.Count - 1] == "Inner")
+							isCorrect = input == "Outer";
+						else if (lastCorrectInputs[lastCorrectInputs.Count - 1] == "Outer")
+							isCorrect = input == "Inner";
+						else
+							isCorrect = input == rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs[currentInputPos - 1])) % 6];
+						break;
+					}
+				case "FIN":
+				case "ISH":
+					{
+						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
+						int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
+						curIdx -= solvedCount % 6;
+						while (curIdx < 0)
+							curIdx += 6;
+						isCorrect = input == rearrangedColorList[curIdx] && (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10 == secondsTimer % 10;
+						//Debug.LogFormat("[Unfair's Revenge #{0}]: At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10);
+					}
+					break;
+			}
+		return isCorrect;
+	}
 	bool canSkip = false;
 	void ProcessInstruction(string input)
 	{
-		if (isFinished) return;
+		if (isFinished || !hasStarted) return;
 		string[] rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToArray();
 		bool isCorrect = true;
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Pressing the {1} button at {2} on the countdown timer...", loggingModID, input, bombInfo.GetFormattedTime());
@@ -1058,11 +1206,11 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 
 	string FormatSecondsToTime(int num)
 	{
-		return string.Format("{0}:{1}",num/60,num%60);
+        return string.Format("{0}:{1}", num / 60, (num % 60).ToString("00"));
 	}
 	string FormatSecondsToTime(long num)
 	{
-		return string.Format("{0}:{1}", num / 60, num % 60);
+		return string.Format("{0}:{1}", num / 60, (num % 60).ToString("00"));
 	}
 	// TP Handling Begins here
 	void TwitchHandleForcedSolve()
@@ -1147,7 +1295,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			}
 			else if (partTrimmed.RegexMatch(@"^(r(ed)?|g(reen)?|b(lue)?|c(yan)?|m(agenta)?|y(ellow)?|inner|outer)( (at|on))?( [0-5][0-9])+$"))
 			{
-				
+
 				List<long> possibleTimes = new List<long>();
 				for (int idx = partOfPartTrimmed.Length - 1; idx > 0; idx--)
 				{
@@ -1235,7 +1383,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				if (hasStruck) yield break;
 				if (timeThresholds[x].Any())
 				{
-					
+
 					List<long> currentTimeThresholds = timeThresholds[x].Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList();
 					if (!currentTimeThresholds.Any())
 					{
@@ -1279,6 +1427,14 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					while ((long)bombInfo.GetTime() != targetTime);
 					if (canPlayWaitingMusic)
 						yield return "end waiting music";
+				}
+
+				var buttonPressed = selectedCommands[x] == innerRing ? "Inner" :
+					selectedCommands[x] == outerSelectable ? "Outer" :
+					colorButtonSelectables.Contains(selectedCommands[x]) ? baseColorList[idxColorList[Array.IndexOf(colorButtonSelectables, selectedCommands[x])]] : "???";
+				if (!IsCurInstructionCorrect(buttonPressed) && selectedCommands.Count > 1 && buttonPressed != "???")
+				{
+					yield return string.Format("strikemessage by incorrectly pressing {0} on {1} after {2} press(es) in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1);
 				}
 				yield return null;
 				selectedCommands[x].OnInteract();
