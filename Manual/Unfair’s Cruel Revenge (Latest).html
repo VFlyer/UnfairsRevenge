@@ -55,6 +55,10 @@
         {
             margin-top: 0%;
         }
+        .pigpenimg
+        {
+            width: 100%;
+        }
     </style>
     <script>
         function ResetAffineTable()
@@ -420,7 +424,7 @@
                     <tr>
                         <th>Neither</th>
                         <th>Either</th>
-						<th>Both</th>
+                        <th>Both</th>
                     </tr>
                     <tr>
                         <td>Substitution Playfair Cipher (Key A)</td><td>0</td><td>4</td><td>F</td>
@@ -484,7 +488,7 @@
             <div class="page-content">
                 <h2>Solving — Step 2: Pigpen Cipher</h2>
                 <p>Convert the symbols on the top screen into letters using the chart below.</p>
-                <img src="img/Ultimate Cipher/PigPenKey.png" width="100%" alt="A pigpen encryption table would be shown here.">
+                <img class="pigpenimg" src="img/Ultimate Cipher/PigPenKey.png" alt="A pigpen encryption table would be shown here.">
             </div>
             <div class="page-footer relative-footer">Page 6 of 17</div>
         </div>
@@ -1078,70 +1082,72 @@
                 <h3>Example: Myszkowski Transposition</h3>
                 <p>The plain text used for this example is "BOBRAN FASTER THANON EHORSE." The keyword used is "PAPERS" using the Modern English Alphabet for encrypting. The number key obtained from this from "PAPERS" is "313245." The text when encrypted reads "OAHH RTNR BBFS TAEO AEOS NRNE." Spaces are provided in the quotes for readability for decrypting and encrypting.</p>
                 <table style="border-style: hidden; margin: auto">
-                    <td style="border-right-style: hidden">
-                        <table style="text-align: center">
-                            <tr>
-                                <th>P</th>
-                                <th>A</th>
-                                <th>P</th>
-                                <th>E</th>
-                                <th>R</th>
-                                <th>S</th>
-                            </tr>
-                            <tr  style="font-weight: bold">
-                                <td>3</td>
-                                <td>1</td>
-                                <td>3</td>
-                                <td>2</td>
-                                <td>4</td>
-                                <td>5</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td>
-                        <table style="text-align: center">
-                            <tr>
-                                <th>3</th>
-                                <th>1</th>
-                                <th>3</th>
-                                <th>2</th>
-                                <th>4</th>
-                                <th>5</th>
-                            </tr>
-                            <tr>
-                                <td>B</td>
-                                <td>O</td>
-                                <td>B</td>
-                                <td>R</td>
-                                <td>A</td>
-                                <td>N</td>
-                            </tr>
-                            <tr>
-                                <td>F</td>
-                                <td>A</td>
-                                <td>S</td>
-                                <td>T</td>
-                                <td>E</td>
-                                <td>R</td>
-                            </tr>
-                            <tr>
-                                <td>T</td>
-                                <td>H</td>
-                                <td>A</td>
-                                <td>N</td>
-                                <td>O</td>
-                                <td>N</td>
-                            </tr>
-                            <tr>
-                                <td>E</td>
-                                <td>H</td>
-                                <td>O</td>
-                                <td>R</td>
-                                <td>S</td>
-                                <td>E</td>
-                            </tr>
-                        </table>
-                    </td>
+                    <tr>
+                        <td style="border-right-style: hidden">
+                            <table style="text-align: center">
+                                <tr>
+                                    <th>P</th>
+                                    <th>A</th>
+                                    <th>P</th>
+                                    <th>E</th>
+                                    <th>R</th>
+                                    <th>S</th>
+                                </tr>
+                                <tr  style="font-weight: bold">
+                                    <td>3</td>
+                                    <td>1</td>
+                                    <td>3</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table style="text-align: center">
+                                <tr>
+                                    <th>3</th>
+                                    <th>1</th>
+                                    <th>3</th>
+                                    <th>2</th>
+                                    <th>4</th>
+                                    <th>5</th>
+                                </tr>
+                                <tr>
+                                    <td>B</td>
+                                    <td>O</td>
+                                    <td>B</td>
+                                    <td>R</td>
+                                    <td>A</td>
+                                    <td>N</td>
+                                </tr>
+                                <tr>
+                                    <td>F</td>
+                                    <td>A</td>
+                                    <td>S</td>
+                                    <td>T</td>
+                                    <td>E</td>
+                                    <td>R</td>
+                                </tr>
+                                <tr>
+                                    <td>T</td>
+                                    <td>H</td>
+                                    <td>A</td>
+                                    <td>N</td>
+                                    <td>O</td>
+                                    <td>N</td>
+                                </tr>
+                                <tr>
+                                    <td>E</td>
+                                    <td>H</td>
+                                    <td>O</td>
+                                    <td>R</td>
+                                    <td>S</td>
+                                    <td>E</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
                 </table>
             </div>
             <div class="page-footer relative-footer">Page 9 of 17</div>
@@ -1791,7 +1797,7 @@
                 <p class="flavour-text">Did you know that "Orange" is an anagram of "A Goner?"</p>
                 <table style="width: 100%">
                     <tr>
-                        <th colspan="8">Anagrams</th>
+                        <th colspan="6">Anagrams</th>
                     </tr>
                     <tr>
                         <td>TAMERS</td>
@@ -2247,10 +2253,11 @@
                     <li><em><strong>PRN:</strong></em> Press <strong>Inner Center</strong> if (Module ID % 20) is a prime number; otherwise press <strong>Outer Center</strong>.</li>
                     <li><em><strong>CHK:</strong></em> Press <strong>Outer Center</strong> if (Module ID % 20) is a prime number; otherwise press <strong>Inner Center</strong>.</li>
                     <li><em><strong>REP</strong></em> or <em><strong>EAT:</strong></em> Repeat the last input, or press <strong>Inner Center</strong> if this is the first instruction. Ignore timing constraints.</li>
-                    <li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from the last colored button you pressed or <span class="red">Red</span> if you have not pressed any colored buttons yet, count as many colored buttons counter-clockwise as there are strikes and press the resulting button. In the case of 0 strikes, press the starting button.</li>
+                    <li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from the last colored button you pressed or <span class="red">Red</span> if you have not pressed any colored buttons yet, count as many colored buttons counter-clockwise as there are strikes and press the resulting button. In the case of 0 strikes, press the starting button.
                     <ul>
                         <li>For these instructions, refer to the <span class="red">Strike Counter</span> on the screen to the right of the module itself.</li>
-                    </ul>
+                    </ul></li>
+                    
                 </ul>
             </div>
             <div class="page-footer relative-footer">Page 15 of 17</div>

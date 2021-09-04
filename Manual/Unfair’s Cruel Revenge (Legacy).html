@@ -55,6 +55,10 @@
         {
             margin-top: 0%;
         }
+        .pigpenimg
+        {
+            width: 100%;
+        }
     </style>
     <script>
         function ResetAffineTable()
@@ -563,7 +567,7 @@
             <div class="page-content">
                 <h2>Solving — Step 2: Pigpen Cipher</h2>
                 <p>Convert the symbols on the top screen into letters using the chart below.</p>
-                <img src="img/Ultimate Cipher/PigPenKey.png" width="100%" alt="A pigpen encryption table would be shown here.">
+                <img class="pigpenimg" src="img/Ultimate Cipher/PigPenKey.png" alt="A pigpen encryption table would be shown here.">
             </div>
             <div class="page-footer relative-footer">Page 6 of 17</div>
         </div>
@@ -767,7 +771,7 @@
                 <h2>Solving — Step ?: ROT13 Cipher</h2>
                 <p>Each letter is encrypted by using Caesar Cipher with a key of 13 on the given alphabet, wrapping around to the first letter if needed.</p>
                 <p>To <em>decrypt,</em> simply do Caesar Cipher with a key of 13.</p>
-				<h2>Solving — Step ?: Scytale Transposition</h2>
+                <h2>Solving — Step ?: Scytale Transposition</h2>
                 <ol>
                     <li>Add 2 to (the number of ports on the bomb modulo 4); this is how many rows you will need to make.</li>
                     <li>Create dashes that match the length of the string, and to match the height of the theoretical cylinder. The dashes should start on the top-left and repeat every X letters, based on the height of the cylinder.</li>
@@ -1200,70 +1204,72 @@
                 <h3>Example: Myszkowski Transposition</h3>
                 <p>The plain text used for this example is "BOBRAN FASTER THANON EHORSE." The keyword used is "PAPERS" using the Modern English Alphabet for encrypting. The number key obtained from this from "PAPERS" is "313245." The text when encrypted reads "OAHH RTNR BBFS TAEO AEOS NRNE." Spaces are provided in the quotes for readability for decrypting and encrypting.</p>
                 <table style="border-style: hidden; margin: auto">
-                    <td style="border-right-style: hidden">
-                        <table style="text-align: center">
-                            <tr>
-                                <th>P</th>
-                                <th>A</th>
-                                <th>P</th>
-                                <th>E</th>
-                                <th>R</th>
-                                <th>S</th>
-                            </tr>
-                            <tr  style="font-weight: bold">
-                                <td>3</td>
-                                <td>1</td>
-                                <td>3</td>
-                                <td>2</td>
-                                <td>4</td>
-                                <td>5</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td>
-                        <table style="text-align: center">
-                            <tr>
-                                <th>3</th>
-                                <th>1</th>
-                                <th>3</th>
-                                <th>2</th>
-                                <th>4</th>
-                                <th>5</th>
-                            </tr>
-                            <tr>
-                                <td>B</td>
-                                <td>O</td>
-                                <td>B</td>
-                                <td>R</td>
-                                <td>A</td>
-                                <td>N</td>
-                            </tr>
-                            <tr>
-                                <td>F</td>
-                                <td>A</td>
-                                <td>S</td>
-                                <td>T</td>
-                                <td>E</td>
-                                <td>R</td>
-                            </tr>
-                            <tr>
-                                <td>T</td>
-                                <td>H</td>
-                                <td>A</td>
-                                <td>N</td>
-                                <td>O</td>
-                                <td>N</td>
-                            </tr>
-                            <tr>
-                                <td>E</td>
-                                <td>H</td>
-                                <td>O</td>
-                                <td>R</td>
-                                <td>S</td>
-                                <td>E</td>
-                            </tr>
-                        </table>
-                    </td>
+                    <tr>
+                        <td style="border-right-style: hidden">
+                            <table style="text-align: center">
+                                <tr>
+                                    <th>P</th>
+                                    <th>A</th>
+                                    <th>P</th>
+                                    <th>E</th>
+                                    <th>R</th>
+                                    <th>S</th>
+                                </tr>
+                                <tr  style="font-weight: bold">
+                                    <td>3</td>
+                                    <td>1</td>
+                                    <td>3</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table style="text-align: center">
+                                <tr>
+                                    <th>3</th>
+                                    <th>1</th>
+                                    <th>3</th>
+                                    <th>2</th>
+                                    <th>4</th>
+                                    <th>5</th>
+                                </tr>
+                                <tr>
+                                    <td>B</td>
+                                    <td>O</td>
+                                    <td>B</td>
+                                    <td>R</td>
+                                    <td>A</td>
+                                    <td>N</td>
+                                </tr>
+                                <tr>
+                                    <td>F</td>
+                                    <td>A</td>
+                                    <td>S</td>
+                                    <td>T</td>
+                                    <td>E</td>
+                                    <td>R</td>
+                                </tr>
+                                <tr>
+                                    <td>T</td>
+                                    <td>H</td>
+                                    <td>A</td>
+                                    <td>N</td>
+                                    <td>O</td>
+                                    <td>N</td>
+                                </tr>
+                                <tr>
+                                    <td>E</td>
+                                    <td>H</td>
+                                    <td>O</td>
+                                    <td>R</td>
+                                    <td>S</td>
+                                    <td>E</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
                 </table>
             </div>
             <div class="page-footer relative-footer">Page 9 of 17</div>
@@ -1680,7 +1686,7 @@
                 <p class="flavour-text">Did you know that "Orange" is an anagram of "A Goner?"</p>
                 <table style="width: 100%">
                     <tr>
-                        <th colspan="8">Anagrams</th>
+                        <th colspan="6">Anagrams</th>
                     </tr>
                     <tr>
                         <td>TAMERS</td>
@@ -1901,13 +1907,13 @@
                     </table>
                     </li>
                     <li>Now refer to <a href="Orange%20Cipher.html">Orange Cipher</a> in order to decrypt this. This page will repeat the procedure from Step 3’s Orange Cipher if the link is broken.</li>
-                    <li>To <em>decrypt,</em> split the encrypted string into pairs, making sure all letters from the 10th letter in the alphabet are substituted with the 9th letter in the alphabet. Then for each pair:</li>
-                    <ul>
+                    <li>To <em>decrypt,</em> split the encrypted string into pairs, making sure all letters from the 10th letter in the alphabet are substituted with the 9th letter in the alphabet. Then for each pair:<ul>
                         <li>Grab the row and column of the 1st letter in the pair from the TR square.</li>
                         <li>Grab the row and column of the 2nd letter in the pair from the BL square.</li>
                         <li>Use the row position of the 1st letter and the column position of the 2nd letter to get your 1st decrypted letter in the TL square for that pair.</li>
                         <li>Use the column position of the 1st letter and the row position of the 2nd letter to get your 2nd decrypted letter in the BR square for that pair.</li>
                     </ul>
+                    </li>
                     <li>Concatenate the decrypted pairs to get your <em>decrypted</em> string. Account for 9th/10th letters when decrypting.</li>
                 </ol>
             </div>
@@ -1941,10 +1947,11 @@
                     <li><em><strong>PRN:</strong></em> Press <strong>Inner Center</strong> if (Module ID % 20) is a prime number; otherwise press <strong>Outer Center</strong>.</li>
                     <li><em><strong>CHK:</strong></em> Press <strong>Outer Center</strong> if (Module ID % 20) is a prime number; otherwise press <strong>Inner Center</strong>.</li>
                     <li><em><strong>REP</strong></em> or <em><strong>EAT:</strong></em> Repeat the last input, or press <strong>Inner Center</strong> if this is the first instruction. Ignore timing constraints.</li>
-                    <li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from the last colored button you pressed or <span class="red">Red</span> if you have not pressed any colored buttons yet, count as many colored buttons counter-clockwise as there are strikes and press the resulting button. In the case of 0 strikes, press the starting button.</li>
+                    <li><em><strong>STR</strong></em> or <em><strong>IKE:</strong></em> Starting from the last colored button you pressed or <span class="red">Red</span> if you have not pressed any colored buttons yet, count as many colored buttons counter-clockwise as there are strikes and press the resulting button. In the case of 0 strikes, press the starting button.
                     <ul>
                         <li>For these instructions, refer to the <span class="red">Strike Counter</span> on the screen to the right of the module itself.</li>
-                    </ul>
+                    </ul></li>
+
                 </ul>
             </div>
             <div class="page-footer relative-footer">Page 15 of 17</div>
@@ -2114,18 +2121,18 @@
                     </li>
                     <li>In the following text, use the instructions marked (d) when <em>decrypting</em> and those marked (e) when <em>encrypting</em>.
                     </li>
-                    <li>Split the <strong>message</strong> into character pairs. <em>If you cannot form a pair, add <strong>the 24th letter in the alphabet</strong></em>. For each pair:</li>
-                    <ul>
+                    <li>Split the <strong>message</strong> into character pairs. <em>If you cannot form a pair, add <strong>the 24th letter in the alphabet</strong></em>. For each pair:                   <ul>
                         <li>If the letters are exactly identical, do not modify them at all.</li>
                         <li>If the letters appear on the same row of your matrix, replace them with the letters to their immediate <em>left</em> (d)/<em>right</em> (e) respectively, wrapping around to the other side of the row if necessary.</li>
                         <li>If the letters are on the same column of your matrix, replace them with the letters immediately <em>above</em> (d)/<em>below</em> (e), wrapping to the other side of the column if necessary.</li>
                         <li>If the letters are on different rows and columns, replace each of them with the letter on the same row but in the column of the other letter in the original pair.</li>
-                    </ul>
+                    </ul></li>
                     <li>Drop any final (24th letter)’s that don’t make sense and locate any (9th letter)’s that should be (10th letter)’s if necessary.
                     </li>
                 </ul>
             </div>
             <div class="page-footer relative-footer">Page 17 of 17</div>
         </div>
+    </div>
 </body>
 </html>
