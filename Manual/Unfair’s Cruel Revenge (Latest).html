@@ -120,7 +120,7 @@
                 <p>The module encrypts a string of six distant three-letter-long <span style="text-decoration: underline">instructions</span> with different ciphers, using different <strong>keys</strong> for each. Enter the correct combination of inputs to disarm the module.</p>
                 <p><strong>ALL ciphers referring to the alphabet refers to the A1Z26 standard for each letter unless stated otherwise. Alphabetical order is ALSO modified for the ciphers!</strong></p>
                 <ul>
-                    <li>The basic order of the given encrypted text is the following: <strong>Original -&gt; 5x Ciphers (Balanced Around 20:00) -&gt; Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
+                    <li>The basic order of the given encrypted text is the following: <strong>Original -&gt; 5x Ciphers (2 Transpositions, 1 Long Cipher, 2 Short Ciphers) -&gt; Pigpen Ciphered.</strong> Reverse the order to obtain the <strong>original</strong> instruction string.</li>
                 </ul>
                 <p><strong>The next pages will go over instruction on how to decrypt the latest version of Unfair's Cruel Revenge. If some information is missing on the module, the defuser may have enabled Legacy Unfair's Cruel Revenge. Check the legacy manual on how to disarm that. You will know if you have legacy Unfair's Cruel Revenge enabled if the following is true: The 4th page is empty except with "=LEGACY=" at the bottom; Page 3 on the module has 2 sets of information dashed out.</strong></p>
             </div>
@@ -134,7 +134,7 @@
             <div class="page-content squeeze">
                 <h2>Solving — Step 0: Understanding The Extra Screen</h2>
                 <p>The extra screen has a nifty indicator on the side that is used to indicate what page you are on currently. The page the defuser is currently on is marked in white with the first LED on the top denoting the first page.</p>
-                <p>There are four pages that the defuser can cycle to by selecting the top or bottom halves of the screen to cycle the pages up or down respectively. (down going to the next page, up going to the previous page.)</p>
+                <p>There are four pages that the defuser can cycle to by selecting the top or bottom halves of the screen to cycle the pages up or down respectively. (Down going to the next page; up going to the previous page.)</p>
                 <p>The first page will show the Module ID, which is shown in Broken or Fixed Roman Numerals or in Arabic Numerals; the second page will show the Strike Counter, which is shown in Broken or Fixed Roman Numerals or in Arabic Numerals. In addition, the second page will have its text colored differently depending on what mode it has started in.</p>
                 <p>The third page on the other hand consists of the following in no particular order:</p>
                 <ul>
@@ -142,7 +142,7 @@
                     <li>A falsely selected word from <a href="Word%20Search.html">Word Search</a></li>
                     <li>12 Pigpen encrypted letters for Four Square Cipher</li>
                     <li>7 base-24 digits used for obtaining Key A</li>
-                    <li>And a decrypted word from an older version of <a href="Ultimate%20Cipher.html">Ultimate Cipher</a>.</li>
+                    <li>And a decrypted word from an old condensed manual of <a href="Ultimate%20Cipher%20condensed%20interactive%20(Fang).html">Ultimate Cipher</a>.</li>
                 </ul>
                 <p>The positioning of those numbers, the falsely selected word, and the pigpen encrypted letters will vary and may be used to determine how the cipher operates but the base 24 digits and the Ultimate Cipher word will always be in the same position.</p>
                 <p>The fourth page consists of the following in this specific order:</p>
@@ -165,7 +165,7 @@
                 <p>You are going to need to obtain these keys and values in order use the ciphers later on.</p>
                 <h3>Key A</h3>
                 <ol>
-                    <li>Start 6 base-24 digits on the module for key A. You can find this to the left of the Ultimate Cipher decrypted word.</li>
+                    <li>Start with 7 base-24 digits on the module for key A. You can find this to the left of the Ultimate Cipher decrypted word.</li>
                     <li>Convert this base-24 number into <strong>hexadecimal.</strong> You can do this by converting the base-24 value into base-10 and then converting the base-10 value into hexadecimal. Refer to <span class="itil">Appendix HexDex</span> for instructions to convert base-10 into hexadecimal and <span class="itil">Appendix Base-24 Conversion</span> for converting base-24 into base-10.</li>
                     <li>Now read the string of hexadecimal digits as a string of decimal digits and letters. Going from left to right, for every digit:
                         <ul>
@@ -476,7 +476,7 @@
                     </tr>
 
                 </table>
-                <p>The table above shows all possible ciphers that can be used on Unfair’s Cruel Revenge. The original set of instructions were encrypted by the ciphers determined by the cipher digits, from left to right, and then encrypted with Pigpen Cipher to be displayed on the module. If both the module ID and the strike counter are shown in Arabic numbers, the "Both" column is used. Otherwise if either the strike counter or the module ID is shown in Arabic numbers, the "Either" column is used. Otherwise the "Neither" column is used. The expert will need to grab those ciphers that are used on this module, and then decrypt them by reversing the procedure. For example, if the determined ciphers in the list are ROT13 Cipher, Atbash Cipher, Autokey Mechanical Cipher, Anagram Shuffler, and Scytale Transposition, the order to decrypt this is Scytale Transposition, Anagram Shuffler, Autokey Mechanical Cipher, Atbash Cipher, ROT13 Cipher in that order.</p>
+                <p>The table above shows all possible ciphers that can be used on Unfair’s Cruel Revenge. The original set of instructions were encrypted by the ciphers determined by the cipher digits, from left to right on the module, and then encrypted with Pigpen Cipher to be displayed on the module. If both the module ID and the strike counter are shown in Arabic numbers, the "Both" column is used. Otherwise if either the strike counter or the module ID is shown in Arabic numbers, the "Either" column is used. Otherwise the "Neither" column is used. The expert will need to grab those ciphers that are used on this module, and then decrypt them by reversing the procedure. For example, if the determined ciphers in the list are ROT13 Cipher, Atbash Cipher, Autokey Mechanical Cipher, Anagram Shuffler, and Scytale Transposition, the order to decrypt this is Scytale Transposition, Anagram Shuffler, Autokey Mechanical Cipher, Atbash Cipher, ROT13 Cipher in that order.</p>
             </div>
             <div class="page-footer relative-footer">Page 4 of 17</div>
         </div>
@@ -500,12 +500,12 @@
             <div class="page-content">
                 <h2>Solving — Step 3: Modifying the Base Alphabet</h2>
                 <p class="flavour-text">Did he put a "Blue Arrows" in "Unfair’s Revenge?" Don't tell me he did...</p>
-                <p>You will need to modify the starting alphabet in order to use the ciphers and transpositions on the next set of pages when the modified alphabet is needed. To get the modified alphabet:</p>
+                <p>You will need to modify the starting alphabet in order to use the ciphers and transpositions on the next set of pages when the modified alphabet is needed. When the manual references "shift to the right X times," it means taking that many letters at the end of the string and moving that to the front of the string. To get the modified alphabet:</p>
                 <ol>
                     <li>Start the alphabet with "ABCDEFGHIJKLMNOPQRSTUVWXYZ".</li>
                     <li>Shift the entire alphabet to the right [1 + the last digit of the serial number (10 if none)] times.</li>
                     <li>If there are any letters in the serial number, move the last letter of the serial number to the front of the alphabet. If that letter is already in the front, move it to the back instead.</li>
-                    <li>Then, perform the extra modifications from the table below, top to bottom. Your alphabet for decrypting will be the string after using the table on both pages. Conditions referred from the table are labeled from top to bottom, starting on 1 with the top-most row, on this page.</li>
+                    <li>Then, perform the extra modifications from the table below based on their conditions, top to bottom. Your alphabet for decrypting will be the string after using the table on both pages. Conditions referred from the table are labeled from top to bottom, starting on 1 with the top-most row, on this page.</li>
                 </ol>
                 <table style="width: 100%">
                     <tr>
@@ -570,7 +570,7 @@
                     </tr>
                     <tr>
                         <td>At least 1 empty port plate is present</td>
-                        <td>Split the alphabet into 2 halves where the first half contains the letters whose position in the string (the first letter in the string being position 1) is divisible by 6. Shift the other half to the right 6 times, then combine the halves together with the shorter string being first.</td>
+                        <td>Split the alphabet into 2 halves where the first half contains the letters whose position in the string (the first letter in the string being position 1) is divisible by 6. Shift the longer half to the right 6 times, then combine the halves together with the shorter string being first.</td>
                     </tr>
                     <tr>
                         <td>Who's on First or What's on Second is present AND the 11th condition is NOT met</td>
@@ -2039,7 +2039,7 @@
             <div class="page-content">
                 <h2>Solving — Step ?: Monoalphabetic Substitution:</h2>
                 <p class="flavour-text">It's actually this easy. But without the key? Lots of guessing and checking. That's how the experts cracked that one code.</p>
-                <p>Start with the Ultimate Cipher word and remove any duplicates. Now examine the modified alphabet and remove ALL letters that are in your Ultimate Cipher word. If the NE button is yellow, place the result of your modified alphabet at the start of your Ultimate Cipher word. (I.E: "CABLERDFGHIJKMNOPQSTUVWXYZ") Otherwise, place your modified alphabet at the end of your Ultimate Cipher word. (I.E: "DFGHIJKMNOPQSTUVWXYZCABLER")</p>
+                <p>Start with the Ultimate Cipher word and remove any duplicates. Now examine the modified alphabet and remove ALL letters that are in your Ultimate Cipher word. If the NE button is yellow, place the result of your modified alphabet at the start of your Ultimate Cipher word. (I.E: "DFGHIJKMNOPQSTUVWXYZCABLER") Otherwise, place your modified alphabet at the end of your Ultimate Cipher word. (I.E: "CABLERDFGHIJKMNOPQSTUVWXYZ")</p>
                 <p>To <em>decrypt,</em> you will need to place this string, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", at the top in this specific order, and then place the key underneath that was used to encrypt your message. Now examine the first letter in the encrypted message in the key. The letter above is the result of your decryption. Repeat for the other letters to get your decrypted string.</p>
                 <p>Example:</p>
                 <p>Say you're provided with this which was used to encrypt your message:</p>
@@ -2434,6 +2434,29 @@
                 <ul>
                     <li>A prime number is referred to a number that is only divisible by 1 and itself. 1 is not considered prime even though it is divisible by 1 and itself.</li>
                     <li>Prime numbers (to 20): 2, 3, 5, 7, 11, 13, 17, 19</li>
+                </ul>
+            </div>
+            <div class="page-footer relative-footer">Page 17 of 17</div>
+        </div>
+        <div class="page page-bg-05">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Unfair’s Cruel Revenge</span>
+            </div>
+            <div class="page-content">
+                <h3>Appendix: Unfair's Cruel Revenge's Extra Tweaks</h3>
+				<p>Settings can be used to alter the behavior of Unfair's Cruel Revenge. These settings should only be accounted for in specific cases.</p>
+                <ul>
+                    <li><code>enableLegacyUCR</code>: Turning this on activates the legacy version of Unfair's Cruel Revenge. The legacy manual can be found <a href="Unfair%E2%80%99s%20Cruel%20Revenge%20legacy.html">here</a>.</li>
+                    <li><code>cruelerRevenge</code>: Turning this on activates the harder version of Unfair's Cruel Revenge. This cannot activate if <code>enableLegacyUCR</code> is enabled. This option should be left off unless you can handle the wrath. In no particular order, the harder version of Unfair's Cruel Revenge,<ul>
+                        <li>Swaps the colors of the colored buttons around after every correct press. Upon striking while this is active, the module will revert the colored buttons back to the initial state.</li>
+                        <li>Encrypts 10 distinct instructions with 9 ciphers overall; 3 long ciphers, 3 transpositions, 3 short ciphers. More substitution letters are shown in this case, with 10n+9 seconds remaining now being the end of the sequence, 10n seconds remaining showing the first cipher's substitution letters. Note that because there are so many substitution letters to display at once, the module will ONLY display the hexadecimal cipher digits at 10n+9 seconds as a result.</li>
+                        <li>Adds 2 specific instructions into the pool:<ul>
+							<li><em><strong>AGN:</strong></em> Perform the last instruction that was previously performed; <strong>This includes timing constraints.</strong> However if this is the first instruction, perform the next instruction instead. Note that if the previous instruction was skipped, the previous instruction will need to be performed instead.</li>
+							<li><em><strong>SCN:</strong></em> Take the sum of the alphabetical positions in the serial letter with the modified alphabet used. Modulo this by 4 and then add 1. Have the screen display that page number and the press <strong>Inner Center</strong>. NOTE: On Twitch Plays, auto cycling the pages is <strong>not</strong> recommended for this instruction.</li>
+							</ul></li>
+                        </ul></li>
+					 <li><code>noTPCruelerRevenge</code>: Turning this on prevents Twitch Plays from activating hard mode Unfair's Cruel Revenge.</li>
                 </ul>
             </div>
             <div class="page-footer relative-footer">Page 17 of 17</div>

@@ -48,7 +48,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	bool isplayingSolveAnim, hasStarted, isShowingStrikeCount, isFinished, hasStruck = false;
 
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
-	private int[] idxColorList = { 0, 1, 2, 3, 4, 5 };
+    private int[] idxColorList = Enumerable.Range(0, 6).ToArray();
 	List<string> lastCorrectInputs = new List<string>(), splittedInstructions = new List<string>();
 	void Awake()
 	{
@@ -547,13 +547,13 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		int animLength = 10;
 		for (int x = animLength; x >= 0; x--)
 		{
-			colorLights[btnIdx].intensity = 4f + (x / 10f);
+			colorLights[btnIdx].intensity = 1f + (x / 10f);
 			colorButtonRenderers[btnIdx].material.color = (colorWheel[idxColorList[btnIdx]] * .75f * ((animLength - x) / (float)animLength)) + Color.white * (x / (float)animLength);
 			yield return new WaitForSeconds(0.05f);
 		}
 		//colorButtonRenderers[btnIdx].material = switchableMats[0];
 		colorButtonRenderers[btnIdx].material.color = colorWheel[idxColorList[btnIdx]] * .75f;
-		colorLights[btnIdx].intensity = 4f;
+		colorLights[btnIdx].intensity = 1f;
 		yield return null;
 	}
 	IEnumerator HandlePressAnim(GameObject givenItem)
@@ -650,9 +650,10 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			{"Revenge...", "Of the Unfairs." },
 			{"This looks fishy...", "Maybe he looked\nat it wrong." },
 			{"[REDACTED]:", "Please don't make\nthis a dupe." },
-			{"Me: Nothing. Raffina:", "Rainbow Deluxe!" },
-			{"Landing Sequence...", "Initiated" },
+			{"Me: Nothing.\nRaffina:", "Rainbow Deluxe!" },
+			{"Landing\nSequence...", "Initiated" },
 			{"I'll tell you\nwhat you want", "What you really\nreally want" },
+			{"Invite the\nfollowing and\nget them", "to join the\nAll Worlds\nAlliance " }
 		};
 		KeyValuePair<string, string> selectedSample = sampleQuestionResponse.PickRandom();
 		mainDisplay.color = Color.red;
@@ -687,7 +688,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			entireCircle.transform.localScale = new Vector3(curScale, curScale, curScale);
 			if (x != animLength)
 				entireCircle.transform.localEulerAngles = Vector3.up * 720 * (1f - x);
-			float currentOffset = Easing.InOutQuad(1f, 0f, 1f, x);
+			float currentOffset = Easing.InOutQuad(1f - x, 0f, 1f, 1f);
 			entireCircle.transform.localPosition = new Vector3(0, 5 * currentOffset, 0);
 			yield return null;
 		}
@@ -1035,7 +1036,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					isCorrect = input == "Outer" && secondsTimer % 11 == 0;
 					break;
 				case "MIT":
-					isCorrect = input == "Inner" && secondsTimer % 10 == (selectedModID + 1 + currentInputPos + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10;
+					isCorrect = input == "Inner" && secondsTimer % 10 == (selectedModID + 1 + currentInputPos + lastCorrectInputs.Count(a => baseColorList.Contains(a))) % 10;
 					break;
 				case "PRN":
 					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ? "Inner" : "Outer");
@@ -1076,7 +1077,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "PVP":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
@@ -1087,7 +1088,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "NXP":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = (curIdx + 1) % 6;
@@ -1098,7 +1099,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "PVS":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
@@ -1109,7 +1110,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "NXS":
 					{
-						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						do
 						{
 							curIdx = (curIdx + 1) % 6;
@@ -1120,18 +1121,18 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				case "OPP":
 					{
-						if (!lastCorrectInputs.Any() || lastCorrectInputs[lastCorrectInputs.Count - 1] == "Inner")
+						if (!lastCorrectInputs.Any() || lastCorrectInputs.Last() == "Inner")
 							isCorrect = input == "Outer";
-						else if (lastCorrectInputs[lastCorrectInputs.Count - 1] == "Outer")
+						else if (lastCorrectInputs.Last() == "Outer")
 							isCorrect = input == "Inner";
 						else
-							isCorrect = input == rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs[currentInputPos - 1])) % 6];
+							isCorrect = input == rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last())) % 6];
 						break;
 					}
 				case "FIN":
 				case "ISH":
 					{
-						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
 						int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
 						curIdx -= solvedCount % 6;
@@ -1213,11 +1214,156 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		return string.Format("{0}:{1}", num / 60, (num % 60).ToString("00"));
 	}
 	// TP Handling Begins here
-	void TwitchHandleForcedSolve()
+	IEnumerator TwitchHandleForcedSolve()
 	{
-		isFinished = true;
-		StartCoroutine(HandleSolveAnim());
-		modSelf.HandlePass();
+		string[] rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToArray();
+		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
+		while (!hasStarted) yield return true;
+		hasStruck = false;
+		while (currentInputPos < splittedInstructions.Count)
+		{
+			var strikeCount = bombInfo.GetStrikes();
+			switch (splittedInstructions[currentInputPos])
+            {
+				case "BOB":
+					innerSelectable.OnInteract();
+					break;
+				case "PCR":
+					colorButtonSelectables[Array.IndexOf(idxColorList, 0)].OnInteract();
+					break;
+				case "PCG":
+					colorButtonSelectables[Array.IndexOf(idxColorList, 2)].OnInteract();
+					break;
+				case "PCB":
+					colorButtonSelectables[Array.IndexOf(idxColorList, 4)].OnInteract();
+					break;
+				case "SCC":
+					colorButtonSelectables[Array.IndexOf(idxColorList, 3)].OnInteract();
+					break;
+				case "SCM":
+					colorButtonSelectables[Array.IndexOf(idxColorList, 5)].OnInteract();
+					break;
+				case "SCY":
+					colorButtonSelectables[Array.IndexOf(idxColorList, 1)].OnInteract();
+					break;
+				case "STR":
+				case "IKE":
+					colorButtonSelectables[(Array.IndexOf(idxColorList, 0) + strikeCount) % 6].OnInteract();
+					break;
+				case "SIG":
+					innerSelectable.OnInteract();
+					if (currentInputPos < splittedInstructions.Count)
+					{
+						yield return new WaitForSeconds(0.1f);
+						colorButtonSelectables[Array.IndexOf(idxColorList, 3)].OnInteract();
+					}
+					break;
+				case "PRN":
+					(primesUnder20.Contains(selectedModID % 20) ? innerSelectable : outerSelectable).OnInteract();
+					break;
+				case "CHK":
+					(primesUnder20.Contains(selectedModID % 20) ? outerSelectable : innerSelectable).OnInteract();
+					break;
+				case "PVP":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
+						}
+						while (!primaryList.Contains(rearrangedColorList[curIdx]));
+						colorButtonSelectables[curIdx].OnInteract();
+						break;
+					}
+				case "NXP":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = (curIdx + 1) % 6;
+						}
+						while (!primaryList.Contains(rearrangedColorList[curIdx]));
+						colorButtonSelectables[curIdx].OnInteract();
+						break;
+					}
+				case "PVS":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = curIdx - 1 < 0 ? 5 : curIdx - 1;
+						}
+						while (primaryList.Contains(rearrangedColorList[curIdx]));
+						colorButtonSelectables[curIdx].OnInteract();
+						break;
+					}
+				case "NXS":
+					{
+						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
+						do
+						{
+							curIdx = (curIdx + 1) % 6;
+						}
+						while (primaryList.Contains(rearrangedColorList[curIdx]));
+						colorButtonSelectables[curIdx].OnInteract();
+						break;
+					}
+				case "OPP":
+					{
+						if (!lastCorrectInputs.Any() || lastCorrectInputs[lastCorrectInputs.Count - 1] == "Inner")
+							outerSelectable.OnInteract();
+						else if (lastCorrectInputs[lastCorrectInputs.Count - 1] == "Outer")
+							innerSelectable.OnInteract();
+						else
+							colorButtonSelectables[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last())) % 6].OnInteract();
+						break;
+					}
+				case "REP":
+				case "EAT":
+					var lastInput = lastCorrectInputs.LastOrDefault();
+					if (!lastCorrectInputs.Any() || lastInput == "Inner")
+						innerSelectable.OnInteract();
+					else if (lastInput == "Outer")
+						outerSelectable.OnInteract();
+					else
+						colorButtonSelectables[Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last())].OnInteract();
+					break;
+				case "SUB":
+					{
+						var secondsTimer = (int)bombInfo.GetTime() % 60;
+						while (secondsTimer % 11 != 0)
+						{
+							yield return true;
+							secondsTimer = (int)bombInfo.GetTime() % 60;
+						}
+						outerSelectable.OnInteract();
+                    }
+					break;
+				case "MIT":
+					{
+						var secondsTimer = (int)bombInfo.GetTime() % 60;
+						var calculatedExpectedDigit = (selectedModID + 1 + currentInputPos + lastCorrectInputs.Count(a => baseColorList.Contains(a))) % 10;
+						while (secondsTimer % 10 != calculatedExpectedDigit)
+						{
+							yield return true;
+							secondsTimer = (int)bombInfo.GetTime() % 60;
+						}
+						innerSelectable.OnInteract();
+					}
+					break;
+				default:
+					yield return true;
+					break;
+            }
+			yield return new WaitForSeconds(0.1f);
+			if (hasStruck)
+			{
+				isFinished = true;
+				StartCoroutine(HandleSolveAnim());
+				modSelf.HandlePass();
+				yield break;
+			}
+		}
 	}
 
 	bool TimeModeActive;
@@ -1380,6 +1526,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			yield return "multiple strikes";
 			for (int x = 0; x < selectedCommands.Count; x++)
 			{
+				yield return null;
 				if (hasStruck) yield break;
 				if (timeThresholds[x].Any())
 				{
@@ -1434,9 +1581,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					colorButtonSelectables.Contains(selectedCommands[x]) ? baseColorList[idxColorList[Array.IndexOf(colorButtonSelectables, selectedCommands[x])]] : "???";
 				if (!IsCurInstructionCorrect(buttonPressed) && selectedCommands.Count > 1 && buttonPressed != "???")
 				{
-					yield return string.Format("strikemessage by incorrectly pressing {0} on {1} after {2} press(es) in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1);
+					yield return string.Format("strikemessage by incorrectly pressing {0} on {1} after {2} press{3} in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1, x == 1 ? "" : "es");
 				}
-				yield return null;
 				selectedCommands[x].OnInteract();
 				yield return new WaitForSeconds(0.1f);
 			}

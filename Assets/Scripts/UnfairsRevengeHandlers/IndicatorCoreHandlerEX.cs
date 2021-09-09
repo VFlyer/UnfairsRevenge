@@ -61,33 +61,47 @@ public class IndicatorCoreHandlerEX : MonoBehaviour {
 	public IEnumerator HandleRevealAnim()
 	{
 		centerIndicator.SetActive(canRevealCenter);
-		for (int x = 0; x <= 10; x++)
+        for (float x = 0; x <= 1f; x += Time.deltaTime * 5)
 		{
 			for (int a = 0; a < targetAncilerryPos.Count; a++)
 			{
-				ancierallyIndicators[a].transform.localPosition = targetAncilerryPos[a] * (x / 10f) + startCenterPos * ((10-x)/10f);
+                ancierallyIndicators[a].transform.localPosition = targetAncilerryPos[a] * x + startCenterPos * (1f - x);
 				ancierallyIndicators[a].SetActive(true);
 			}
-			indicatorEnd.transform.localPosition = endRPos * (x / 10f) + startCenterPos * ((10 - x) / 10f);
-			indicatorStart.transform.localPosition = endLPos * (x / 10f) + startCenterPos * ((10 - x) / 10f);
-			yield return new WaitForSeconds(Time.deltaTime);
+			indicatorEnd.transform.localPosition = endRPos * x + startCenterPos * (1f - x);
+            indicatorStart.transform.localPosition = endLPos * x + startCenterPos * (1f - x);
+			yield return null;
 		}
+		for (int a = 0; a < targetAncilerryPos.Count; a++)
+		{
+			ancierallyIndicators[a].transform.localPosition = targetAncilerryPos[a];
+			ancierallyIndicators[a].SetActive(true);
+		}
+		indicatorEnd.transform.localPosition = endRPos;
+		indicatorStart.transform.localPosition = endLPos;
 		isPlayingAnim = false;
 		yield return true;
 	}
 	public IEnumerator HandleCollaspeAnim()
 	{
-		
-		for (int x = 10; x >= 0; x--)
+
+        for (float x = 1; x >= 0; x -= Time.deltaTime * 5)
 		{
 			for (int a = 0; a < targetAncilerryPos.Count; a++)
 			{
-				ancierallyIndicators[a].transform.localPosition = targetAncilerryPos[a] * (x / 10f) + startCenterPos * ((10 - x) / 10f);
+				ancierallyIndicators[a].transform.localPosition = targetAncilerryPos[a] * x + startCenterPos * (1f - x);
 			}
-			indicatorEnd.transform.localPosition = endRPos * (x / 10f) + startCenterPos * ((10 - x) / 10f);
-			indicatorStart.transform.localPosition = endLPos * (x / 10f) + startCenterPos * ((10 - x) / 10f);
+			indicatorEnd.transform.localPosition = endRPos * x + startCenterPos * (1f - x);
+			indicatorStart.transform.localPosition = endLPos * x + startCenterPos * (1f - x);
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
+		for (int a = 0; a < targetAncilerryPos.Count; a++)
+		{
+			ancierallyIndicators[a].transform.localPosition = startCenterPos;
+			ancierallyIndicators[a].SetActive(true);
+		}
+		indicatorEnd.transform.localPosition = startCenterPos;
+		indicatorStart.transform.localPosition = startCenterPos;
 		for (int a = 0; a < ancierallyIndicators.Length; a++)
 		{
 			ancierallyIndicators[a].SetActive(false);

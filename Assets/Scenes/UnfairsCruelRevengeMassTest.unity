@@ -953,7 +953,7 @@ Prefab:
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
       propertyPath: TwitchPlaysMode
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114848120511536268, guid: 8814ea52310d2614a9feda02ec355ae4,
         type: 2}
@@ -969,7 +969,7 @@ Prefab:
         type: 2}
       propertyPath: AudioClips.Array.data[17]
       value: 
-      objectReference: {fileID: 8300000, guid: 3394479c4a0ebc04280dc6513b17b600, type: 3}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8814ea52310d2614a9feda02ec355ae4, type: 2}
   m_IsPrefabParent: 0
