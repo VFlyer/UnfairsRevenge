@@ -84,7 +84,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors;
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge;
 	private MeshRenderer[] usedRenderers;
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
     private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst;
@@ -95,10 +95,19 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		try
 		{
 			ModConfig<UnfairsCruelRevengeSettings> fileSettings = new ModConfig<UnfairsCruelRevengeSettings>("UnfairsCruelRevengeSettings");
-			ucrSettings = fileSettings.Settings;
-			fileSettings.Settings = ucrSettings;
+			if (ucrSettings.version != fileSettings.Settings.version)
+			{
+				fileSettings.Settings = ucrSettings;
+			}
+			else
+			{
+				ucrSettings = fileSettings.Settings;
+				fileSettings.Settings = ucrSettings;
+			}
+			
 			legacyUCR = ucrSettings.enableLegacyUCR;
 			harderUCR = ucrSettings.cruelerRevenge;
+			noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
 		}
 		catch
 		{
@@ -3868,6 +3877,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
     {
 		public bool enableLegacyUCR = false;
 		public bool cruelerRevenge = false;
+		public bool noTPCruelerRevenge = false;
 		public string version = "2.0";
     }
 
@@ -4259,7 +4269,60 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		yield return null;
 
 	}
-
+	IEnumerator HandleDelay()
+    {
+		tpPrepCruelRevenge = true;
+		yield return new WaitForSecondsRealtime(5);
+		tpPrepCruelRevenge = false;
+    }
+	IEnumerator ActivateCruelerRevengeTP()
+    {
+		hasStarted = false;
+		harderUCR = true;
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}] TP has activated Unfair's Crueler Revenge! Restarting from the beginning...", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}] -=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=--=-", loggingModID);
+		currentScreenVal = 0;
+		while (pigpenDisplay.text.Length > 0 || pigpenSecondary.text.Length > 0 || strikeIDDisplay.text.Length > 0 || mainDisplay.text.Length > 0)
+        {
+			yield return new WaitForSeconds(0.02f);
+			if (pigpenDisplay.text.Length > 0)
+				pigpenDisplay.text = pigpenDisplay.text.Substring(0, pigpenDisplay.text.Length - 1).Trim();
+			if (pigpenSecondary.text.Length > 0)
+				pigpenSecondary.text = pigpenSecondary.text.Substring(0, pigpenSecondary.text.Length - 1).Trim();
+			if (strikeIDDisplay.text.Length > 0)
+				strikeIDDisplay.text = strikeIDDisplay.text.Substring(0, strikeIDDisplay.text.Length - 1).Trim();
+			if (mainDisplay.text.Length > 0)
+				mainDisplay.text = mainDisplay.text.Substring(0, mainDisplay.text.Length - 1).Trim();
+		}
+		StartCoroutine(indicatorCoreHandlerEX.HandleCollaspeAnim());
+		StartCoroutine(IndicatorCoreHandlerExtraScreen.HandleCollaspeAnim());
+		var expectedTextToType = "YOU ARE GOING\nTO REGRET THIS.";
+		mainDisplay.color = Color.red;
+		for (var x = 1; x < expectedTextToType.Length; x++)
+        {
+			mainDisplay.text = expectedTextToType.Substring(0, x);
+			yield return new WaitForSeconds(0.02f);
+		}
+		for (float x = 0; x <= 1f; x += Time.deltaTime / 2)
+		{
+			float curScale = 1f - x;
+			entireCircle.transform.localScale = new Vector3(curScale, curScale, curScale);
+			entireCircle.transform.localEulerAngles = Vector3.up * 720 * (1f - x);
+			float currentOffset = Easing.InOutQuad(x, 0, 1f, 1f);
+			entireCircle.transform.localPosition = new Vector3(0, 5 * currentOffset, 0);
+			yield return null;
+		}
+		mainDisplay.text = "";
+		entireCircle.SetActive(false);
+		keyABaseKey = "";
+		fourSquareKey = "";
+		displaySubstutionLettersAll.Clear();
+		usedRenderers = new[] { statusIndicators.First() }.Concat(statusIndicators.Skip(1).Take(8)).Concat(new[] { statusIndicators.Last() }).ToArray();
+		PrepModule();
+		UpdateSecondaryScreen();
+		hasStarted = true;
+		yield return null;
+    }
 	bool TimeModeActive;
 #pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
@@ -4289,7 +4352,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		List<string> rearrangedColorList = idxColorList.Select(a => baseColorList[a]).ToList();
 
         Match autocycleCommands = Regex.Match(command, @"^autocycle\s(\d+(\.\d+)?|off|disable|deactivate|reverse|flip)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
-			colorblindCommands = Regex.Match(command, @"^colou?rblind|cycle$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+			colorblindCommands = Regex.Match(command, @"^colou?rblind|cycle$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
+			cruelRevengeActivationCommands = Regex.Match(command, @"^gimmiecruelerrevenge$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
 		int[] multiplierTimes = { 1, 60, 3600, 86400 }; // To denote seconds, minutes, hours, days in seconds.
 		if (Application.isEditor)
@@ -4302,7 +4366,38 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				yield break;
 			}
 		}
-		if (autocycleCommands.Success)
+		if (cruelRevengeActivationCommands.Success)
+        {
+			if (noTPCruelCruelRevenge)
+			{
+				yield return "sendtochat {0}, I'm afraid I can't let you do that.";
+				yield break;
+			}
+			else if (legacyUCR)
+            {
+				yield return "sendtochat {0}, Crueler Revenge cannot be enabled while the module is showing the Legacy version.";
+				yield break;
+			}
+			else if (harderUCR)
+			{
+				yield return "sendtochat {0}, Crueler Revenge is already enabled.";
+				yield break;
+			}
+			if (!tpPrepCruelRevenge)
+            {
+				StartCoroutine(HandleDelay());
+				yield return "sendtochat {0}, are you sure you want to enable Crueler Revenge? You will NOT be able to revert this back upon doing so! Type in the same command within 5 seconds to confirm.";
+				yield break;
+			}
+			else
+            {
+				yield return null;
+				StartCoroutine(ActivateCruelerRevengeTP());
+				yield return "sendtochat {0}, you asked for this.";
+				yield break;
+			}
+		}
+		else if (autocycleCommands.Success)
 		{
 			string[] shutoffCommands = { "off", "disable", "deactivate" };
 			string[] reverseCommands = { "reverse", "flip" };

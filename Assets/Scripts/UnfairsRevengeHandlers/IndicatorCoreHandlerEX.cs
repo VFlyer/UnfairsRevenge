@@ -61,7 +61,7 @@ public class IndicatorCoreHandlerEX : MonoBehaviour {
 	public IEnumerator HandleRevealAnim()
 	{
 		centerIndicator.SetActive(canRevealCenter);
-        for (float x = 0; x <= 1f; x += Time.deltaTime * 5)
+        for (float x = 0; x <= 1f; x += Time.deltaTime * 4)
 		{
 			for (int a = 0; a < targetAncilerryPos.Count; a++)
 			{
@@ -85,7 +85,7 @@ public class IndicatorCoreHandlerEX : MonoBehaviour {
 	public IEnumerator HandleCollaspeAnim()
 	{
 
-        for (float x = 1; x >= 0; x -= Time.deltaTime * 5)
+        for (float x = 1; x >= 0; x -= Time.deltaTime * 4)
 		{
 			for (int a = 0; a < targetAncilerryPos.Count; a++)
 			{
