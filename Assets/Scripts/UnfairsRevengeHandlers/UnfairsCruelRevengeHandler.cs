@@ -26,13 +26,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	public KMGameInfo gameInfo;
 	public ProgressBarHandler progressHandler;
 	public StringListEditable uCipherWordBank;
-
 	private string[]
-		hardModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "PVP", "NXP", "PVS", "NXS", "REP", "EAT", "STR", "IKE", "PRN", "CHK", "MOT", "OPP", "SKP", "INV", "ERT", "SWP" },
+		hardModeInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "PVP", "NXP", "PVS", "NXS", "REP", "EAT", "STR", "IKE", "PRN", "CHK", "MOT", "OPP", "SKP", "INV", "ERT", "SWP", "AGN", "SCN" },
 		legacyInstructions = { "PCR", "PCG", "PCB", "SCC", "SCM", "SCY", "SUB", "PVP", "NXP", "PVS", "NXS", "REP", "EAT", "STR", "IKE", "PRN", "CHK", "MOT", "OPP", "SKP", },
 		baseColorList = new[] { "Red", "Yellow", "Green", "Cyan", "Blue", "Magenta" },
 		lastCommands = { "FIN", "ISH", "ALE" },
-		extraCruelInstructions = { "AGN", "SCN" },
+		extraCruelInstructions = { },
 		primaryList = { "Red", "Green", "Blue", };
 	private string baseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", // Base alphabet for code assumes A=1,B=2,...,Y=25,Z=26
 		displayPigpenText = "", fourSquareKey = "", selectedWord = "", encodingDisplay = "", uCipherWord = "", keyABaseKey = "";
@@ -250,6 +249,11 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.75f;
 			}
 		};
+		bombInfo.OnBombExploded += delegate {
+			if (harderUCR && !legacyUCR)
+				mAudio.PlaySoundAtTransform("7_youdied", transform);
+		};
+
 		if (Application.isEditor)
 		{
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Unity Editor Mode is active, if TP is enabled, you may use \"!# simulate on/off to simulate lights turning on or off.\"", loggingModID);
@@ -910,6 +914,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
 		displayPigpenText = FitToScreen(encryptedResults.Any() ? encryptedResults.Last() : splittedInstructions.Join(""), 13);
 		StartCoroutine(TypePigpenText(encryptedResults.Any() ? encryptedResults.Last() : splittedInstructions.Join("")));
+		TwitchHelpMessage += " This is the legacy version of Unfair's Cruel Revenge. Use the legacy manual to assist you with this.";
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: --------------------------------------------------------", loggingModID);
 	}
 	// End Legacy Unfair's Cruel Revenge Handling
@@ -1239,7 +1244,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							else
 								modifiedString += curChar;
 						}
-						var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyBString, true);
+						var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyCString, true);
 						var resultToAdd = "";
 						for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
 						{
@@ -1423,7 +1428,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						new[] { "MARK","YOUR","ANCHOR","LETTER","IN","YOUR","MOBILIS","THE","FIRST","LETTER","IN","THE","SERIAL",
 							"NUMBER","IF","THERE","ARE","ANY","OTHERWISE","MARK","A","AS","YOUR","ANCHOR","LETTER","INSTEAD" },
 						new[] { "NOW","TAKE","THE","FIRST","TWO","LETTERS","IN","THE","TWELVE","LETTER","PIGPEN","TEXT","AND",
-							"CONVERT","THEM","INTO","THEIR","ALPHABETICAL","EQUIVALENTS","USING","STEP","TWO","FROM","THIS","MANUAL","PROVIDED" },
+							"CONVERT","THEM","INTO","THEIR","ENGLISH","LETTERS","USING","STEP","TWO","FROM","THIS","MANUAL","PROVIDED" },
 						new[] { "CONVERT","THESE","INTO","THEIR","POSITIONS","IN","THE","MODIFIED","ALPHABET","START","ON","THE","PARAGRAPH",
 							"FROM","THE","FIRST","NUMBER","OBTAINED","WHERE","ONE","OR","FOURTEEN","IS","THE","TOP","PARAGRAPH" },
 						new[] { "USING","THE","SECOND","NUMBER","COUNT","THAT","MANY","WORDS","FROM","THE","PARAGRAPH","YOU","OBTAINED",
@@ -1510,6 +1515,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 		displayPigpenText = FitToScreen(string.IsNullOrEmpty(displayResult) ? splittedInstructions.Join("") : displayResult, 13);
 		StartCoroutine(TypePigpenText(string.IsNullOrEmpty(displayResult) ? splittedInstructions.Join("") : displayResult));
+		TwitchHelpMessage += harderUCR ? " DO NOT chain colored button presses on this module. The colored buttons change after every press!" : "";
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: --------------------------------------------------------", loggingModID);
 		// Section for testing purposes. To ensure ciphers and transpositions work as intended
 		/*
@@ -2183,7 +2189,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 	string ObtainKeyCNew()
 	{
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key C Calculations------------", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key {1} Calculations------------", loggingModID, legacyUCR ? 'D' : 'C');
 		string[] allPossibleStrings = {
 			"WLUAZVHEJDNQSYFPGMBOIRCXTK",
 			"MVFBXJQNHWZTAKPEOCURISDYLG",
@@ -2227,7 +2233,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		}
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The sum of all of the false rules is {1}", loggingModID, sum);
 		string output = sum % trueConditions.Where(a => !a).Count() == 0 ? allPossibleStrings[sum / trueConditions.Count(a => !a) - 1] : allPossibleStrings[14];
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row used for Key C: {1}", loggingModID, sum % trueConditions.Count(a => !a) == 0 ? (sum / trueConditions.Count(a => !a)) : 15);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Row used for Key {2}: {1}", loggingModID, sum % trueConditions.Count(a => !a) == 0 ? (sum / trueConditions.Count(a => !a)) : 15, legacyUCR ? 'D' : 'C' );
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
 		return output;
 	}
@@ -2829,6 +2835,21 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{
 			colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.5f;
 		}
+		if (!legacyUCR || harderUCR)
+        {
+			mAudio.PlaySoundAtTransform("ForgetAnyColorFinalStage", transform);
+			for (float x = 0; x <= 1f; x += Time.deltaTime / 4)
+			{
+				float curScale = 1f - x;
+				float currentOffset = Easing.InCirc(x, 0, 1f, 1f);
+				entireCircle.transform.localScale = new Vector3(curScale, curScale, curScale);
+				entireCircle.transform.localEulerAngles = Vector3.up * 3600 * curScale;
+				entireCircle.transform.localPosition = new Vector3(0, 5 * currentOffset, 0);
+				yield return null;
+			}
+			entireCircle.SetActive(false);
+		}
+
 		yield return null;
 	}
 	IEnumerator TypePigpenText(string displayValue)
@@ -2872,9 +2893,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{
 			{"It was too\nconsistent.", "So he made this\nharder instead.\nWhy? Because-" },
 			{"Nothing will ever\nbe the same...", "Ever again." },
+			{"Why is it called\nUnfair's Crueler\nRevenge?", "Well... You'll\nabout to find\nout..." },
 			{"Hard Mode Cruel\nRevenge Activated", "YOU ARE GOING\nTO REGRET THIS" },
 			{"Wanna hear the\nmost annoying\nsound in the world?", "Cyan! Azure! Lapis\nLazuli! Celestrial!\nCobalt!" },
-			{"Estimated\nSimulation", "About\nFifty Minutes" },
+			{"Estimated\nSimulation", "About\nFifty Minutes\nGive Or Take 1 Hour" },
 		};
 		KeyValuePair<string, string> selectedSample = harderUCR && !legacyUCR ? cruelModeQuestionResponse.PickRandom() : sampleQuestionResponse.PickRandom();
 		mainDisplay.color = Color.red;
@@ -3014,7 +3036,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				toLog = "Press Inner Center when the seconds digit match.";
 				break;
 			case "MOT":
-				toLog = string.Format("Press Outer Center when the last seconds digit is {0}.", (selectedModID + (5 - (1 + currentInputPos)) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10);
+				toLog = string.Format("Press Outer Center when the last seconds digit is {0}.", (selectedModID + (4 - currentInputPos + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10 + 10) % 10);
 				break;
 			case "PRN":
 				toLog = string.Format("Press {0} Center because {1} is {2}.", primesUnder20.Contains(selectedModID % 20) ? "Inner" : "Outer", selectedModID % 20, primesUnder20.Contains(selectedModID % 20) ? "prime" : "not prime");
@@ -3473,7 +3495,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					isCorrect = input == (swapInnerOuterPresses ? "Outer" : "Inner") && secondsTimer % 11 == 0;
 					break;
 				case "MOT":
-					isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer") && secondsTimer % 10 == (selectedModID + (5 - (1 + currentInputPos)) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10;
+					isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer") && secondsTimer % 10 == ((selectedModID + 4 - currentInputPos + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10 + 10) % 10;
 					break;
 				case "PRN":
 					isCorrect = input == (primesUnder20.Contains(selectedModID % 20) ^ swapInnerOuterPresses ? "Inner" : "Outer");
@@ -3749,9 +3771,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{
 				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: All instructions are handled correctly. You're done.", loggingModID);
 				isFinished = true;
-				if (harderUCR)
+				if (harderUCR && !legacyUCR)
 				{
-					//mAudio.PlaySoundAtTransform("Darkest Dungeon - OverconfidenceRant", transform);
+					mAudio.PlaySoundAtTransform("6_awesome", transform);
 				}
 				modSelf.HandlePass();
 				StartCoroutine(HandleSolveAnim());
@@ -4046,7 +4068,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				case "MOT":
 					{
 						var secondsTimer = (int)(bombInfo.GetTime() % 60);
-						var calculatedExpectedDigit = (selectedModID + (4 - (currentInputPos)) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10;
+						var calculatedExpectedDigit = ((selectedModID + (4 - currentInputPos) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10 + 10) % 10;
 						while (secondsTimer % 10 != calculatedExpectedDigit)
 						{
 							yield return true;
@@ -4327,7 +4349,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 #pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
 	bool TwitchShouldCancelCommand;
-	readonly string TwitchHelpMessage =
+	string TwitchHelpMessage =
 		"Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" " +
 		"To time a specific press, append based only on seconds digits (##), up to full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. " +
 		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed.\n"+
@@ -4676,6 +4698,11 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				else if (IsCurInstructionCorrect(buttonPressed) && harderUCR && currentInputPos + 1 >= splittedInstructions.Count)
 					yield return "awardpointsonsolve 30";
 				selectedCommands[x].OnInteract();
+				if (x + 1 < selectedCommands.Count && colorButtonSelectables.Contains(selectedCommands[x + 1]) && harderUCR && !hasStruck)
+				{
+					yield return "sendtochat {0}, I'm not allowing you to press another colored button in the same command due to how Crueler Revenge changes the buttons around.";
+					yield break;
+				}
 				yield return new WaitForSeconds(0.1f);
 			}
 			yield return "end multiple strikes";
