@@ -18,12 +18,16 @@ MonoBehaviour:
     backlash. And another month just to make sure nothing else slid through badly.[/i]\r\n\r\nThis
     mod contains 2 modules: \r\n- Unfair's Revenge (as if the module was mostly in-line
     to the original mod idea)\r\n- Unfair's Cruel Revenge (as if normal decrypting
-    methods were too consistent and too quick)\r\nContains a snippet of TheFatRat
+    methods were too consistent and too quick)\r\n[s]Contains a snippet of TheFatRat
     - The Calling, You only can hear this on Unfair's Cruel Revenge and if that is
-    solved very last and configured to activate. The full track can be found [url=https://www.youtube.com/watch?v=KR-eV7fHNbM]here.[/url]\r\n\r\nModule
-    IDs:\r\nUnfair's Revenge: unfairsRevenge\r\nUnfair's Cruel Revenge: unfairsRevengeCruel\r\n\r\nOriginal
-    idea by Tachatat18\r\nImplemented by VFlyer\r\n\r\nSource Code: https://github.com/VFlyer/UnfairsRevenge\r\nTemporary
-    Manuals can be found in source code, as PDFs\r\n\n"
-  version: 1.2_02
+    solved very last and configured to activate. The full track can be found [url=https://www.youtube.com/watch?v=KR-eV7fHNbM]here.[/url]\r[/s]
+    This has been removed in the recent update.\nContains 2 sound effects from Hexagon,
+    an old flash made by Terry Cavanagh. The original credit to the 2 sound effects
+    can be found from there.\n\r\nModule IDs:\r\nUnfair's Revenge: unfairsRevenge\r\nUnfair's
+    Cruel Revenge: unfairsRevengeCruel\r\n\r\nOriginal idea by Tachatat18\r\nImplemented
+    by VFlyer\r\n\r\nSource Code: https://github.com/VFlyer/UnfairsRevenge\r\n\nHTML
+    Manual of Unfair's Revenge: https://ktane.timwi.de/HTML/Unfair's%20Revenge.html\nHTML
+    Manual of Unfair's Cruel Revenge: https://ktane.timwi.de/HTML/Unfair's%20Cruel%20Revenge.html\n"
+  version: 1.3
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: 8b1d362f728a06744a8f1aaad392d7fd, type: 3}
+  previewImage: {fileID: 2800000, guid: 9fbcb5eb2009a2944823bb091fb038eb, type: 3}

@@ -3911,6 +3911,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	{
 		return string.Format("{0}:{1}", num / 60, (num % 60).ToString("00"));
 	}
+	// Mission Detection Begins Here
 
 
 	// TP Handling Begins here
