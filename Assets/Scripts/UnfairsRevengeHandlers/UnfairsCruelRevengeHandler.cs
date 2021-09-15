@@ -2835,7 +2835,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{
 			colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.5f;
 		}
-		if (!legacyUCR || harderUCR)
+		if (!legacyUCR && harderUCR)
         {
 			mAudio.PlaySoundAtTransform("ForgetAnyColorFinalStage", transform);
 			for (float x = 0; x <= 1f; x += Time.deltaTime / 4)
@@ -3064,7 +3064,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			case "SKP":
 				string[] finaleInstructions = { "FIN", "ISH", "ALE" };
 				toLog = "Press Inner Center.";
-				if (currentInputPos + 1 < splittedInstructions.Count && !finaleInstructions.Contains(splittedInstructions[currentInputPos + 1]))
+				if (currentInputPos + 1 < splittedInstructions.Count && !lastCommands.Contains(splittedInstructions[currentInputPos + 1]))
 					toLog += " The next instruction is skippable, so press Outer Center in replacement for the next instruction.";
 				break;
 			case "PVP":
@@ -3464,7 +3464,6 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
 		int solvableCount = bombInfo.GetSolvableModuleIDs().Count();
 		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
-		string[] finaleInstructions = { "FIN", "ISH", "ALE" };
 		if (canSkip)
 		{
 			isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer");
@@ -3537,7 +3536,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				case "SKP":
 					{
 						isCorrect = input == (swapInnerOuterPresses ? "Outer" : "Inner");
-						if (currentInputPos + 1 < splittedInstructions.Count && !finaleInstructions.Contains(splittedInstructions[currentInputPos + 1]))
+						if (currentInputPos + 1 < splittedInstructions.Count && !lastCommands.Contains(splittedInstructions[currentInputPos + 1]))
 							canSkip = true;
 						break;
 					}
@@ -4639,7 +4638,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{
 				yield return null;
 				if (hasStruck) yield break;
-				while (!isChangingColors)
+				while (isChangingColors)
                 {
 					yield return string.Format("trycancel Your button press has been canceled after {0} press{1} in the command specified.", x + 1, x == 1 ? "" : "es");
                 }
