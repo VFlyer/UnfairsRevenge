@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using uernd = UnityEngine.Random;
+using KeepCoding;
 public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 	public KMBombInfo bombInfo;
@@ -83,7 +84,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge;
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden;
 	private MeshRenderer[] usedRenderers;
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
     private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst;
@@ -227,6 +228,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			}
 			return false;
 		};
+		OverrideSettings();
 		currentlyRunning = SampleStandardText();
 		StartCoroutine(currentlyRunning);
 		entireCircle.SetActive(false);
@@ -2751,7 +2753,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	{
 		if (btnIdx < 0 || btnIdx >= 6) yield break;
 		//colorButtonRenderers[btnIdx].material = switchableMats[1];
-		var lastColor = colorButtonRenderers[btnIdx].material.color;
+		var lastColor = isChangingColors ? colorButtonRenderers[btnIdx].material.color : colorWheel[idxColorList[btnIdx]];
 		var speed = 2;
         for (float x = 0; x <= 1f; x += Time.deltaTime * speed)
 		{
@@ -2895,9 +2897,24 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{"Nothing will ever\nbe the same...", "Ever again." },
 			{"Why is it called\nUnfair's Crueler\nRevenge?", "Well... You'll\nabout to find\nout..." },
 			{"Hard Mode Cruel\nRevenge Activated", "YOU ARE GOING\nTO REGRET THIS" },
-			{"Wanna hear the\nmost annoying\nsound in the world?", "Cyan! Azure! Lapis\nLazuli! Celestrial!\nCobalt!" },
+			{"Wanna hear the\nmost annoying\nsound in the world?", "Cyan! Azure! Lapis\nLazuli! Celadon!\nCobalt!" },
 			{"Estimated\nSimulation", "About\nFifty Minutes\nGive Or Take 1 Hour" },
 		};
+		//yield return null;
+		//OverrideSettings();
+		if (settingsOverriden)
+        {
+			var firstTextExpected = "CRUEL REVENGE\nHAS BEEN\nOVERRIDEN";
+			var secondTextExpected = string.Format("MODE:\n{0}", legacyUCR ? "LEGACY" : harderUCR ? "CRUELER": "NORMAL");
+
+			for (int x = 1; x <= Math.Max(firstTextExpected.Length, secondTextExpected.Length); x++)
+			{
+				mainDisplay.text = firstTextExpected.Substring(0, Math.Min(x, firstTextExpected.Length));
+				strikeIDDisplay.text = secondTextExpected.Substring(0, Math.Min(x, secondTextExpected.Length));
+				yield return null;
+			}
+			yield return new WaitForSecondsRealtime(1f);
+		}
 		KeyValuePair<string, string> selectedSample = harderUCR && !legacyUCR ? cruelModeQuestionResponse.PickRandom() : sampleQuestionResponse.PickRandom();
 		mainDisplay.color = Color.red;
 		strikeIDDisplay.color = Color.red;
@@ -2905,7 +2922,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		{
 			mainDisplay.text = selectedSample.Key.Substring(0, Math.Min(x,selectedSample.Key.Length));
 			strikeIDDisplay.text = selectedSample.Value.Substring(0, Math.Min(x, selectedSample.Value.Length));
-			yield return new WaitForSeconds(Time.deltaTime);
+			yield return null;
 		}
 		yield return new WaitForSeconds(3f);
 		mainDisplay.text = "";
@@ -3062,7 +3079,6 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					break;
 				}
 			case "SKP":
-				string[] finaleInstructions = { "FIN", "ISH", "ALE" };
 				toLog = "Press Inner Center.";
 				if (currentInputPos + 1 < splittedInstructions.Count && !lastCommands.Contains(splittedInstructions[currentInputPos + 1]))
 					toLog += " The next instruction is skippable, so press Outer Center in replacement for the next instruction.";
@@ -3176,7 +3192,6 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		if (canSkip)
 		{
 			isCorrect = input == (swapInnerOuterPresses ? "Inner" : "Outer");
-			canSkip = false;
 		}
 		else
 			switch (splittedInstructions[currentInputPos])
@@ -3901,17 +3916,70 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		public bool noTPCruelerRevenge = false;
 		public string version = "2.0";
     }
-
-	string FormatSecondsToTime(int num)
-	{
-		return string.Format("{0}:{1}", num / 60, (num % 60).ToString("00"));
-	}
 	string FormatSecondsToTime(long num)
 	{
 		return string.Format("{0}:{1}", num / 60, (num % 60).ToString("00"));
 	}
 	// Mission Detection Begins Here
-
+	private void OverrideSettings()
+    {
+		var lastTPSettings = noTPCruelCruelRevenge;
+		var missionDescription = Game.Mission.Description;
+		var missionID = Game.Mission.ID;
+		noTPCruelCruelRevenge = true;
+		Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Detected Mission ID: {1}", loggingModID, missionID ?? "<unknown>");
+		switch (missionID)
+        {
+			case "mod_missionpack_VFlyer_missionUCRLegacyPractice":
+				settingsOverriden = true;
+				legacyUCR = true;
+				harderUCR = false;
+				break;
+			case "mod_missionpack_VFlyer_missionUCRCruelerPractice":
+				settingsOverriden = true;
+				harderUCR = true;
+				legacyUCR = false;
+				break;
+			case "mod_missionpack_VFlyer_missionUCRStandardPractice":
+				settingsOverriden = true;
+				harderUCR = false;
+				legacyUCR = false;
+				break;
+			default:
+				break;
+        }
+		if (settingsOverriden) {
+			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? YES, BY MISSION ID", loggingModID);
+			return;
+		}
+		var allPossibleOverrides = new[] { "Old", "Legacy", "Normal", "Standard", "Crueler", };
+		Match UCRMatch = Regex.Match(missionDescription, string.Format(@"\[UCROverride\]\s({0})", allPossibleOverrides.Join("|")));
+		if (UCRMatch.Success)
+        {
+			switch (UCRMatch.Value.Split().Last())
+            {
+				case "Old":
+				case "Legacy":
+					legacyUCR = true;
+					harderUCR = false;
+					settingsOverriden = true;
+					break;
+				case "Normal":
+				case "Standard":
+					legacyUCR = false;
+					harderUCR = false;
+					settingsOverriden = true;
+					break;
+				case "Crueler":
+					legacyUCR = false;
+					harderUCR = true;
+					settingsOverriden = true;
+					break;
+            }
+        }
+		else noTPCruelCruelRevenge = lastTPSettings;
+		Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? {1}", loggingModID, settingsOverriden ? "YES BY MISSION DESCRIPTION" : "NO");
+	}
 
 	// TP Handling Begins here
 	IEnumerator TwitchHandleForcedSolve()

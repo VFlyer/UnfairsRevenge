@@ -856,11 +856,9 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		//Debug.LogFormat("[Unfair's Revenge #{0}]: Pressing the {1} button at {2} on the countdown timer...", loggingModID, input, bombInfo.GetFormattedTime());
 		int secondsTimer = (int)bombInfo.GetTime() % 60;
 		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
-		string[] finaleInstructions = { "FIN", "ISH" };
 		if (canSkip)
 		{
 			isCorrect = input == baseColorList[3];
-			canSkip = false;
 		}
 		else
 			switch (splittedInstructions[currentInputPos])
@@ -897,11 +895,6 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					break;
 				case "BOB":
 					isCorrect = input == "Inner";
-					if (bombInfo.IsIndicatorOn(Indicator.BOB) && bombInfo.GetBatteryCount() == 4 && bombInfo.GetBatteryHolderCount() == 2 && bombInfo.GetIndicators().Count() == 1)
-					{
-						//Debug.LogFormat("[Unfair's Revenge #{0}]: BOB is nice today. He will make you skip the rest of the instructions.", loggingModID);
-						currentInputPos = splittedInstructions.Count;
-					}
 					break;
 				case "REP":
 				case "EAT":
@@ -922,8 +915,6 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				case "SIG":
 					{
 						isCorrect = input == "Inner";
-						if (currentInputPos + 1 < splittedInstructions.Count && !finaleInstructions.Contains(splittedInstructions[currentInputPos + 1]))
-							canSkip = true;
 						break;
 					}
 				case "PVP":
@@ -980,19 +971,6 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 							isCorrect = input == rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs[currentInputPos - 1])) % 6];
 						break;
 					}
-				case "FIN":
-				case "ISH":
-					{
-						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Where(a => baseColorList.Contains(a)).Last()) : 0;
-						curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
-						int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
-						curIdx -= solvedCount % 6;
-						while (curIdx < 0)
-							curIdx += 6;
-						isCorrect = input == rearrangedColorList[curIdx] && (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10 == secondsTimer % 10;
-						//Debug.LogFormat("[Unfair's Revenge #{0}]: At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10);
-					}
-					break;
 			}
 		return isCorrect;
 	}
@@ -1129,19 +1107,6 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 							isCorrect = input == rearrangedColorList[(3 + Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last())) % 6];
 						break;
 					}
-				case "FIN":
-				case "ISH":
-					{
-						int curIdx = lastCorrectInputs.Where(a => baseColorList.Contains(a)).Any() ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
-						curIdx = (curIdx + lastCorrectInputs.Where(a => !baseColorList.Contains(a)).Count()) % 6;
-						int solvedCount = bombInfo.GetSolvedModuleIDs().Count();
-						curIdx -= solvedCount % 6;
-						while (curIdx < 0)
-							curIdx += 6;
-						isCorrect = input == rearrangedColorList[curIdx] && (bombInfo.GetSolvableModuleIDs().Count() - solvedCount) % 10 == secondsTimer % 10;
-						Debug.LogFormat("[Unfair's Revenge #{0}]: At {1} solved, {2} unsolved, the resulting button should be {3} which much be pressed when the last seconds digit is {4}.", loggingModID, solvedCount, bombInfo.GetSolvableModuleIDs().Count() - solvedCount, rearrangedColorList[curIdx], (bombInfo.GetSolvableModuleIDs().Count() - solvedCount)%10);
-					}
-					break;
 			}
 		if (isCorrect)
 		{
