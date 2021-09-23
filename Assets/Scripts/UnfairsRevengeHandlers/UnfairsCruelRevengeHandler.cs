@@ -2185,7 +2185,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				}
 			}
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After Intereperation + ModID, Port Plate, Battery Holder appending: {1}", loggingModID, output);
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
 		return output;
 	}
 
@@ -3923,62 +3923,76 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	// Mission Detection Begins Here
 	private void OverrideSettings()
     {
-		var lastTPSettings = noTPCruelCruelRevenge;
-		var missionDescription = Game.Mission.Description;
-		var missionID = Game.Mission.ID;
-		noTPCruelCruelRevenge = true;
-		Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Detected Mission ID: {1}", loggingModID, missionID ?? "<unknown>");
-		switch (missionID)
-        {
-			case "mod_missionpack_VFlyer_missionUCRLegacyPractice":
-				settingsOverriden = true;
-				legacyUCR = true;
-				harderUCR = false;
-				break;
-			case "mod_missionpack_VFlyer_missionUCRCruelerPractice":
-				settingsOverriden = true;
-				harderUCR = true;
-				legacyUCR = false;
-				break;
-			case "mod_missionpack_VFlyer_missionUCRStandardPractice":
-				settingsOverriden = true;
-				harderUCR = false;
-				legacyUCR = false;
-				break;
-			default:
-				break;
-        }
-		if (settingsOverriden) {
-			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? YES, BY MISSION ID", loggingModID);
-			return;
-		}
-		var allPossibleOverrides = new[] { "Old", "Legacy", "Normal", "Standard", "Crueler", };
-		Match UCRMatch = Regex.Match(missionDescription, string.Format(@"\[UCROverride\]\s({0})", allPossibleOverrides.Join("|")));
-		if (UCRMatch.Success)
-        {
-			switch (UCRMatch.Value.Split().Last())
-            {
-				case "Old":
-				case "Legacy":
+		try
+		{
+			var lastTPSettings = noTPCruelCruelRevenge;
+			var missionDescription = Game.Mission.Description;
+			var missionID = Game.Mission.ID;
+			noTPCruelCruelRevenge = true;
+			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Detected Mission ID: {1}", loggingModID, missionID ?? "<unknown>");
+			switch (missionID)
+			{
+				case "mod_missionpack_VFlyer_missionUCRLegacyPractice":
+					settingsOverriden = true;
 					legacyUCR = true;
 					harderUCR = false;
-					settingsOverriden = true;
 					break;
-				case "Normal":
-				case "Standard":
-					legacyUCR = false;
-					harderUCR = false;
+				case "mod_missionpack_VFlyer_missionUCRCruelerPractice":
 					settingsOverriden = true;
-					break;
-				case "Crueler":
-					legacyUCR = false;
 					harderUCR = true;
-					settingsOverriden = true;
+					legacyUCR = false;
 					break;
-            }
-        }
-		else noTPCruelCruelRevenge = lastTPSettings;
-		Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? {1}", loggingModID, settingsOverriden ? "YES BY MISSION DESCRIPTION" : "NO");
+				case "mod_missionpack_VFlyer_missionUCRStandardPractice":
+					settingsOverriden = true;
+					harderUCR = false;
+					legacyUCR = false;
+					break;
+				default:
+					break;
+			}
+			if (settingsOverriden)
+			{
+				Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? YES, BY MISSION ID", loggingModID);
+				return;
+			}
+			var allPossibleOverrides = new[] { "Old", "Legacy", "Normal", "Standard", "Crueler", };
+			Match UCRMatch = Regex.Match(missionDescription ?? "", string.Format(@"\[UCROverride\]\s({0})", allPossibleOverrides.Join("|")));
+			if (UCRMatch.Success)
+			{
+				switch (UCRMatch.Value.Split().Last())
+				{
+					case "Old":
+					case "Legacy":
+						legacyUCR = true;
+						harderUCR = false;
+						settingsOverriden = true;
+						break;
+					case "Normal":
+					case "Standard":
+						legacyUCR = false;
+						harderUCR = false;
+						settingsOverriden = true;
+						break;
+					case "Crueler":
+						legacyUCR = false;
+						harderUCR = true;
+						settingsOverriden = true;
+						break;
+				}
+			}
+			else noTPCruelCruelRevenge = lastTPSettings;
+			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? {1}", loggingModID, settingsOverriden ? "YES BY MISSION DESCRIPTION" : "NO");
+		}
+		catch (Exception resultingError)
+        {
+			Debug.LogErrorFormat("<Unfair's Cruel Revenge #{0}> EXCEPTION THROWN. USING SETTINGS PROVIDED BY FILE INSTEAD.", loggingModID);
+			Debug.LogException(resultingError);
+
+			settingsOverriden = false;
+			legacyUCR = ucrSettings.enableLegacyUCR;
+			harderUCR = ucrSettings.cruelerRevenge;
+            noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
+		}
 	}
 
 	// TP Handling Begins here

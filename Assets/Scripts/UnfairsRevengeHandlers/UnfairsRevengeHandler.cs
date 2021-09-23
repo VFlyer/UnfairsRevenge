@@ -258,7 +258,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------------------------------------------", loggingModID);
 		int monthOfStart = DateTime.Now.Month;
 		int idxStartDOW = Array.IndexOf(possibleDays, DateTime.Now.DayOfWeek);
-		string keyAString = obtainKeyA();
+		string keyAString = ObtainKeyA();
 		string keyBString = keyBTable[idxStartDOW, monthOfStart - 1];
 		string keyCString = EncryptUsingPlayfair(keyAString, keyBString, true);
 
@@ -394,9 +394,9 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		{'U', 30 }, {'V', 31 }, {'W', 32 }, {'X', 33 }, {'Y', 34 }, {'Z', 35 },
 	};
 
-	string obtainKeyA()
+	string ObtainKeyA()
 	{
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: ------------Key A Calculations------------", loggingModID);
 
 		string returningString = "";
 		string hexDecimalString = "0123456789ABCDEF";
@@ -452,7 +452,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 				}
 			}
 		Debug.LogFormat("[Unfair's Revenge #{0}]: After Intereperation + ModID, Port Plate, Battery Holder appending: {1}", loggingModID, output);
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ------------------------------------------", loggingModID);
+		Debug.LogFormat("[Unfair's Revenge #{0}]: ----------------------------------------------", loggingModID);
 		return output;
 	}
 
