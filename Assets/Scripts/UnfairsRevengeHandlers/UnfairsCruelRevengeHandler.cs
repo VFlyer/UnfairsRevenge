@@ -2456,7 +2456,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				var ucrCount = allModIDs.Count(a => a.Equals(modSelf.ModuleType));
 				for (int x = 0; x < ucrCount - 1; x++)
 				{
-					valueToChange = valueToChange.Substring(10) + valueToChange.Substring(0, 10);
+					valueToChange = valueToChange.Substring(valueToChange.Length - 10) + valueToChange.Substring(0, valueToChange.Length - 10);
 				}
 				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Modified Alphabet String after this condition: {1}", loggingModID, valueToChange);
 				appliedConditions.Add(9);
