@@ -84,7 +84,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden;
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden, forceSolveRequested;
 	private MeshRenderer[] usedRenderers;
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
     private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst;
@@ -3785,7 +3785,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{
 				Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: All instructions are handled correctly. You're done.", loggingModID);
 				isFinished = true;
-				if (harderUCR && !legacyUCR)
+				if (harderUCR && !legacyUCR && !forceSolveRequested)
 				{
 					mAudio.PlaySoundAtTransform("6_awesome", transform);
 				}
@@ -3929,7 +3929,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			var missionDescription = Game.Mission.Description;
 			var missionID = Game.Mission.ID;
 			noTPCruelCruelRevenge = true;
-			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Detected Mission ID: {1}", loggingModID, missionID ?? "<unknown>");
+			//Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Detected Mission ID: {1}", loggingModID, missionID ?? "<unknown>");
 			switch (missionID)
 			{
 				case "mod_missionpack_VFlyer_missionUCRLegacyPractice":
@@ -3947,6 +3947,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					harderUCR = false;
 					legacyUCR = false;
 					break;
+				case "freeplay":
+					noTPCruelCruelRevenge = lastTPSettings;
+					Debug.LogFormat("<Unfair's Cruel Revenge #{0}> MISSION DETECTED AS FREEPLAY. CANNOT OVERRIDE SETTINGS.", loggingModID);
+					return;
 				default:
 					break;
 			}
@@ -3980,7 +3984,6 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						break;
 				}
 			}
-			else noTPCruelCruelRevenge = lastTPSettings;
 			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? {1}", loggingModID, settingsOverriden ? "YES BY MISSION DESCRIPTION" : "NO");
 		}
 		catch (Exception resultingError)
@@ -4002,6 +4005,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		int[] primesUnder20 = { 2, 3, 5, 7, 11, 13, 17, 19 };
 		while (!hasStarted) yield return true;
 		hasStruck = false;
+		forceSolveRequested = true;
+		Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Force solve Requested by TP.", loggingModID);
 		while (currentInputPos < splittedInstructions.Count)
 		{
 			yield return new WaitForSeconds(0.1f);
@@ -4420,6 +4425,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		entireCircle.SetActive(false);
 		keyABaseKey = "";
 		fourSquareKey = "";
+		baseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		displaySubstutionLettersAll.Clear();
 		usedRenderers = new[] { statusIndicators.First() }.Concat(statusIndicators.Skip(1).Take(8)).Concat(new[] { statusIndicators.Last() }).ToArray();
 		PrepModule();
