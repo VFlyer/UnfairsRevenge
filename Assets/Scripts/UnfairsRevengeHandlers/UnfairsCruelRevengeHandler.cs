@@ -3937,20 +3937,22 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					legacyUCR = true;
 					harderUCR = false;
 					break;
-				case "mod_missionpack_VFlyer_missionUCRCruelerPractice":
+				case "mod_missionpack_VFlyer_mission47thWrath":
 					settingsOverriden = true;
 					harderUCR = true;
 					legacyUCR = false;
 					break;
-				case "mod_missionpack_VFlyer_missionUCRStandardPractice":
+				case "mod_missionpack_VFlyer_mission47thProblem":
 					settingsOverriden = true;
 					harderUCR = false;
 					legacyUCR = false;
 					break;
+					/*
 				case "freeplay":
 					noTPCruelCruelRevenge = lastTPSettings;
 					Debug.LogFormat("<Unfair's Cruel Revenge #{0}> MISSION DETECTED AS FREEPLAY. CANNOT OVERRIDE SETTINGS.", loggingModID);
 					return;
+					*/
 				default:
 					break;
 			}
@@ -3984,6 +3986,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						break;
 				}
 			}
+			else
+				noTPCruelCruelRevenge = lastTPSettings;
 			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? {1}", loggingModID, settingsOverriden ? "YES BY MISSION DESCRIPTION" : "NO");
 		}
 		catch (Exception resultingError)
