@@ -398,7 +398,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		StartCoroutine(IndicatorCoreHandlerExtraScreen.HandleIndicatorModification(4));
 		idxColorList.Shuffle();
 		List<string> curColorList = idxColorList.Select(a => baseColorList[a]).ToList();
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: A lot of things have been changed recently. You may also notice fewer condtions being applied. You are currently using the legacy ruleset for Unfair's Cruel Revenge.", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: How in the world did he forget about this module!? At least it's updated. You are currently using the legacy ruleset for Unfair's Cruel Revenge.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Button colors in clockwise order (starting on the NW button): {1}", loggingModID, curColorList.Join(", "));
 		StartCoroutine(HandleStartUpAnim());
 		//StartCoroutine(TypePigpenText(FitToScreen("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM",13)));
@@ -926,7 +926,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		idxColorList.Shuffle();
 		initialIdxColorList = idxColorList.ToArray();
 		List<string> curColorList = idxColorList.Select(a => baseColorList[a]).ToList();
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: A lot of things have been changed recently. You may also notice fewer condtions being applied. You are currently using the newer ruleset for Unfair's Cruel Revenge.", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: How in the world did he forget about this module!? At least it's updated. You are currently using the newer ruleset for Unfair's Cruel Revenge.", loggingModID);
 		if (harderUCR)
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Hard Mode Unfair's Cruel Revenge has been activated. I hope you are prepared.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2} colors in clockwise order (starting on the NW button): {1}", loggingModID, curColorList.Join(", "), harderUCR ? "Initial button" : "Button");
@@ -1143,30 +1143,33 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			var baseAlphabetNot10thLetters = baseAlphabet.Take(9).Concat(baseAlphabet.Skip(10));
 			var resultingFinalSubstitutionString = "";
 			var currentSubstituionString = "";
+			string currentString = baseString;
+			if (groupedEncryptedResults.Any())
+			{
+				currentString = groupedEncryptedResults.Last();
+			}
 			var lastEncryptedString = groupedEncryptedResults.Join("");
 			if (string.IsNullOrEmpty(lastEncryptedString))
 				lastEncryptedString = baseString;
-			for (int y = 0; y < lastEncryptedString.Length; y++)
+			for (int y = 0; y < currentString.Length; y++)
 			{
 				char selectedLetter = baseAlphabetNot10thLetters.PickRandom();
 				while (selectedLetter == lastEncryptedString[y]) // Prevent overlapping the substitution letters in that given position.
 					selectedLetter = baseAlphabetNot10thLetters.PickRandom();
 				currentSubstituionString += selectedLetter;
 			}
-			
-			
-			string currentString = baseString;
-			if (groupedEncryptedResults.Any())
-				currentString = groupedEncryptedResults.Last();
+		
 				
 			var curCipherIdx = cipherIdxesAll[x];
 			switch (curCipherIdx)
 			{
 				case 0:
 					{// Playfair Cipher with Key A
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------- Playfair Cipher (Key A) ----------+-", loggingModID);
 						// Modify the string by substituting the 10th letters
 						string modifiedString = "";
 						var idx10thLetters = new List<int>();
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution letters for this cipher: {1}", loggingModID, currentSubstituionString);
 						for (var y = 0; y < currentString.Length; y++)
 						{
 							var curChar = currentString[y];
@@ -1178,8 +1181,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							else
 								modifiedString += curChar;
 						}
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Message string after substituting 10th letters: {1}", loggingModID, modifiedString);
 						var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyAString, true);
 						var resultToAdd = "";
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Encrypted string before resubstituting 10th letters: {1}", loggingModID, resultingEncryption);
 						for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
 						{
 							if (idx10thLetters.Contains(y))
@@ -1194,13 +1199,17 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							}
 						}
 						groupedEncryptedResults.Add(resultToAdd);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution Letters displayed for this cipher: {1}", loggingModID, resultingFinalSubstitutionString);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
 						break;
 					}
 				case 1:
 					{// Playfair Cipher with Key B
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------- Playfair Cipher (Key B) ----------+-", loggingModID);
 						// Modify the string by substituting the 10th letters
 						string modifiedString = "";
 						var idx10thLetters = new List<int>();
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution letters for this cipher: {1}", loggingModID, currentSubstituionString);
 						for (var y = 0; y < currentString.Length; y++)
 						{
 							var curChar = currentString[y];
@@ -1212,8 +1221,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							else
 								modifiedString += curChar;
 						}
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Message string after substituting 10th letters: {1}", loggingModID, modifiedString);
 						var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyBString, true);
 						var resultToAdd = "";
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Encrypted string before resubstituting 10th letters: {1}", loggingModID, resultingEncryption);
 						for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
 						{
 							if (idx10thLetters.Contains(y))
@@ -1228,13 +1239,17 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							}
 						}
 						groupedEncryptedResults.Add(resultToAdd);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution Letters displayed for this cipher: {1}", loggingModID, resultingFinalSubstitutionString);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
 						break;
 					}
 				case 2:
 					{// Playfair Cipher with Key C
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------- Playfair Cipher (Key C) ----------+-", loggingModID);
 						// Modify the string by substituting the 10th letters
 						string modifiedString = "";
 						var idx10thLetters = new List<int>();
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution letters for this cipher: {1}", loggingModID, currentSubstituionString);
 						for (var y = 0; y < currentString.Length; y++)
 						{
 							var curChar = currentString[y];
@@ -1246,8 +1261,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							else
 								modifiedString += curChar;
 						}
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Message string after substituting 10th letters: {1}", loggingModID, modifiedString);
 						var resultingEncryption = EncryptUsingPlayfair(modifiedString, keyCString, true);
 						var resultToAdd = "";
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Encrypted string before resubstituting 10th letters: {1}", loggingModID, resultingEncryption);
 						for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
 						{
 							if (idx10thLetters.Contains(y))
@@ -1261,7 +1278,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 								resultingFinalSubstitutionString += currentSubstituionString[y];
 							}
 						}
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution Letters displayed for this cipher: {1}", loggingModID, resultingFinalSubstitutionString);
 						groupedEncryptedResults.Add(resultToAdd);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+---------------------------------------------+-", loggingModID);
 						break;
 					}
 				case 3:
@@ -1286,7 +1305,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					}
 				case 7:
 					{// Basic Columnar Transposition
-						groupedEncryptedResults.Add(EncryptUsingBasicColumnar(currentString, columnalTranspositionLst, !preppedIdxes.Contains(7)));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-------- Basic Columnar Transposition --------+-", loggingModID);
+						groupedEncryptedResults.Add(EncryptUsingBasicColumnar(currentString, columnalTranspositionLst, true));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----------------------------------------------+-", loggingModID);
 						goto default;
 					}
 				case 8:
@@ -1352,6 +1373,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						// Modify the string by substituting the 10th letters
 						string modifiedString = "";
 						var idx10thLetters = new List<int>();
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution letters for this cipher: {1}", loggingModID, currentSubstituionString);
 						for (var y = 0; y < currentString.Length; y++)
 						{
 							var curChar = currentString[y];
@@ -1363,8 +1385,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							else
 								modifiedString += curChar;
 						}
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Message string after substituting 10th letters: {1}", loggingModID, modifiedString);
 						var resultingEncryption = EncryptUsingFourSquare(modifiedString, keyAString, keyBString, keyCString, fourSquareKey, true);
 						var resultToAdd = "";
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Encrypted string before resubstituting 10th letters: {1}", loggingModID, resultingEncryption);
 						for (var y = 0; y < resultingEncryption.Length; y++) // Then resubstitute the 10th letters
 						{
 							if (idx10thLetters.Contains(y))
@@ -1379,13 +1403,15 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							}
 						}
 						groupedEncryptedResults.Add(resultToAdd);
-
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Substitution Letters displayed for this cipher: {1}", loggingModID, resultingFinalSubstitutionString);
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-------------------------------------------------+-", loggingModID);
 						break;
 					}
 				case 13:
 					{// Redefence Transposition
-						groupedEncryptedResults.Add(EncryptUsingRedefenceTranspositon(currentString, columnalTranspositionLst, !preppedIdxes.Contains(13)));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+------------ Redefence Transposition ------------+-", loggingModID);
+						groupedEncryptedResults.Add(EncryptUsingRedefenceTranspositon(currentString, columnalTranspositionLst, true));
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-------------------------------------------------+-", loggingModID);
 						goto default;
 					}
 				case 14:
@@ -2044,7 +2070,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	string EncryptUsingRedefenceTranspositon(string input, int[] key, bool logValues = false)
     {
 		string[] separtedSets = new string[key.Length];
-		if (logValues) Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Redefence Transposition Key: {1}", loggingModID, key.Join(""));
+		if (logValues) Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Redefence Transposition Key: {1}", loggingModID, key.Select(x => x + 1).Join(""));
 		int curPos = 1;
 		bool dirBack = true;
         for (int x = 0; x < input.Length; x++)
@@ -2890,8 +2916,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{"Where did he go?", "Is it there?" },
 			{"Who saw\nthis coming?", "Certainly not him." },
 			{"Estimated\nSimulation", "About\nTwenty Minutes" },
-		};
-		Dictionary<string, string> cruelModeQuestionResponse = new Dictionary<string, string>()
+		}, cruelModeQuestionResponse = new Dictionary<string, string>()
 		{
 			{"It was too\nconsistent.", "So he made this\nharder instead.\nWhy? Because-" },
 			{"Nothing will ever\nbe the same...", "Ever again." },
@@ -2899,6 +2924,14 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{"Hard Mode Cruel\nRevenge Activated", "YOU ARE GOING\nTO REGRET THIS" },
 			{"Wanna hear the\nmost annoying\nsound in the world?", "Cyan! Azure! Lapis\nLazuli! Celadon!\nCobalt!" },
 			{"Estimated\nSimulation", "About\nFifty Minutes\nGive Or Take 1 Hour" },
+		}, legacyModeQuestionResponse = new Dictionary<string, string>()
+		{
+			{ "Why is it called\nUnfair's Legacy\nRevenge?", "You wanna know?" },
+			{ "The old days...", "It just keeps\ncoming back." },
+			{"It was too\nconsistent.", "Why was it\nconsistent?" },
+			{ "The old days\nof Cruel Revenge...", "Do you want\nto revisit it?" },
+			{ "I mean it was\nborn like this.", "I assume you\nknew this." },
+			{ "Estimated\nSimulation", "ERROR" },
 		};
 		//yield return null;
 		//OverrideSettings();
@@ -2915,7 +2948,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			}
 			yield return new WaitForSecondsRealtime(1f);
 		}
-		KeyValuePair<string, string> selectedSample = harderUCR && !legacyUCR ? cruelModeQuestionResponse.PickRandom() : sampleQuestionResponse.PickRandom();
+		KeyValuePair<string, string> selectedSample = legacyUCR ? legacyModeQuestionResponse.PickRandom() : harderUCR ? cruelModeQuestionResponse.PickRandom() : sampleQuestionResponse.PickRandom();
 		mainDisplay.color = Color.red;
 		strikeIDDisplay.color = Color.red;
 		for (int x = 1; x <= Math.Max(selectedSample.Key.Length,selectedSample.Value.Length); x++)
@@ -3373,94 +3406,47 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
                     {
 						if (splittedInstructions.Count > 0)
 						{
-							if (currentInputPos == 0)
-							{
-								var secondInstruction = splittedInstructions[1];
-								if (secondInstruction == "INV" || secondInstruction == "ERT")
-									goto case "INV";
-								else if (secondInstruction == "STR" || secondInstruction == "IKE")
-									goto case "STR";
-								else if (secondInstruction == "REP" || secondInstruction == "EAT")
-									goto case "REP";
-								else if (secondInstruction == "SCN")
-									goto case "SCN";
-								else if (secondInstruction == "OPP")
-									goto case "OPP";
-								else if (secondInstruction == "NXS")
-									goto case "NXS";
-								else if (secondInstruction == "PVS")
-									goto case "PVS";
-								else if (secondInstruction == "NXP")
-									goto case "NXP";
-								else if (secondInstruction == "PVP")
-									goto case "PVP";
-								else if (secondInstruction == "SKP")
-									goto case "SKP";
-								else if (secondInstruction == "MOT")
-									goto case "MOT";
-								else if (secondInstruction == "SUB")
-									goto case "SUB";
-								else if (secondInstruction == "PRN")
-									goto case "PRN";
-								else if (secondInstruction == "CHK")
-									goto case "CHK";
-								else if (secondInstruction == "PCR")
-									goto case "PCR";
-								else if (secondInstruction == "PCG")
-									goto case "PCG";
-								else if (secondInstruction == "PCB")
-									goto case "PCB";
-								else if (secondInstruction == "SCC")
-									goto case "SCC";
-								else if (secondInstruction == "SCY")
-									goto case "SCY";
-								else if (secondInstruction == "SCM")
-									goto case "SCM";
-							}
-							else
-                            {
-								var lastInstruction = splittedInstructions[currentInputPos - 1];
-								if (lastInstruction == "INV" || lastInstruction == "ERT")
-									goto case "INV";
-								else if (lastInstruction == "STR" || lastInstruction == "IKE")
-									goto case "STR";
-								else if (lastInstruction == "REP" || lastInstruction == "EAT")
-									goto case "REP";
-								else if (lastInstruction == "SCN")
-									goto case "SCN";
-								else if (lastInstruction == "OPP")
-									goto case "OPP";
-								else if (lastInstruction == "NXS")
-									goto case "NXS";
-								else if (lastInstruction == "PVS")
-									goto case "PVS";
-								else if (lastInstruction == "NXP")
-									goto case "NXP";
-								else if (lastInstruction == "PVP")
-									goto case "PVP";
-								else if (lastInstruction == "SKP")
-									goto case "SKP";
-								else if (lastInstruction == "MOT")
-									goto case "MOT";
-								else if (lastInstruction == "SUB")
-									goto case "SUB";
-								else if (lastInstruction == "PRN")
-									goto case "PRN";
-								else if (lastInstruction == "CHK")
-									goto case "CHK";
-								else if (lastInstruction == "PCR")
-									goto case "PCR";
-								else if (lastInstruction == "PCG")
-									goto case "PCG";
-								else if (lastInstruction == "PCB")
-									goto case "PCB";
-								else if (lastInstruction == "SCC")
-									goto case "SCC";
-								else if (lastInstruction == "SCY")
-									goto case "SCY";
-								else if (lastInstruction == "SCM")
-									goto case "SCM";
-							}
+							var lastInstruction = splittedInstructions[currentInputPos == 0 ? 1 : currentInputPos - 1];
+							if (lastInstruction == "INV" || lastInstruction == "ERT")
+								goto case "INV";
+							else if (lastInstruction == "STR" || lastInstruction == "IKE")
+								goto case "STR";
+							else if (lastInstruction == "REP" || lastInstruction == "EAT")
+								goto case "REP";
+							else if (lastInstruction == "SCN")
+								goto case "SCN";
+							else if (lastInstruction == "OPP")
+								goto case "OPP";
+							else if (lastInstruction == "NXS")
+								goto case "NXS";
+							else if (lastInstruction == "PVS")
+								goto case "PVS";
+							else if (lastInstruction == "NXP")
+								goto case "NXP";
+							else if (lastInstruction == "PVP")
+								goto case "PVP";
+							else if (lastInstruction == "SKP")
+								goto case "SKP";
+							else if (lastInstruction == "MOT")
+								goto case "MOT";
+							else if (lastInstruction == "SUB")
+								goto case "SUB";
+							else if (lastInstruction == "PRN")
+								goto case "PRN";
+							else if (lastInstruction == "CHK")
+								goto case "CHK";
+							else if (lastInstruction == "PCR")
+								goto case "PCR";
+							else if (lastInstruction == "PCG")
+								goto case "PCG";
+							else if (lastInstruction == "PCB")
+								goto case "PCB";
+							else if (lastInstruction == "SCC")
+								goto case "SCC";
+							else if (lastInstruction == "SCY")
+								goto case "SCY";
+							else if (lastInstruction == "SCM")
+								goto case "SCM";
 						}
 						break;
                     }
@@ -3683,53 +3669,9 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					{
 						if (splittedInstructions.Count > 0)
 						{
-							if (currentInputPos == 0)
+							if (splittedInstructions.Count > 0)
 							{
-								var secondInstruction = splittedInstructions[1];
-								if (secondInstruction == "INV" || secondInstruction == "ERT")
-									goto case "INV";
-								else if (secondInstruction == "STR" || secondInstruction == "IKE")
-									goto case "STR";
-								else if (secondInstruction == "REP" || secondInstruction == "EAT")
-									goto case "REP";
-								else if (secondInstruction == "SCN")
-									goto case "SCN";
-								else if (secondInstruction == "OPP")
-									goto case "OPP";
-								else if (secondInstruction == "NXS")
-									goto case "NXS";
-								else if (secondInstruction == "PVS")
-									goto case "PVS";
-								else if (secondInstruction == "NXP")
-									goto case "NXP";
-								else if (secondInstruction == "PVP")
-									goto case "PVP";
-								else if (secondInstruction == "SKP")
-									goto case "SKP";
-								else if (secondInstruction == "MOT")
-									goto case "MOT";
-								else if (secondInstruction == "SUB")
-									goto case "SUB";
-								else if (secondInstruction == "PRN")
-									goto case "PRN";
-								else if (secondInstruction == "CHK")
-									goto case "CHK";
-								else if (secondInstruction == "PCR")
-									goto case "PCR";
-								else if (secondInstruction == "PCG")
-									goto case "PCG";
-								else if (secondInstruction == "PCB")
-									goto case "PCB";
-								else if (secondInstruction == "SCC")
-									goto case "SCC";
-								else if (secondInstruction == "SCY")
-									goto case "SCY";
-								else if (secondInstruction == "SCM")
-									goto case "SCM";
-							}
-							else
-							{
-								var lastInstruction = splittedInstructions[currentInputPos - 1];
+								var lastInstruction = splittedInstructions[currentInputPos == 0 ? 1 : currentInputPos - 1];
 								if (lastInstruction == "INV" || lastInstruction == "ERT")
 									goto case "INV";
 								else if (lastInstruction == "STR" || lastInstruction == "IKE")
@@ -3882,7 +3824,6 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 								pigpenSecondary.text = FitToScreen(displaySubstutionLettersAll.ElementAtOrDefault((int)(bombInfo.GetTime() % (displaySubstutionLettersAll.Count + 1))), 13);
 								strikeIDDisplay.text = "";
 							}
-
 						}
 						else
 						{
@@ -4147,38 +4088,31 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					break;
 				case "SUB":
 					{
-						var secondsTimer = (int)(bombInfo.GetTime() % 60);
-						while (secondsTimer % 11 != 0)
+						while ((int)(bombInfo.GetTime() % 60 % 11) != 0)
 						{
 							yield return true;
-							secondsTimer = (int)(bombInfo.GetTime() % 60);
 						}
 						(swapInnerOuterPresses ? outerSelectable : innerSelectable).OnInteract();
 					}
 					break;
 				case "MOT":
 					{
-						var secondsTimer = (int)(bombInfo.GetTime() % 60);
 						var calculatedExpectedDigit = ((selectedModID + (4 - currentInputPos) + lastCorrectInputs.Where(a => baseColorList.Contains(a)).Count()) % 10 + 10) % 10;
-						while (secondsTimer % 10 != calculatedExpectedDigit)
+						while ((int)(bombInfo.GetTime() % 10) != calculatedExpectedDigit)
 						{
 							yield return true;
-							secondsTimer = (int)(bombInfo.GetTime() % 60);
 						}
 						(swapInnerOuterPresses ? innerSelectable : outerSelectable).OnInteract();
 					}
 					break;
 				case "FIN":
                     {
-						if (legacyUCR) goto case "LEGACY";
-						var secondsTimer = (int)(bombInfo.GetTime() % 60);
 						var solveCount = bombInfo.GetSolvedModuleIDs().Count();
 						var allModCount = bombInfo.GetSolvableModuleIDs().Count;
-						while (secondsTimer % 10 != (allModCount - solveCount) % 10)
+						while ((int)(bombInfo.GetTime() % 10) != (allModCount - solveCount) % 10)
 						{
 							yield return true;
 							solveCount = bombInfo.GetSolvedModuleIDs().Count();
-							secondsTimer = (int)(bombInfo.GetTime() % 60);
 						}
 						(solveCount % 2 == 0 ? innerSelectable : outerSelectable).OnInteract();
 					}
@@ -4188,15 +4122,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						if (legacyUCR) goto case "LEGACY";
 						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						curIdx = (curIdx + lastCorrectInputs.Count(a => !baseColorList.Contains(a))) % 6;
-
-						var secondsTimer = (int)(bombInfo.GetTime() % 60);
 						var solveCount = bombInfo.GetSolvedModuleIDs().Count();
 						var allModCount = bombInfo.GetSolvableModuleIDs().Count;
-						while (secondsTimer % 10 != (allModCount - solveCount) % 10)
+						while ((int)(bombInfo.GetTime() % 10) != (allModCount - solveCount) % 10)
 						{
 							yield return true;
 							solveCount = bombInfo.GetSolvedModuleIDs().Count();
-							secondsTimer = (int)(bombInfo.GetTime() % 60);
 						}
 						colorButtonSelectables[curIdx].OnInteract();
 					}
@@ -4204,13 +4135,11 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				case "ALE":
                     {
 						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
-						var secondsTimer = (int)(bombInfo.GetTime() % 60);
 						var solveCount = bombInfo.GetSolvedModuleIDs().Count();
-						while (secondsTimer % 10 != solveCount % 10)
+						while ((int)(bombInfo.GetTime() % 10) != solveCount % 10)
 						{
 							yield return true;
-							solveCount = bombInfo.GetSolvedModuleIDs().Count();
-							secondsTimer = (int)(bombInfo.GetTime() % 60);
+							solveCount = bombInfo.GetSolvedModuleIDs().Count();;
 						}
 						colorButtonSelectables[lastCorrectInputs.Count(a => baseColorList.Contains(a)) % 2 == 0 ? (curIdx + 3) % 6 :
 							Array.IndexOf(rearrangedColorList, complementaryCounterparts[rearrangedColorList[curIdx]])].OnInteract();
@@ -4220,14 +4149,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
                     {
 						int curIdx = lastCorrectInputs.Any(a => baseColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => baseColorList.Contains(a))) : 0;
 						curIdx += lastCorrectInputs.Count(a => !baseColorList.Contains(a));
-						var secondsTimer = (int)(bombInfo.GetTime() % 60);
 						var solveCount = bombInfo.GetSolvedModuleIDs().Count();
 						var allModCount = bombInfo.GetSolvableModuleIDs().Count;
-						while (secondsTimer % 10 != (allModCount - solveCount) % 10)
+						while ((int)(bombInfo.GetTime() % 10) != (allModCount - solveCount) % 10)
 						{
 							yield return true;
 							solveCount = bombInfo.GetSolvedModuleIDs().Count();
-							secondsTimer = (int)(bombInfo.GetTime() % 60);
 						}
 						colorButtonSelectables[(curIdx + 5 * solveCount) % 6].OnInteract();
 					}
@@ -4247,95 +4174,51 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					{
 						if (splittedInstructions.Count > 0)
 						{
-							if (currentInputPos == 0)
-							{
-								var secondInstruction = splittedInstructions[1];
-								if (secondInstruction == "INV" || secondInstruction == "ERT")
-									goto case "INV";
-								else if (secondInstruction == "STR" || secondInstruction == "IKE")
-									goto case "STR";
-								else if (secondInstruction == "REP" || secondInstruction == "EAT")
-									goto case "REP";
-								else if (secondInstruction == "SCN")
-									goto case "SCN";
-								else if (secondInstruction == "OPP")
-									goto case "OPP";
-								else if (secondInstruction == "NXS")
-									goto case "NXS";
-								else if (secondInstruction == "PVS")
-									goto case "PVS";
-								else if (secondInstruction == "NXP")
-									goto case "NXP";
-								else if (secondInstruction == "PVP")
-									goto case "PVP";
-								else if (secondInstruction == "SKP")
-									goto case "SKP";
-								else if (secondInstruction == "MOT")
-									goto case "MOT";
-								else if (secondInstruction == "SUB")
-									goto case "SUB";
-								else if (secondInstruction == "PRN")
-									goto case "PRN";
-								else if (secondInstruction == "CHK")
-									goto case "CHK";
-								else if (secondInstruction == "PCR")
-									goto case "PCR";
-								else if (secondInstruction == "PCG")
-									goto case "PCG";
-								else if (secondInstruction == "PCB")
-									goto case "PCB";
-								else if (secondInstruction == "SCC")
-									goto case "SCC";
-								else if (secondInstruction == "SCY")
-									goto case "SCY";
-								else if (secondInstruction == "SCM")
-									goto case "SCM";
+								if (splittedInstructions.Count > 0)
+								{
+									var lastInstruction = splittedInstructions[currentInputPos == 0 ? 1 : currentInputPos - 1];
+									if (lastInstruction == "INV" || lastInstruction == "ERT")
+										goto case "INV";
+									else if (lastInstruction == "STR" || lastInstruction == "IKE")
+										goto case "STR";
+									else if (lastInstruction == "REP" || lastInstruction == "EAT")
+										goto case "REP";
+									else if (lastInstruction == "SCN")
+										goto case "SCN";
+									else if (lastInstruction == "OPP")
+										goto case "OPP";
+									else if (lastInstruction == "NXS")
+										goto case "NXS";
+									else if (lastInstruction == "PVS")
+										goto case "PVS";
+									else if (lastInstruction == "NXP")
+										goto case "NXP";
+									else if (lastInstruction == "PVP")
+										goto case "PVP";
+									else if (lastInstruction == "SKP")
+										goto case "SKP";
+									else if (lastInstruction == "MOT")
+										goto case "MOT";
+									else if (lastInstruction == "SUB")
+										goto case "SUB";
+									else if (lastInstruction == "PRN")
+										goto case "PRN";
+									else if (lastInstruction == "CHK")
+										goto case "CHK";
+									else if (lastInstruction == "PCR")
+										goto case "PCR";
+									else if (lastInstruction == "PCG")
+										goto case "PCG";
+									else if (lastInstruction == "PCB")
+										goto case "PCB";
+									else if (lastInstruction == "SCC")
+										goto case "SCC";
+									else if (lastInstruction == "SCY")
+										goto case "SCY";
+									else if (lastInstruction == "SCM")
+										goto case "SCM";
+								}
 							}
-							else
-							{
-								var lastInstruction = splittedInstructions[currentInputPos - 1];
-								if (lastInstruction == "INV" || lastInstruction == "ERT")
-									goto case "INV";
-								else if (lastInstruction == "STR" || lastInstruction == "IKE")
-									goto case "STR";
-								else if (lastInstruction == "REP" || lastInstruction == "EAT")
-									goto case "REP";
-								else if (lastInstruction == "SCN")
-									goto case "SCN";
-								else if (lastInstruction == "OPP")
-									goto case "OPP";
-								else if (lastInstruction == "NXS")
-									goto case "NXS";
-								else if (lastInstruction == "PVS")
-									goto case "PVS";
-								else if (lastInstruction == "NXP")
-									goto case "NXP";
-								else if (lastInstruction == "PVP")
-									goto case "PVP";
-								else if (lastInstruction == "SKP")
-									goto case "SKP";
-								else if (lastInstruction == "MOT")
-									goto case "MOT";
-								else if (lastInstruction == "SUB")
-									goto case "SUB";
-								else if (lastInstruction == "PRN")
-									goto case "PRN";
-								else if (lastInstruction == "CHK")
-									goto case "CHK";
-								else if (lastInstruction == "PCR")
-									goto case "PCR";
-								else if (lastInstruction == "PCG")
-									goto case "PCG";
-								else if (lastInstruction == "PCB")
-									goto case "PCB";
-								else if (lastInstruction == "SCC")
-									goto case "SCC";
-								else if (lastInstruction == "SCY")
-									goto case "SCY";
-								else if (lastInstruction == "SCM")
-									goto case "SCM";
-							}
-						}
 						break;
 					}
 				default:
