@@ -737,22 +737,22 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{
 				case 0:
 					{// Playfair Cipher with Key A
-						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyAString, true));
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyAString.Replace(baseAlphabet[9], baseAlphabet[8]), true));
 						break;
 					}
 				case 1:
 					{// Playfair Cipher with Key B
-						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyBString, true));
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyBString.Replace(baseAlphabet[9], baseAlphabet[8]), true));
 						break;
 					}
 				case 2:
 					{// Playfair Cipher with Key C
-						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyCString, true));
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyCString.Replace(baseAlphabet[9], baseAlphabet[8]), true));
 						break;
 					}
 				case 3:
 					{// Playfair Cipher with Key D
-						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyDString, true));
+						encryptedResults.Add(EncryptUsingPlayfair(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), keyDString.Replace(baseAlphabet[9], baseAlphabet[8]), true));
 						break;
 					}
 				case 4:
@@ -869,8 +869,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							"CBDJUHOVLFIKSXPZRWQGETYAMN",
 							"JIYEPUCAFKGNOQBWZDVLXMRTSH",
 						};
-						int[] trueIdxs = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }.Where(a => trueRules[a]).ToArray(),
-							falseIdxs = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }.Where(a => !trueRules[a]).ToArray();
+						int[] trueIdxs = Enumerable.Range(0, 15).Where(a => trueRules[a]).ToArray(),
+							falseIdxs = Enumerable.Range(0, 15).Where(a => !trueRules[a]).ToArray();
 						int idxFirstTrue = trueIdxs.FirstOrDefault(), idxLastFalse = falseIdxs.LastOrDefault();
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The following rules from Reverse Alphabetize (At 0 solves, 0 strikes) are true: [ {1} ]", loggingModID, trueIdxs.Select(a => a + 1).Join(", "));
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The following rules from Reverse Alphabetize (At 0 solves, 0 strikes) are false: [ {1} ]", loggingModID, falseIdxs.Select(a => a + 1).Join(", "));
@@ -896,9 +896,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							encryptionStringA = possibleStrings[medianVal];
 						}
 						else
+						{
 							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon reaching to a pair of numbers, the median row does not exist.", loggingModID);
-
-						encryptedResults.Add(EncryptUsingFourSquare(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), encryptionStringA, possibleStrings[idxFirstTrue], possibleStrings[idxLastFalse], fourSquareKey, true));
+							encryptionStringA = baseAlphabet;
+						}
+						encryptionStringA = encryptionStringA.Replace(baseAlphabet[9], baseAlphabet[8]);
+						encryptedResults.Add(EncryptUsingFourSquare(currentString.Replace(baseAlphabet[9], baseAlphabet[8]), encryptionStringA, possibleStrings[idxFirstTrue].Replace(baseAlphabet[9], baseAlphabet[8]), possibleStrings[idxLastFalse].Replace(baseAlphabet[9], baseAlphabet[8]), fourSquareKey.Replace(baseAlphabet[9], baseAlphabet[8]), true));
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-----------------------------------------------+-", loggingModID);
 						break;
 					}
