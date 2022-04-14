@@ -84,10 +84,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden, forceSolveRequested;
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden, forceSolveRequested, allowDebugCiphers;
 	private MeshRenderer[] usedRenderers;
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
-    private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst;
+    private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst, debugCipherIdxes;
 	List<string> lastCorrectInputs = new List<string>(), splittedInstructions = new List<string>(), displaySubstutionLettersAll = new List<string>();
 	UnfairsCruelRevengeSettings ucrSettings = new UnfairsCruelRevengeSettings();
 	void Awake()
@@ -108,6 +108,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			legacyUCR = ucrSettings.enableLegacyUCR;
 			harderUCR = ucrSettings.cruelerRevenge;
 			noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
+			allowDebugCiphers = ucrSettings.debugCiphers;
+			debugCipherIdxes = ucrSettings.debugCiphersIdxes;
 		}
 		catch
 		{
@@ -314,31 +316,29 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					strikeIDDisplay.color = Color.white;
 					if (swapPigpenAndStandard)
 					{
-						if (swapStandardKeys)
-							strikeIDDisplay.text = string.Format("\n{1} | {0}\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
-						else
-							strikeIDDisplay.text = string.Format("\n{0} | {1}\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
-						pigpenSecondary.text = string.Format("{0}\n\n", fourSquareKey);
+						strikeIDDisplay.text = swapStandardKeys
+                            ? string.Format("\n{1} | {0}\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord)
+                            : string.Format("\n{0} | {1}\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
+                        pigpenSecondary.text = string.Format("{0}\n\n", fourSquareKey);
 					}
 					else
 					{
-						if (swapStandardKeys)
-							strikeIDDisplay.text = string.Format("{1} | {0}\n\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
-						else
-							strikeIDDisplay.text = string.Format("{0} | {1}\n\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
-						pigpenSecondary.text = string.Format("\n{0}\n", fourSquareKey);
+						strikeIDDisplay.text = swapStandardKeys
+                            ? string.Format("{1} | {0}\n\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord)
+                            : string.Format("{0} | {1}\n\n{2} | {3}", columnalTranspositionLst.Select(a => a + 1).Join(""), selectedWord, keyABaseKey, uCipherWord);
+                        pigpenSecondary.text = string.Format("\n{0}\n", fourSquareKey);
 					}
 					break;
 				}
 			case 3:
                 {
 					strikeIDDisplay.color = Color.white;
-					if (harderUCR && !legacyUCR)
+					if ((harderUCR && !legacyUCR) || splittedInstructions.Count > 8)
 					{
 						if (bombInfo.GetTime() % (displaySubstutionLettersAll.Count + 1) >= displaySubstutionLettersAll.Count)
 						{
 							pigpenSecondary.text = "";
-							strikeIDDisplay.text = string.Format("={0}=", encodingDisplay);
+							strikeIDDisplay.text = string.Format("{1}{0}{1}", encodingDisplay, allowDebugCiphers ? "" : "=");
 						}
 						else
 						{
@@ -351,7 +351,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					{
 						pigpenSecondary.text = (legacyUCR || bombInfo.GetTime() % (displaySubstutionLettersAll.Count + 1) >= displaySubstutionLettersAll.Count) ? "" :
 						FitToScreen(displaySubstutionLettersAll.ElementAtOrDefault((int)(bombInfo.GetTime() % (displaySubstutionLettersAll.Count + 1))), 13) + "\n";
-						strikeIDDisplay.text = string.Format("\n\n={0}=", encodingDisplay);
+						strikeIDDisplay.text = string.Format("\n\n{1}{0}{1}", encodingDisplay, allowDebugCiphers ? "" : "=");
 					}
 					break;
                 }
@@ -1078,7 +1078,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			{ 12, "Substitution Four Square Cipher" },
 			{ 13, "Redefence Transposition" },
 			{ 14, "Monoalphabetic Substitution" },
-			{ 15, "Modified Alberti Cipher" },
+			{ 15, "Running Key Alberti Cipher" },
 		};
 		/* The Ciphers are given based on a given set of instructions. Indexes are defined by the following:
 		 * 0, 1, 2 are Playfair Ciphers with keys A, B, C respectively.
@@ -1125,7 +1125,11 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			: quickCipherIdxes.Shuffle().Take(2)
 			.Concat(new[] { longestIdxCiphers.PickRandom() })
 			.Concat(transpositionCipherIdxes.Shuffle().Take(2))).ToArray().Shuffle();
-		encodingDisplay = "";
+		if (allowDebugCiphers)
+		{
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: DEBUG ENABLED.", loggingModID);
+			cipherIdxesAll = debugCipherIdxes.Where(a => a >= 0 && a < 16).ToArray();
+		}
 		encodingDisplay = cipherIdxesAll.Select(b => (idxCurStrikeDisplay == 2 && idxCurModIDDisplay == 2 ? "FEDCBA9876543210" : idxCurStrikeDisplay == 2 || idxCurModIDDisplay == 2 ? "4A981D325E6C7FB0" : "0123456789ABCDEF").ElementAt(b)).Join("");
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Required Ciphers to Disarm: ", loggingModID);
 		for (int x = 0; x < cipherIdxesAll.Length; x++)
@@ -3858,6 +3862,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		public bool enableLegacyUCR = false;
 		public bool cruelerRevenge = false;
 		public bool noTPCruelerRevenge = false;
+		public bool debugCiphers;
+		public int[] debugCiphersIdxes;
 		public string version = "2.0";
     }
 	string FormatSecondsToTime(long num)
@@ -3880,23 +3886,25 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					settingsOverriden = true;
 					legacyUCR = true;
 					harderUCR = false;
+					allowDebugCiphers = false;
 					break;
 				case "mod_missionpack_VFlyer_mission47thWrath":
 					settingsOverriden = true;
 					harderUCR = true;
 					legacyUCR = false;
+					allowDebugCiphers = false;
 					break;
 				case "mod_missionpack_VFlyer_mission47thProblem":
 					settingsOverriden = true;
 					harderUCR = false;
 					legacyUCR = false;
+					allowDebugCiphers = false;
 					break;
-					/*
 				case "freeplay":
 					noTPCruelCruelRevenge = lastTPSettings;
 					Debug.LogFormat("<Unfair's Cruel Revenge #{0}> MISSION DETECTED AS FREEPLAY. CANNOT OVERRIDE SETTINGS.", loggingModID);
+					allowDebugCiphers &= true;
 					return;
-					*/
 				default:
 					break;
 			}
@@ -3905,6 +3913,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? YES, BY MISSION ID", loggingModID);
 				return;
 			}
+			allowDebugCiphers = false;
 			var allPossibleOverrides = new[] { "Old", "Legacy", "Normal", "Standard", "Crueler", };
 			Match UCRMatch = Regex.Match(missionDescription ?? "", string.Format(@"\[UCROverride\]\s({0})", allPossibleOverrides.Join("|")));
 			if (UCRMatch.Success)
@@ -3943,6 +3952,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			legacyUCR = ucrSettings.enableLegacyUCR;
 			harderUCR = ucrSettings.cruelerRevenge;
             noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
+			allowDebugCiphers = ucrSettings.debugCiphers;
 		}
 	}
 
@@ -4110,6 +4120,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					break;
 				case "FIN":
                     {
+						if (legacyUCR) goto case "LEGACY";
 						var solveCount = bombInfo.GetSolvedModuleIDs().Count();
 						var allModCount = bombInfo.GetSolvableModuleIDs().Count;
 						while ((int)(bombInfo.GetTime() % 10) != (allModCount - solveCount) % 10)
@@ -4283,7 +4294,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		currentScreenVal = 0;
 		while (pigpenDisplay.text.Length > 0 || pigpenSecondary.text.Length > 0 || strikeIDDisplay.text.Length > 0 || mainDisplay.text.Length > 0)
         {
-			yield return new WaitForSeconds(0.02f);
+			yield return new WaitForSecondsRealtime(0.02f);
 			if (pigpenDisplay.text.Length > 0)
 				pigpenDisplay.text = pigpenDisplay.text.Substring(0, pigpenDisplay.text.Length - 1).Trim();
 			if (pigpenSecondary.text.Length > 0)
@@ -4320,6 +4331,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		usedRenderers = new[] { statusIndicators.First() }.Concat(statusIndicators.Skip(1).Take(8)).Concat(new[] { statusIndicators.Last() }).ToArray();
 		PrepModule();
 		UpdateSecondaryScreen();
+		LogCurrentInstruction();
 		hasStarted = true;
 		yield return null;
     }
