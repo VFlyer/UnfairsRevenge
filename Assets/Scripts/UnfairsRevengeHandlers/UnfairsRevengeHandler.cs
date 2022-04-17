@@ -1546,7 +1546,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					colorButtonSelectables.Contains(selectedCommands[x]) ? baseColorList[idxColorList[Array.IndexOf(colorButtonSelectables, selectedCommands[x])]] : "???";
 				if (!IsCurInstructionCorrect(buttonPressed) && selectedCommands.Count > 1 && buttonPressed != "???")
 				{
-					yield return string.Format("strikemessage by incorrectly pressing {0} on {1} after {2} press{3} in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1, x == 1 ? "" : "es");
+					yield return string.Format("strikemessage incorrectly pressing {0} on {1} after {2} press{3} in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1, x == 0 ? "" : "es");
 				}
 				selectedCommands[x].OnInteract();
 				yield return new WaitForSeconds(0.1f);

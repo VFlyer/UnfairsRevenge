@@ -81,10 +81,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private static int[] modIDList;
 	private static int lastModIDCnt;
 	private static int modIDCnt;
-	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0;
+	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0, instructionsToGenerate = 6;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden, forceSolveRequested, allowDebugCiphers;
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden, forceSolveRequested, debugCruelRevenge;
 	private MeshRenderer[] usedRenderers;
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
     private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst, debugCipherIdxes;
@@ -108,14 +108,19 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			legacyUCR = ucrSettings.enableLegacyUCR;
 			harderUCR = ucrSettings.cruelerRevenge;
 			noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
-			allowDebugCiphers = ucrSettings.debugCiphers;
+			debugCruelRevenge = ucrSettings.debugUCR;
 			debugCipherIdxes = ucrSettings.debugCiphersIdxes;
+			if (debugCruelRevenge)
+				instructionsToGenerate = Math.Max(Math.Min(ucrSettings.debugNumPairsInstructions * 2, 12), 2);
 		}
 		catch
 		{
 			Debug.LogWarningFormat("<Unfair's Cruel Revenge>: Settings do not work as intended! Using default settings!", loggingModID);
 			legacyUCR = false;
 			harderUCR = false;
+			instructionsToGenerate = 6;
+			debugCruelRevenge = false;
+			noTPCruelCruelRevenge = false;
 		}
 		finally
 		{
@@ -254,7 +259,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			}
 		};
 		bombInfo.OnBombExploded += delegate {
-			if (harderUCR && !legacyUCR)
+			if (harderUCR && !legacyUCR && !bombInfo.GetModuleIDs().Contains("Phosphorescence"))
 				mAudio.PlaySoundAtTransform("7_youdied", transform);
 		};
 
@@ -338,7 +343,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						if (bombInfo.GetTime() % (displaySubstutionLettersAll.Count + 1) >= displaySubstutionLettersAll.Count)
 						{
 							pigpenSecondary.text = "";
-							strikeIDDisplay.text = string.Format("{1}{0}{1}", encodingDisplay, allowDebugCiphers ? "" : "=");
+							strikeIDDisplay.text = string.Format("{1}{0}{1}", encodingDisplay, debugCruelRevenge ? "" : "=");
 						}
 						else
 						{
@@ -351,7 +356,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					{
 						pigpenSecondary.text = (legacyUCR || bombInfo.GetTime() % (displaySubstutionLettersAll.Count + 1) >= displaySubstutionLettersAll.Count) ? "" :
 						FitToScreen(displaySubstutionLettersAll.ElementAtOrDefault((int)(bombInfo.GetTime() % (displaySubstutionLettersAll.Count + 1))), 13) + "\n";
-						strikeIDDisplay.text = string.Format("\n\n{1}{0}{1}", encodingDisplay, allowDebugCiphers ? "" : "=");
+						strikeIDDisplay.text = string.Format("\n\n{1}{0}{1}", encodingDisplay, debugCruelRevenge ? "" : "=");
 					}
 					break;
                 }
@@ -720,7 +725,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			splittedInstructions.Clear();
 			GenerateInstructions();
 		}
-		while (splittedInstructions.Select(a => a.Replace(baseAlphabet[9], baseAlphabet[8])).Distinct().Count() != 6);
+		while (splittedInstructions.Select(a => a.Replace(baseAlphabet[9], baseAlphabet[8])).Distinct().Count() != instructionsToGenerate);
 		// For each splitted instruction, replace any (10th letters) with (9th letters) and check if they are distinct to each other to have a length of 6.
 
 
@@ -1107,13 +1112,15 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 		// Generate non-conflicting instructions.
 		var iterationCount = 0;
+		if (!debugCruelRevenge)
+			instructionsToGenerate = harderUCR ? 10 : 6;
 		do
 		{
 			splittedInstructions.Clear();
-			GenerateInstructions(harderUCR ? 9 : 5);
+			GenerateInstructions(instructionsToGenerate - 1);
 			iterationCount++;
 		}
-		while (splittedInstructions.Distinct().Count() != (harderUCR ? 10 : 6) && iterationCount < 10000);
+		while (splittedInstructions.Distinct().Count() != instructionsToGenerate && iterationCount < 10000);
 		// Decide what ciphers should be used and how the messages should be encrypted.
 		string baseString = splittedInstructions.Join("");
 		//Debug.Log(splittedMessages.Join(","));
@@ -1125,10 +1132,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			: quickCipherIdxes.Shuffle().Take(2)
 			.Concat(new[] { longestIdxCiphers.PickRandom() })
 			.Concat(transpositionCipherIdxes.Shuffle().Take(2))).ToArray().Shuffle();
-		if (allowDebugCiphers)
+		if (debugCruelRevenge)
 		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: DEBUG ENABLED.", loggingModID);
-			cipherIdxesAll = debugCipherIdxes.Where(a => a >= 0 && a < 16).ToArray();
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: DEBUG ENABLED. CIPHER LIST IS DETERMINED BY SETTINGS.", loggingModID);
+			cipherIdxesAll = debugCipherIdxes.Where(a => a >= 0 && a < 16).ToArray() ?? new int[0];
 		}
 		encodingDisplay = cipherIdxesAll.Select(b => (idxCurStrikeDisplay == 2 && idxCurModIDDisplay == 2 ? "FEDCBA9876543210" : idxCurStrikeDisplay == 2 || idxCurModIDDisplay == 2 ? "4A981D325E6C7FB0" : "0123456789ABCDEF").ElementAt(b)).Join("");
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Required Ciphers to Disarm: ", loggingModID);
@@ -3862,9 +3869,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		public bool enableLegacyUCR = false;
 		public bool cruelerRevenge = false;
 		public bool noTPCruelerRevenge = false;
-		public bool debugCiphers;
+		public bool debugUCR;
+		public int debugNumPairsInstructions = 3;
 		public int[] debugCiphersIdxes;
-		public string version = "2.0";
+		public string version = "2.1";
     }
 	string FormatSecondsToTime(long num)
 	{
@@ -3886,24 +3894,24 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					settingsOverriden = true;
 					legacyUCR = true;
 					harderUCR = false;
-					allowDebugCiphers = false;
+					debugCruelRevenge = false;
 					break;
 				case "mod_missionpack_VFlyer_mission47thWrath":
 					settingsOverriden = true;
 					harderUCR = true;
 					legacyUCR = false;
-					allowDebugCiphers = false;
+					debugCruelRevenge = false;
 					break;
 				case "mod_missionpack_VFlyer_mission47thProblem":
 					settingsOverriden = true;
 					harderUCR = false;
 					legacyUCR = false;
-					allowDebugCiphers = false;
+					debugCruelRevenge = false;
 					break;
 				case "freeplay":
 					noTPCruelCruelRevenge = lastTPSettings;
 					Debug.LogFormat("<Unfair's Cruel Revenge #{0}> MISSION DETECTED AS FREEPLAY. CANNOT OVERRIDE SETTINGS.", loggingModID);
-					allowDebugCiphers &= true;
+					debugCruelRevenge &= true;
 					return;
 				default:
 					break;
@@ -3913,7 +3921,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? YES, BY MISSION ID", loggingModID);
 				return;
 			}
-			allowDebugCiphers = false;
+			debugCruelRevenge = false;
 			var allPossibleOverrides = new[] { "Old", "Legacy", "Normal", "Standard", "Crueler", };
 			Match UCRMatch = Regex.Match(missionDescription ?? "", string.Format(@"\[UCROverride\]\s({0})", allPossibleOverrides.Join("|")));
 			if (UCRMatch.Success)
@@ -3952,7 +3960,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			legacyUCR = ucrSettings.enableLegacyUCR;
 			harderUCR = ucrSettings.cruelerRevenge;
             noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
-			allowDebugCiphers = ucrSettings.debugCiphers;
+			debugCruelRevenge = ucrSettings.debugUCR;
 		}
 	}
 
@@ -4683,10 +4691,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					colorButtonSelectables.Contains(selectedCommands[x]) ? baseColorList[idxColorList[Array.IndexOf(colorButtonSelectables, selectedCommands[x])]] : "???";
 				if (!IsCurInstructionCorrect(buttonPressed) && selectedCommands.Count > 1 && buttonPressed != "???")
                 {
-					yield return string.Format("strikemessage by incorrectly pressing {0} on {1} after {2} press{3} in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1, x == 1 ? "" : "es");
+					yield return string.Format("strikemessage incorrectly pressing {0} on {1} after {2} press{3} in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1, x == 0 ? "" : "es");
 				}
 				else if (IsCurInstructionCorrect(buttonPressed) && harderUCR && currentInputPos + 1 >= splittedInstructions.Count)
-					yield return "awardpointsonsolve 30";
+					yield return "awardpointsonsolve 29";
 				selectedCommands[x].OnInteract();
 				if (x + 1 < selectedCommands.Count && colorButtonSelectables.Contains(selectedCommands[x + 1]) && harderUCR && !hasStruck)
 				{
