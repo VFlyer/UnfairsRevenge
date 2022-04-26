@@ -84,10 +84,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	private int loggingModID, selectedModID, currentInputPos = 0, localStrikeCount = 0, currentScreenVal = 0, idxCurModIDDisplay = 0, idxCurStrikeDisplay = 0, instructionsToGenerate = 6;
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
-	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden, forceSolveRequested, debugCruelRevenge;
+	bool isplayingSolveAnim, hasStarted, colorblindDetected, isAnimatingStart, isFinished, hasStruck = false, autoCycleEnabled = false, swapPigpenAndStandard = false, swapStandardKeys = false, inverseAutoCycle, legacyUCR, harderUCR, isChangingColors, noTPCruelCruelRevenge, tpPrepCruelRevenge, settingsOverriden, forceSolveRequested, debugCruelRevenge, overrideInstructionsToGenerate;
 	private MeshRenderer[] usedRenderers;
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
-    private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst, debugCipherIdxes;
+    private int[] idxColorList = Enumerable.Range(0, 6).ToArray(), initialIdxColorList, columnalTranspositionLst, lockCipherIdxes;
 	List<string> lastCorrectInputs = new List<string>(), splittedInstructions = new List<string>(), displaySubstutionLettersAll = new List<string>();
 	UnfairsCruelRevengeSettings ucrSettings = new UnfairsCruelRevengeSettings();
 	void Awake()
@@ -109,7 +109,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			harderUCR = ucrSettings.cruelerRevenge;
 			noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
 			debugCruelRevenge = ucrSettings.debugUCR;
-			debugCipherIdxes = ucrSettings.debugCiphersIdxes;
+			lockCipherIdxes = ucrSettings.debugCiphersIdxes;
 			if (debugCruelRevenge)
 				instructionsToGenerate = Math.Max(Math.Min(ucrSettings.debugNumPairsInstructions * 2, 12), 2);
 		}
@@ -787,7 +787,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					}
 				case 9:
 					{// Myszkowski Transposition
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----Mysckowski Transposition Preparations----+-", loggingModID);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----Myszkowski Transposition Preparations----+-", loggingModID);
 						int sumSerNumDigits = bombInfo.GetSerialNumberNumbers().Sum();
 						string selectedKey = myszkowskiKeywords[sumSerNumDigits % 28];
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Myszkowski Transposition, the sum of the serial number digits is {1}, which lands on the keyword: \"{2}\"", loggingModID, sumSerNumDigits, selectedKey);
@@ -1112,7 +1112,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 
 		// Generate non-conflicting instructions.
 		var iterationCount = 0;
-		if (!debugCruelRevenge)
+		if (!debugCruelRevenge && !overrideInstructionsToGenerate)
 			instructionsToGenerate = harderUCR ? 10 : 6;
 		do
 		{
@@ -1134,8 +1134,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			.Concat(transpositionCipherIdxes.Shuffle().Take(2))).ToArray().Shuffle();
 		if (debugCruelRevenge)
 		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: DEBUG ENABLED. CIPHER LIST IS DETERMINED BY SETTINGS.", loggingModID);
-			cipherIdxesAll = debugCipherIdxes.Where(a => a >= 0 && a < 16).ToArray() ?? new int[0];
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: DEBUG ENABLED. CIPHER LIST IS DETERMINED BY SETTINGS. NOTE THAT THIS WILL STILL AFFECT AFFINE CIPHER.", loggingModID);
+			cipherIdxesAll = lockCipherIdxes.Where(a => a >= 0 && a < 16 && (a != 5 || Mathf.Abs(valueX % 13) != 6)).ToArray() ?? new int[0];
 		}
 		encodingDisplay = cipherIdxesAll.Select(b => (idxCurStrikeDisplay == 2 && idxCurModIDDisplay == 2 ? "FEDCBA9876543210" : idxCurStrikeDisplay == 2 || idxCurModIDDisplay == 2 ? "4A981D325E6C7FB0" : "0123456789ABCDEF").ElementAt(b)).Join("");
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Required Ciphers to Disarm: ", loggingModID);
@@ -1326,7 +1326,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					}
 				case 8:
 					{// Myszkowski Transposition
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----Mysckowski Transposition Preparations----+-", loggingModID);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+----Myszkowski Transposition Preparations----+-", loggingModID);
 						int sumSerNumDigits = bombInfo.GetSerialNumberNumbers().Sum();
 						string selectedKey = myszkowskiKeywords[sumSerNumDigits % 28];
 						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Upon using Myszkowski Transposition, the sum of the serial number digits is {1}, which lands on the keyword: \"{2}\"", loggingModID, sumSerNumDigits, selectedKey);
@@ -3943,6 +3943,13 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					case "Crueler":
 						legacyUCR = false;
 						harderUCR = true;
+						settingsOverriden = true;
+						break;
+					case "Chaotic":
+						legacyUCR = false;
+						harderUCR = true;
+						overrideInstructionsToGenerate = true;
+						instructionsToGenerate = 12;
 						settingsOverriden = true;
 						break;
 				}
