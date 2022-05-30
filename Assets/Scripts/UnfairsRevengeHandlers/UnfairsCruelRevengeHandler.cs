@@ -403,7 +403,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		StartCoroutine(IndicatorCoreHandlerExtraScreen.HandleIndicatorModification(4));
 		idxColorList.Shuffle();
 		List<string> curColorList = idxColorList.Select(a => baseColorList[a]).ToList();
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: How in the world did he forget about this module!? At least it's updated. You are currently using the legacy ruleset for Unfair's Cruel Revenge.", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: How in the world did he forget about this module!? At least it's fixed again. You are currently using the legacy ruleset for Unfair's Cruel Revenge.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Button colors in clockwise order (starting on the NW button): {1}", loggingModID, curColorList.Join(", "));
 		StartCoroutine(HandleStartUpAnim());
 		//StartCoroutine(TypePigpenText(FitToScreen("ABCDEFGHIJKLMNOPQRSTVUWXYZABCDEFGHIJKLM",13)));
@@ -934,7 +934,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		idxColorList.Shuffle();
 		initialIdxColorList = idxColorList.ToArray();
 		List<string> curColorList = idxColorList.Select(a => baseColorList[a]).ToList();
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: How in the world did he forget about this module!? At least it's updated. You are currently using the newer ruleset for Unfair's Cruel Revenge.", loggingModID);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: How in the world did he forget about this module!? At least it's fixed again. You are currently using the newer ruleset for Unfair's Cruel Revenge.", loggingModID);
 		if (harderUCR)
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Hard Mode Unfair's Cruel Revenge has been activated. I hope you are prepared.", loggingModID);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2} colors in clockwise order (starting on the NW button): {1}", loggingModID, curColorList.Join(", "), harderUCR ? "Initial button" : "Button");
@@ -3211,12 +3211,12 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				break;
 			case "SCN":
 				var sumAlphabeticalPositions = bombInfo.GetSerialNumberLetters().Select(a => baseAlphabet.IndexOf(a) + 1).Sum();
-				toLog = string.Format("The sum of the alphabetical positions in the serial number is {0}, go to page {1} on the screen and then press Inner Center.", sumAlphabeticalPositions, sumAlphabeticalPositions % 4 + 1);
+				toLog = string.Format("The sum of the alphabetical positions in the serial number is {0}, go to page {1} on the module and then press Inner Center.", sumAlphabeticalPositions, sumAlphabeticalPositions % 4 + 1);
 				break;
 		}
 		if (swapInnerOuterPresses || invertColorButtonPresses && !lastCommands.Contains(splittedInstructions[currentInputPos]))
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Account for the modifiers that are currently active for this instruction.", loggingModID);
-		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Instruction {2} (\"{3}\"): {1}", loggingModID, toLog, currentInputPos + 1, splittedInstructions[currentInputPos]);
+		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Instruction No.{2} (\"{3}\"): {1}", loggingModID, toLog, currentInputPos + 1, splittedInstructions[currentInputPos]);
 	}
 	bool canSkip = false, swapInnerOuterPresses = false, invertColorButtonPresses = false;
 	Dictionary<string, string> complementaryCounterparts = new Dictionary<string, string>() {
@@ -3429,6 +3429,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 								goto case "REP";
 							else if (lastInstruction == "SCN")
 								goto case "SCN";
+							else if (lastInstruction == "SWP")
+								goto case "SWP";
 							else if (lastInstruction == "OPP")
 								goto case "OPP";
 							else if (lastInstruction == "NXS")
@@ -3694,6 +3696,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 									goto case "REP";
 								else if (lastInstruction == "SCN")
 									goto case "SCN";
+								else if (lastInstruction == "SWP")
+									goto case "SWP";
 								else if (lastInstruction == "OPP")
 									goto case "OPP";
 								else if (lastInstruction == "NXS")
@@ -3898,7 +3902,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					break;
 				case "mod_missionpack_VFlyer_mission47thWrath":
 					settingsOverriden = true;
-					harderUCR = true;
+					harderUCR = false;
 					legacyUCR = false;
 					debugCruelRevenge = false;
 					break;
@@ -4203,51 +4207,50 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					{
 						if (splittedInstructions.Count > 0)
 						{
-								if (splittedInstructions.Count > 0)
-								{
-									var lastInstruction = splittedInstructions[currentInputPos == 0 ? 1 : currentInputPos - 1];
-									if (lastInstruction == "INV" || lastInstruction == "ERT")
-										goto case "INV";
-									else if (lastInstruction == "STR" || lastInstruction == "IKE")
-										goto case "STR";
-									else if (lastInstruction == "REP" || lastInstruction == "EAT")
-										goto case "REP";
-									else if (lastInstruction == "SCN")
-										goto case "SCN";
-									else if (lastInstruction == "OPP")
-										goto case "OPP";
-									else if (lastInstruction == "NXS")
-										goto case "NXS";
-									else if (lastInstruction == "PVS")
-										goto case "PVS";
-									else if (lastInstruction == "NXP")
-										goto case "NXP";
-									else if (lastInstruction == "PVP")
-										goto case "PVP";
-									else if (lastInstruction == "SKP")
-										goto case "SKP";
-									else if (lastInstruction == "MOT")
-										goto case "MOT";
-									else if (lastInstruction == "SUB")
-										goto case "SUB";
-									else if (lastInstruction == "PRN")
-										goto case "PRN";
-									else if (lastInstruction == "CHK")
-										goto case "CHK";
-									else if (lastInstruction == "PCR")
-										goto case "PCR";
-									else if (lastInstruction == "PCG")
-										goto case "PCG";
-									else if (lastInstruction == "PCB")
-										goto case "PCB";
-									else if (lastInstruction == "SCC")
-										goto case "SCC";
-									else if (lastInstruction == "SCY")
-										goto case "SCY";
-									else if (lastInstruction == "SCM")
-										goto case "SCM";
-								}
-							}
+							var lastInstruction = splittedInstructions[currentInputPos == 0 ? 1 : currentInputPos - 1];
+							if (lastInstruction == "INV" || lastInstruction == "ERT")
+								goto case "INV";
+							else if (lastInstruction == "STR" || lastInstruction == "IKE")
+								goto case "STR";
+							else if (lastInstruction == "REP" || lastInstruction == "EAT")
+								goto case "REP";
+							else if (lastInstruction == "SCN")
+								goto case "SCN";
+							else if (lastInstruction == "SWP")
+								goto case "SWP";
+							else if (lastInstruction == "OPP")
+								goto case "OPP";
+							else if (lastInstruction == "NXS")
+								goto case "NXS";
+							else if (lastInstruction == "PVS")
+								goto case "PVS";
+							else if (lastInstruction == "NXP")
+								goto case "NXP";
+							else if (lastInstruction == "PVP")
+								goto case "PVP";
+							else if (lastInstruction == "SKP")
+								goto case "SKP";
+							else if (lastInstruction == "MOT")
+								goto case "MOT";
+							else if (lastInstruction == "SUB")
+								goto case "SUB";
+							else if (lastInstruction == "PRN")
+								goto case "PRN";
+							else if (lastInstruction == "CHK")
+								goto case "CHK";
+							else if (lastInstruction == "PCR")
+								goto case "PCR";
+							else if (lastInstruction == "PCG")
+								goto case "PCG";
+							else if (lastInstruction == "PCB")
+								goto case "PCB";
+							else if (lastInstruction == "SCC")
+								goto case "SCC";
+							else if (lastInstruction == "SCY")
+								goto case "SCY";
+							else if (lastInstruction == "SCM")
+								goto case "SCM";
+						}
 						break;
 					}
 				default:
