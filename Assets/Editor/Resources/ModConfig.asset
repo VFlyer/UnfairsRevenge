@@ -26,6 +26,6 @@ MonoBehaviour:
     idea by Tachatat18\r\nImplemented by VFlyer\r\n\r\nSource Code: https://github.com/VFlyer/UnfairsRevenge\r\n\nHTML
     Manual of Unfair's Revenge: https://ktane.timwi.de/HTML/Unfair's%20Revenge.html\nHTML
     Manual of Unfair's Cruel Revenge: https://ktane.timwi.de/HTML/Unfair's%20Cruel%20Revenge.html\n"
-  version: 1.3.2_04
+  version: 1.3.2_05
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 9fbcb5eb2009a2944823bb091fb038eb, type: 3}

@@ -3900,12 +3900,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					harderUCR = false;
 					debugCruelRevenge = false;
 					break;
-				case "mod_missionpack_VFlyer_mission47thWrath":
-					settingsOverriden = true;
-					harderUCR = false;
-					legacyUCR = false;
-					debugCruelRevenge = false;
-					break;
+				case "mod_missionpack_VFlyer_mission47thWrathFlyer":
 				case "mod_missionpack_VFlyer_mission47thProblem":
 					settingsOverriden = true;
 					harderUCR = false;
