@@ -109,7 +109,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			harderUCR = ucrSettings.cruelerRevenge;
 			noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
 			debugCruelRevenge = ucrSettings.debugUCR;
-			lockCipherIdxes = ucrSettings.debugCiphersIdxes;
+			lockCipherIdxes = ucrSettings.debugCiphersIdxes.ToArray();
 			if (debugCruelRevenge)
 				instructionsToGenerate = Math.Max(Math.Min(ucrSettings.debugNumPairsInstructions * 2, 12), 2);
 		}
@@ -3867,17 +3867,6 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			progressHandler.curProgress = Mathf.Max(0, progressHandler.curProgress - Time.deltaTime);
 		}
 	}
-
-	public class UnfairsCruelRevengeSettings
-    {
-		public bool enableLegacyUCR = false;
-		public bool cruelerRevenge = false;
-		public bool noTPCruelerRevenge = false;
-		public bool debugUCR;
-		public int debugNumPairsInstructions = 3;
-		public int[] debugCiphersIdxes;
-		public string version = "2.1";
-    }
 	string FormatSecondsToTime(long num)
 	{
 		return string.Format("{0}:{1}", num / 60, (num % 60).ToString("00"));

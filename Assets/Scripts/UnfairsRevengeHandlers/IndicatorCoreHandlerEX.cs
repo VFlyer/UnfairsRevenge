@@ -23,12 +23,15 @@ public class IndicatorCoreHandlerEX : MonoBehaviour {
 		indicatorEnd.SetActive(false);
 	}
 	bool isPlayingAnim = false;
+	public bool GetPlayingAnimBool()
+    {
+		return isPlayingAnim;
+    }
 	public IEnumerator HandleIndicatorModification(int num)
 	{
 		isPlayingAnim = true;
 		StartCoroutine(HandleCollaspeAnim());
-		while (isPlayingAnim)
-			yield return new WaitForSeconds(Time.deltaTime);
+		yield return new WaitWhile(delegate { return isPlayingAnim; });
 
 		targetAncilerryPos.Clear();
 

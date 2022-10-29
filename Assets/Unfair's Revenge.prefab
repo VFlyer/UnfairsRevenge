@@ -5149,17 +5149,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Parent: {fileID: 0}
   Children:
-  - {fileID: 114350542038862906}
   - {fileID: 114047029150333298}
-  - {fileID: 114272111694731494}
-  - {fileID: 114860117870817780}
-  - {fileID: 114915745894987434}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 114216352039895966}
   - {fileID: 114715432647840990}
   - {fileID: 114915942109700398}
+  - {fileID: 0}
+  - {fileID: 114350542038862906}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 114272111694731494}
+  - {fileID: 114860117870817780}
+  - {fileID: 114915745894987434}
   - {fileID: 114269649854560690}
   IsPassThrough: 0
-  ChildRowLength: 1
+  ChildRowLength: 4
   Highlight: {fileID: 114568521581759702}
   SelectableColliders: []
   DefaultSelectableIndex: 0
@@ -5710,7 +5717,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1340464428
+  randomSeed: 1289568490
   InitialModule:
     serializedVersion: 3
     enabled: 1
