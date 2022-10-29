@@ -1400,7 +1400,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 					breakLoop = true;
 				}
 				selectedCommands[x].OnInteract();
-				if (buttonPressed != "Outer")
+				if (selectedCommands[x] != outerSelectable && selectedCommands[x] != screenSelectable)
 					selectedCommands[x].OnInteractEnded();
 				yield return new WaitForSeconds(0.1f);
 			}
