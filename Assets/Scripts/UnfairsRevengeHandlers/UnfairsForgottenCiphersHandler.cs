@@ -99,10 +99,10 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 	List<string> encodingsPagesTop, encodingsPagesSide;
 	List<int> ledCountQuery = new List<int>();
 	string decodedWords = "", inputtedWord = "", inputtedSequence = "";
-	const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", symbolRef = "-0+";
+	const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", symbolRef = "-0+", inputStringRef = "ABCDEFGHIJKLMNOPQRSTUVWXYZ?";
 	static int modIDCnt;
 	int moduleID;
-	bool displayModuleIDText, isSolved, swapTopAndRightScreens, interactable, solving, unlockedSubmission, isReady, playAltAnimOnLastSolve;
+	bool displayModuleIDText, isSolved, swapTopAndRightScreens, interactable, solving, unlockedSubmission, isReady, playAltAnimOnLastSolve, disableStrikeOnAutosolve;
 	int idxStrikeDisplay, expectedSafeDigit, curPageIdx = 0;
 	int[] idx6ColorsDisplay, idx3ColorsDisplay;
 
@@ -351,7 +351,6 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 		bigTextMeshes[swapTopAndRightScreens ? 0 : 1].text = "";
 		normalTextMeshes[swapTopAndRightScreens ? 1 : 0].text = "";
 
-		var currentBatch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ?";
 		var sum = 0;
 		for (var x = 0; x < inputtedSequence.Length; x++)
         {
@@ -360,9 +359,9 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
         }
 
 		strikeTextMeshes[swapTopAndRightScreens ? 0 : 1].text = string.Format("-:{0} 0:{1} +:{2}\n",
-			inputtedSequence.Length == 0 ? "A-I" : inputtedSequence.Length == 1 ? currentBatch.Substring(9 * sum, 3) : currentBatch.Substring(3 * sum, 1),
-			inputtedSequence.Length == 0 ? "J-R" : inputtedSequence.Length == 1 ? currentBatch.Substring(9 * sum + 3, 3) : currentBatch.Substring(3 * sum + 1, 1),
-			inputtedSequence.Length == 0 ? "S-Z" : inputtedSequence.Length == 1 ? currentBatch.Substring(9 * sum + 6, 3) : currentBatch.Substring(3 * sum + 2, 1));
+			inputtedSequence.Length == 0 ? "A-I" : inputtedSequence.Length == 1 ? inputStringRef.Substring(9 * sum, 3) : inputStringRef.Substring(3 * sum, 1),
+			inputtedSequence.Length == 0 ? "J-R" : inputtedSequence.Length == 1 ? inputStringRef.Substring(9 * sum + 3, 3) : inputStringRef.Substring(3 * sum + 1, 1),
+			inputtedSequence.Length == 0 ? "S-Z" : inputtedSequence.Length == 1 ? inputStringRef.Substring(9 * sum + 6, 3) : inputStringRef.Substring(3 * sum + 2, 1));
 		strikeTextMeshes[swapTopAndRightScreens ? 1 : 0].text = "";
 	}
 	void HandleScreenPress()
@@ -373,45 +372,60 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 		else if (unlockedSubmission)
 			DisplaySubmissionHelp();
 	}
-	void HandleOuterPress()
+    void HandleOuterPress()
     {
-		PlayRandomButtonSound();
-		solving ^= true;
-		if (solving)
+        PlayRandomButtonSound();
+        solving ^= true;
+        if (solving)
         {
             for (var x = 0; x < strikeTextMeshes.Length; x++)
-				strikeTextMeshes[x].text = "";
-			for (var x = 0; x < bigTextMeshes.Length; x++)
-				bigTextMeshes[x].text = "";
-			for (var x = 0; x < normalTextMeshes.Length; x++)
-				normalTextMeshes[x].text = "";
-			TryChangeLEDCount(1);
-			for (var x = 0; x < 4; x++)
-			{
-				pushAnimsAll[x].SetRetractState(true);
-				coloredButtonRenderers[x].material.color = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
-			}
-			if (unlockedSubmission)
-				DisplaySubmissionHelp();
-			else
-				for (var x = 0; x < normalTextMeshes.Length; x++)
-					normalTextMeshes[x].text = "WAITING";
+                strikeTextMeshes[x].text = "";
+            for (var x = 0; x < bigTextMeshes.Length; x++)
+                bigTextMeshes[x].text = "";
+            for (var x = 0; x < normalTextMeshes.Length; x++)
+                normalTextMeshes[x].text = "";
+            TryChangeLEDCount(1);
+            for (var x = 0; x < 4; x++)
+            {
+                pushAnimsAll[x].SetRetractState(true);
+                coloredButtonRenderers[x].material.color = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
+            }
+            if (unlockedSubmission)
+                DisplaySubmissionHelp();
+            else
+                for (var x = 0; x < normalTextMeshes.Length; x++)
+                    normalTextMeshes[x].text = "WAITING";
         }
-		else
+        else
         {
-			inputtedSequence = "";
-			inputtedWord = "";
-			curPageIdx = 0;
-			DisplayCurrentPage();
-			for (var x = 0; x < 4; x++)
-			{
-				pushAnimsAll[x].SetRetractState(x != curPageIdx);
-				if (x == curPageIdx)
-					pushAnimsAll[x].AnimatePush();
-				coloredButtonRenderers[x].material.color = x == curPageIdx ? Color.black : Color.gray;
-			}
-		}
+            inputtedSequence = "";
+            inputtedWord = "";
+            curPageIdx = 0;
+            DisplayCurrentPage();
+            for (var x = 0; x < 4; x++)
+            {
+                pushAnimsAll[x].SetRetractState(x != curPageIdx);
+                if (x == curPageIdx)
+                    pushAnimsAll[x].AnimatePush();
+                coloredButtonRenderers[x].material.color = x == curPageIdx ? Color.black : Color.gray;
+            }
+        }
     }
+	void HandleSubmissionUnlock()
+    {
+		unlockedSubmission = true;
+		int timeLeftMod10 = Mathf.FloorToInt(bombInfo.GetTime() % 10);
+		if (timeLeftMod10 != expectedSafeDigit && !disableStrikeOnAutosolve)
+		{
+			QuickLog("Submission was unlocked when the last seconds digit was {0} instead of {1}!", timeLeftMod10, expectedSafeDigit);
+			mAudio.PlaySoundAtTransform("wrong", transform);
+			modSelf.HandleStrike();
+		}
+		else
+			PlayRandomButtonSound();
+		DisplaySubmissionHelp();
+	}
+
 	void HandleInnerPress()
     {
 		if (solving)
@@ -420,7 +434,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 			{
 				if (inputtedSequence.Any())
 					inputtedSequence = "";
-				if (inputtedWord.EqualsIgnoreCase(decodedWords) || inputtedWord.SequenceEqual(decodedWords))
+				if (inputtedWord.EqualsIgnoreCase(decodedWords) || inputtedWord.SequenceEqual(decodedWords) || disableStrikeOnAutosolve)
                 {
 					isSolved = true;
 					swapTopAndRightScreens = false;
@@ -442,17 +456,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 			}
 			else
 			{
-				unlockedSubmission = true;
-				int timeLeftMod10 = Mathf.FloorToInt(bombInfo.GetTime() % 10);
-				if (timeLeftMod10 != expectedSafeDigit)
-				{
-					QuickLog("Submission was unlocked when the last seconds digit was {0} instead of {1}!", timeLeftMod10, expectedSafeDigit);
-					mAudio.PlaySoundAtTransform("wrong", transform);
-					modSelf.HandleStrike();
-				}
-				else
-					PlayRandomButtonSound();
-				DisplaySubmissionHelp();
+				HandleSubmissionUnlock();
 			}
 		}
 		else
@@ -525,17 +529,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 			}
 			else
 			{
-				unlockedSubmission = true;
-				int timeLeftMod10 = Mathf.FloorToInt(bombInfo.GetTime() % 10);
-				if (timeLeftMod10 != expectedSafeDigit)
-				{
-					QuickLog("Submission was unlocked when the last seconds digit was {0} instead of {1}!", timeLeftMod10, expectedSafeDigit);
-					mAudio.PlaySoundAtTransform("wrong", transform);
-					modSelf.HandleStrike();
-				}
-				else
-					PlayRandomButtonSound();
-				DisplaySubmissionHelp();
+				HandleSubmissionUnlock();
 			}
 			pushAnimsAll[idx].SetRetractState(false);
 		}
@@ -1408,6 +1402,55 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 		}
 		yield break;
 	}
+	IEnumerator TwitchHandleForcedSolve()
+    {
+		disableStrikeOnAutosolve = true;
+		QuickLog("Enabling autosolve. Disabling strike mechanics.");
+		while (!isSolved)
+        {
+			while (!interactable)
+				yield return true;
+			yield return null;
+			if (!solving)
+				outerSelectable.OnInteract();
+			else
+            {
+				if (unlockedSubmission)
+                {
+					var idxesLetters = decodedWords.Select(a => inputStringRef.IndexOf(a)).ToArray();
+					foreach (var idxL in idxesLetters)
+                    {
+						var curVal = idxL;
+						var idxes3 = new List<int>();
+                        for (var x = 0; x < 3; x++)
+                        {
+							idxes3.Add(curVal % 3);
+							curVal /= 3;
+                        }
+						idxes3.Reverse();
+						foreach (int value in idxes3)
+						{
+							yield return new WaitForSeconds(0.1f);
+							coloredButtonSelectables[value].OnInteract();
+							coloredButtonSelectables[value].OnInteractEnded();
+						}
+					}
+					yield return new WaitForSeconds(0.1f);
+					innerSelectable.OnInteract();
+					innerSelectable.OnInteractEnded();
+				}
+				else
+                {
+					while (Mathf.FloorToInt(bombInfo.GetTime() % 10) != expectedSafeDigit)
+						yield return true;
+					innerSelectable.OnInteract();
+					innerSelectable.OnInteractEnded();
+                }
+            }
+			yield return new WaitForSeconds(0.1f);
+		}
 
+		yield break;
+    }
 
 }
