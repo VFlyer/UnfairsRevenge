@@ -110,7 +110,7 @@
                     <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
                 </div>
                 <div class="page-content">
-                    <img src="img/Component/Unfair’s%20Forgotten%20Ciphers.svg" class="diagram">
+                    <img src="img/Component/Unfair's%20Forgotten%20Ciphers.svg" class="diagram">
                     <h2>On the Subject of Unfair’s Forgotten Ciphers</h2>
                     <p class="flavour-text">Some ciphers were meant to be forgotten after all. Were they "really unfair" in the first place?</p>
                     <p>The display on the top shows an encrypted message. There is also a strip of LEDs underneath the display which will light up depending on what page the defuser is on.</p>
@@ -123,8 +123,8 @@
                         <li><strong>Right:</strong> Go to page 3 on the module.</li>
                         <li><strong>Down:</strong> Go to page 4 on the module.</li>
                         <li><strong>Outer Center:</strong> Toggle between submission and viewing pages.</li>
-                        <li><strong>Inner Center:</strong> If held, shows the names of the colors displayed on pages 3 and 4. <u>This can be used EVEN IF the user has colorblind mode disabled for this module.</u></li>
-                        <li><strong>Right Screen:</strong> Swaps contents displayed on the right and top. Not affected during submission. The manual will refer to the instructions as if the right screen was not pressed at all.</li>
+                        <li><strong>Inner Center:</strong> If held, shows the names of the colors displayed from the LEDs on pages 3 and 4. <u>This can be used EVEN IF the user has colorblind mode disabled for this module.</u></li>
+                        <li><strong>Right Screen:</strong> Swaps contents displayed on the right and top. The manual will refer to the instructions as if the right screen was not pressed at all.</li>
                     </ul>
                 </div>
                 <div class="page-footer relative-footer">1</div>
@@ -497,7 +497,7 @@
                 </div>
                 <div class="page-content">
                     <h2>Example — RGBA Decomposition Cipher</h2>
-                    <p class="center squeeze">Encrypted: <strong>CCRUKQ</strong></p>
+                    <p class="center squeeze">Encrypted: <strong>AEIZAZ</strong></p>
                     <p class="center squeeze">Keyword: <strong>AMBITION</strong></p>
                     <p class="center squeeze">Displayed 6 LED Colors On Page 3: <strong>Mint, Plum, Indigo, Forest, Rose, Magenta</strong></p>
                     <p class="center squeeze">Displayed 3 LED Colors On Page 4: <strong>Mint, Red, Indigo</strong></p>
@@ -547,16 +547,6 @@
                             <td class="nohighlight"><table><tr><td>+</td><td>0</td><td>+</td></tr><tr><td>+</td><td>-</td></tr><tr><td>-</td></tr></table></td>
                         </tr>
                         <tr>
-                            <th colspan="5">R Channel Transforms</th>
-                        </tr>
-                        <tr>
-                            <td class="nohighlight"><table><tr><td>-</td><td>-</td><td>0</td></tr><tr><td>+</td><td>-</td></tr><tr><td>+</td></tr></table></td>
-                            <td class="nohighlight">BR</td>
-                            <td class="nohighlight"><table><tr><td>+</td><td>+</td><td>0</td></tr><tr><td>-</td><td>+</td></tr><tr><td>+</td></tr></table></td>
-                            <td class="nohighlight">BL</td>
-                            <td class="nohighlight"><table><tr><td>+</td><td>-</td><td>-</td></tr><tr><td>+</td><td>+</td></tr><tr><td>0</td></tr></table></td>
-                        </tr>
-                        <tr>
                             <th colspan="5">B Channel Transforms</th>
                         </tr>
                         <tr>
@@ -566,8 +556,18 @@
                             <td class="nohighlight">TR</td>
                             <td class="nohighlight"><table><tr><td>-</td><td>+</td><td>+</td></tr><tr><td>0</td><td>0</td></tr><tr><td>+</td></tr></table></td>
                         </tr>
+                        <tr>
+                            <th colspan="5">R Channel Transforms</th>
+                        </tr>
+                        <tr>
+                            <td class="nohighlight"><table><tr><td>-</td><td>-</td><td>0</td></tr><tr><td>+</td><td>-</td></tr><tr><td>+</td></tr></table></td>
+                            <td class="nohighlight">BR</td>
+                            <td class="nohighlight"><table><tr><td>+</td><td>+</td><td>0</td></tr><tr><td>-</td><td>+</td></tr><tr><td>+</td></tr></table></td>
+                            <td class="nohighlight">BL</td>
+                            <td class="nohighlight"><table><tr><td>+</td><td>-</td><td>-</td></tr><tr><td>+</td><td>+</td></tr><tr><td>0</td></tr></table></td>
+                        </tr>
                     </table>
-                    <p class="center squeeze">Rearranged: <strong>+++-, 0-+, +-+, ++0, -+0, -0+</strong></p>
+                    <p class="center squeeze">Rearranged: <strong>++-, 0-+, +-+, ++0, -+0, -0+</strong></p>
                     <p class="center squeeze">Converted LED Colors: <strong>0+0, 0-0, --0, -0-, +-0, +-+</strong></p>
                     <p class="center squeeze">Result after using operators: <strong>++-, ++-, -0+, 0-+, +-0, --+</strong></p>
                     <p class="center">Decrypted: <strong>CCRUKQ</strong></p>
@@ -586,7 +586,7 @@
                     <p class="squeeze">X, the determinant of a 3&times;3 matrix, is obtained as such:</p>
                     <p class="center"><img class="invertable" src="img/Unfair’s%20Forgotten%20Ciphers/MatrixDet.svg" alt="3x3 Matrix Determinant"></p>
                     <p class="squeeze">Y, the multiplicative inverse of the determinant obtained previously, is then found such that X times Y, all modulo P, the length of the alphabet, is equal to 1. Whatever method used, should result in this statement being true.</p>
-                    <p class="center"><img class="smaller" src="img/Unfair’s%20Forgotten%20Ciphers/MultInv.png" alt="Multiplicative Inverse"></p>
+                    <p class="center"><img class="invertable" src="img/Unfair’s%20Forgotten%20Ciphers/MultInv.svg" alt="Multiplicative Inverse"></p>
                     <p class="squeeze">The adjugate of the original matrix can be formed by obtaining the cofactor of the 3&times;3 matrix, and then flipping across the diagonal from top-left to bottom-right.</p>
                     <p class="center"><img class="invertable" src="img/Unfair’s%20Forgotten%20Ciphers/MatrixAdj.svg" alt="3x3 Matrix Adjugate"></p>
                 </div>
@@ -601,7 +601,7 @@
                     <h2>Decrpyting — Step 4: 3&times;3 Hill Cipher (Continued)</h2>
                     <p class="squeeze">Multiplying the adjugated matrix by Y and then calculating the determinants of the 2&times;2 matrices inside the 3&times;3 matrix will obtain the inverse matrix.</p>
                     <p class="center"><img class="invertable" src="img/Unfair’s%20Forgotten%20Ciphers/MatrixInv.svg" alt="3x3 Matrix Inverse"></p>
-                    <p class="squeeze">To use the inverse matrix, group the letters into sets of 3, and obtain the alphabetic positions of each, with Z equating to 0. Treat each as a 1&times;3 matrix, and multiply the 1&times;3 matrix by the inverse 3&times;3 matrix. The first value of the 1x3 matrix is multiplied to the first column of the 3x3 matrix; the same applies for the 2nd and 3rd values of the 1&times;3 matrix respectively. Add the multiplied values, row by row, to get 3 separate values. Repeat for another 3. Modulo the separate values by the length of the alphabet and convert them back into their respective letter via alphabet position, with 0 equating to Z.</p>
+                    <p class="squeeze">To use the inverse matrix, group the letters into sets of 3, and obtain the alphabetic positions of each, with Z equating to 0. Treat each as a 1&times;3 matrix, and multiply the 1&times;3 matrix by the inverse 3&times;3 matrix. The first value of the 1x3 matrix is multiplied to the first column of the 3x3 matrix; the same applies for the 2nd and 3rd values of the 1&times;3 matrix respectively. Add the multiplied values, row by row, to get 3 separate values. Modulo the separate values by the length of the alphabet and convert them back into their respective letter via alphabet position, with 0 equating to Z.</p>
                 </div>
                 <div class="page-footer relative-footer">10</div>
             </div>
