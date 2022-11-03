@@ -56,7 +56,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 		"Indigo","Plum","Rose",
 		"Teal","Gray","Salmon",
 		"Jade","Mint","Cream",
-		"Blue","Violet","Magneta",
+		"Blue","Violet","Magenta",
 		"Azure","Maya","Pink",
 		"Cyan","Aqua","White",
 	};
