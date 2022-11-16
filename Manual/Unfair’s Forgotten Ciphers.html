@@ -137,7 +137,7 @@
                 <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
             </div>
             <div class="page-content">
-                <h2>Decrpyting — Step 1: Binary Code Retrieval And Completing The Keystring</h2>
+                <h2>Decrypting — Step 1: Binary Code Retrieval And Completing The Keystring</h2>
                 <p>On page 2, there is a long string on the top and right displays. The binary string is obtained by the following procedure:</p>
                 <ol>
                     <li>Concatenate the text displayed on page 2’s top and right screen in that order. Treat this as one complete string.</li>
@@ -171,7 +171,7 @@
                 <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
             </div>
             <div class="page-content">
-                <h2>Decrpyting — Step 2: Red Huffman Cipher</h2>
+                <h2>Decrypting — Step 2: Red Huffman Cipher</h2>
                 <p class="footnote">How did Gryffindor come into here in the first place? Was it something about Hufflepuff’s games?</p>
                 <p>Using the binary string obtained, perform the following procedure until obtaining 10 leafing nodes, where a leafing node is a node at the end of the tree. Digits must be read once from left to right, and never trace back.</p>
                 <ol>
@@ -292,7 +292,7 @@
                 <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
             </div>
             <div class="page-content">
-                <h2>Decrpyting — Step 3: RGBA Decomposition Cipher</h2>
+                <h2>Decrypting — Step 3: RGBA Decomposition Cipher</h2>
                 <svg class="chart centered-img" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 200 118.92" font-family="NotoSans" font-size="3" font-weight="bold" text-anchor="middle">
                     <path d="M38.8 30.21v2.57h139.58V30.2z" />
                     <path class="s" d="m32.48 109.15 1.2-1.2-4.2 1.2 4.2 1.2zm144.81 0-1.2 1.2 4.2-1.2-4.2-1.2z" fill-rule="evenodd" stroke="#000" stroke-width="2" transform="matrix(.95427 0 0 1 8.5 -77.65)" />
@@ -332,7 +332,7 @@
                 <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
             </div>
             <div class="page-content">
-                <h2>Decrpyting — Step 3: RGBA Decomposition Cipher (Continued)</h2>
+                <h2>Decrypting — Step 3: RGBA Decomposition Cipher (Continued)</h2>
                 <p class="squeeze">Also on page 4 consists of 3 strings denoting transformations denoted for each channel. Convert letters from the top screen of page 1 to their colors, resulting in 6 triplets, representing R, G and B respectively. Rearrange the 6 triplets formed from the base message into a right triangle whose base and height is 3 triplets long, in reading order. The 3 strings displayed on the top screen will be in RGB order from top to bottom, shifted to the right by the number of ports, in RGB order (R -&gt; G -&gt; B), wrapping around to R if on B. Transformations are then applied in the order displayed on the module. If a channel has “NONE”, that means no transformations were applied to that channel. Grabbing the transformed triplets and the displayed colors should form 6 pairs of triplets.</p>
                 <ul class="squeeze">
                     <li><strong>“TL”:</strong> Flip individual rows vertically of that channel.</li>
@@ -483,7 +483,7 @@
                 <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
             </div>
             <div class="page-content">
-                <h2>Decrpyting — Step 4: 3×3 Hill Cipher</h2>
+                <h2>Decrypting — Step 4: 3×3 Hill Cipher</h2>
                 <p class="footnote">Of course this showed up. People are going to use freaking tools to decrypt that now! How could you!?</p>
                 <p class="squeeze">The 18 digits obtained from step 2 form 9 sets of 2-digit values that are part of a 3×3 matrix in reading order. These are labeled a - i on this manual. To decrypt:</p>
                 <p class="squeeze">X, the determinant of a 3×3 matrix, is obtained as such:</p>
@@ -499,7 +499,7 @@
                 <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
             </div>
             <div class="page-content">
-                <h2>Decrpyting — Step 4: 3×3 Hill Cipher (Continued)</h2>
+                <h2>Decrypting — Step 4: 3×3 Hill Cipher (Continued)</h2>
                 <p class="squeeze">The adjugate of the original matrix can be formed by obtaining the cofactor of the 3×3 matrix, and then flipping across the diagonal from top-left to bottom-right.</p>
                 <img class="centered-img invertable" style="height:800px" src="img/Unfair's%20Forgotten%20Ciphers/MatrixAdj.svg" alt="3x3 Matrix Adjugate">
             </div>
@@ -511,7 +511,7 @@
                 <span class="page-header-section-title">Unfair’s Forgotten Ciphers</span>
             </div>
             <div class="page-content">
-                <h2>Decrpyting — Step 4: 3×3 Hill Cipher (Continued)</h2>
+                <h2>Decrypting — Step 4: 3×3 Hill Cipher (Continued)</h2>
                 <p class="squeeze">Multiplying the adjugated matrix by Y and then calculating the determinants of the 2×2 matrices inside the 3×3 matrix will obtain the inverse matrix.</p>
                 <img class="centered-img invertable" src="img/Unfair's%20Forgotten%20Ciphers/MatrixInv.svg" alt="3x3 Matrix Inverse">
                 <p class="squeeze">To use the inverse matrix, group the letters decrypted from step 3 into sets of 3, and obtain the alphabetic positions of each, with Z equating to 0. Treat each as a 1×3 matrix, and multiply the 1×3 matrix by the inverse 3×3 matrix. The first value of the 1x3 matrix is multiplied to the first column of the 3x3 matrix; the same applies for the 2nd and 3rd values of the 1×3 matrix respectively. Add the multiplied values, row by row, to get 3 separate values. Modulo the separate values by the length of the alphabet and convert them back into their respective letter via alphabet position, with 0 equating to Z.</p>

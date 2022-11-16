@@ -190,6 +190,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 			lighting.range *= lossX;
         }
 	}
+
 	IEnumerator FlickerColoredButtons(float delay = 0f, float rate = 0.1f)
     {
 		if (delay > 0f)
@@ -331,7 +332,53 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
     }
 	IEnumerator ChangeColoredButtonsAnim()
     {
+		interactable = false;
 		var lastColors = coloredButtonRenderers.Select(a => a.material.color).ToArray();
+		if (solving)
+        {
+            for (float t = 0; t < 1f; t += Time.deltaTime * 10)
+            {
+                for (var x = 0; x < coloredButtonRenderers.Length; x++)
+                {
+					var newColor = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
+					coloredButtonRenderers[x].material.color = lastColors[x] * (1f - t) + newColor * t;
+				}
+				yield return null;
+			}
+			for (var x = 0; x < coloredButtonRenderers.Length; x++)
+			{
+				var newColor = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
+				coloredButtonRenderers[x].material.color = newColor;
+			}
+		}
+		else
+        {
+			for (float t = 0; t < 1f; t += Time.deltaTime * 10)
+			{
+				for (var x = 0; x < coloredButtonRenderers.Length; x++)
+				{
+					var newColor = x == curPageIdx ? Color.black : Color.gray;
+					coloredButtonRenderers[x].material.color = lastColors[x] * (1f - t) + newColor * t;
+				}
+				yield return null;
+			}
+			for (var x = 0; x < coloredButtonRenderers.Length; x++)
+			{
+				var newColor = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
+				coloredButtonRenderers[x].material.color = x == curPageIdx ? Color.black : Color.gray;
+			}
+		}
+		interactable = true;
+		yield break;
+    }
+	IEnumerator FlashLEDRed()
+    {
+        for (var x = 0; x < 6; x++)
+        {
+			ledRenderers3[1].material.color = x % 2 == 0 ? Color.red : Color.black;
+			mAudio.PlaySoundAtTransform("wrong", transform);
+			yield return new WaitForSeconds(0.1f);
+        }
 		yield break;
     }
 	void TryChangeLEDCount(int amount)
@@ -388,7 +435,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
             for (var x = 0; x < 4; x++)
             {
                 pushAnimsAll[x].SetRetractState(true);
-                coloredButtonRenderers[x].material.color = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
+                //coloredButtonRenderers[x].material.color = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
             }
             if (unlockedSubmission)
                 DisplaySubmissionHelp();
@@ -407,9 +454,10 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
                 pushAnimsAll[x].SetRetractState(x != curPageIdx);
                 if (x == curPageIdx)
                     pushAnimsAll[x].AnimatePush();
-                coloredButtonRenderers[x].material.color = x == curPageIdx ? Color.black : Color.gray;
+                //coloredButtonRenderers[x].material.color = x == curPageIdx ? Color.black : Color.gray;
             }
         }
+		StartCoroutine(ChangeColoredButtonsAnim());
     }
 	void HandleSubmissionUnlock()
     {
@@ -418,7 +466,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 		if (timeLeftMod10 != expectedSafeDigit && !disableStrikeOnAutosolve)
 		{
 			QuickLog("Submission was unlocked when the last seconds digit was {0} instead of {1}!", timeLeftMod10, expectedSafeDigit);
-			mAudio.PlaySoundAtTransform("wrong", transform);
+			StartCoroutine(FlashLEDRed());
 			modSelf.HandleStrike();
 		}
 		else
@@ -434,7 +482,11 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 			{
 				if (inputtedSequence.Any())
 					inputtedSequence = "";
-				if (inputtedWord.EqualsIgnoreCase(decodedWords) || inputtedWord.SequenceEqual(decodedWords) || disableStrikeOnAutosolve)
+				if (inputtedWord.EqualsIgnoreCase(decodedWords) ||
+					inputtedWord.ToCharArray().SequenceEqual(decodedWords.ToCharArray()) ||
+					inputtedWord == decodedWords ||
+					inputtedWord.Select(a => inputStringRef.IndexOf(a)).SequenceEqual(decodedWords.Select(a => inputStringRef.IndexOf(a))) // Possible triggers for the correct word to be inputted.
+					|| disableStrikeOnAutosolve)
                 {
 					isSolved = true;
 					swapTopAndRightScreens = false;
@@ -453,6 +505,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 					curPageIdx = 0;
 					DisplayCurrentPage();
 				}
+				inputtedWord = "";
 			}
 			else
 			{
@@ -518,7 +571,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 								sum *= 3;
 								sum += symbolRef.IndexOf(inputtedSequence[x]);
 							}
-							inputtedWord += "ABCDEFGHIJKLMNOPQRSTUVWXYZ?"[sum];
+							inputtedWord += inputStringRef[sum];
 							inputtedSequence = "";
 						}
 						else
@@ -556,14 +609,10 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 
 	void PrepModule()
 	{
-		var wordCount = 1;
-		for (var x = 0; x < wordCount; x++)
-		{
-			decodedWords += CipherMachineData._allWords[6].PickRandom();
-		}
+		decodedWords = CipherMachineData._allWords[6].PickRandom();
 		encodingsPagesTop = new List<string>();
 		encodingsPagesSide = new List<string>();
-		QuickLog("Decoded Word: {0}", Enumerable.Range(0, wordCount).Select(a => decodedWords.Substring(a, 6)).Join());
+		QuickLog("Decoded Word: {0}", decodedWords);
 		var outputEncodingHuffmanTree = "";
 		var outputEncodingAll = "";
 		var HuffmanEncodingsAll = new List<string> { "0", "1" };
@@ -1337,6 +1386,10 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 			for (int x = 0; x < selectedCommands.Count && !breakLoop; x++)
 			{
 				yield return null;
+				while (!interactable)
+                {
+					yield return string.Format("trycancel The press for button #{0} in the command was canceled!", x + 1);
+                }
 				if (timeThresholds[x].Any())
 				{
 
