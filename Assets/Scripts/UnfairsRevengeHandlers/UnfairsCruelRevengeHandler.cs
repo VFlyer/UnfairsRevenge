@@ -3735,7 +3735,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						break;
 					}
 			}
-		if (isCorrect)
+		if (isCorrect || forceSolveRequested)
 		{
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: The resulting press is correct.", loggingModID);
 			string[] possibleSounds = { "button1", "button2", "button3", "button4" };
@@ -4006,7 +4006,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				case "IKE":
 					{
 						var strikeCount = bombInfo.GetStrikes();
-						var expectedIdxBeforeInvert = (lastCorrectInputs.Any(a => rearrangedColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => rearrangedColorList.Contains(a))) : (Array.IndexOf(idxColorList, 0)) + strikeCount) % 6;
+						var expectedIdxBeforeInvert = (5 * strikeCount + (lastCorrectInputs.Any(a => rearrangedColorList.Contains(a)) ? Array.IndexOf(rearrangedColorList, lastCorrectInputs.Last(a => rearrangedColorList.Contains(a))) : Array.IndexOf(idxColorList, 0))) % 6;
 						colorButtonSelectables[invertColorButtonPresses ? Array.IndexOf(rearrangedColorList,complementaryCounterparts[rearrangedColorList[expectedIdxBeforeInvert]]) : expectedIdxBeforeInvert].OnInteract();
 					}
 					break;
