@@ -182,6 +182,8 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 				HandleOuterPress();
 			return false;
 		};
+		outerSelectable.OnInteractEnded += delegate { };
+		screenSelectable.OnInteractEnded += delegate { };
 		animatorThingy.SetActive(false);
 		var lossX = transform.lossyScale.x;
 		foreach (var lighting in displayLights)
@@ -363,10 +365,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 				yield return null;
 			}
 			for (var x = 0; x < coloredButtonRenderers.Length; x++)
-			{
-				var newColor = Color.white * x / 3f + Color.black * ((3 - x) / 3f);
 				coloredButtonRenderers[x].material.color = x == curPageIdx ? Color.black : Color.gray;
-			}
 		}
 		interactable = true;
 		yield break;
@@ -1065,7 +1064,6 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
         for (var x = 0; x < 3; x++)
         {
 			var curChnIdx = rgbOrderObtained[x];
-			var chnValueIdx = decomposedIdxVoid[curChnIdx];
 			var remainingRGBValues = decomposedIdxVoid[curChnIdx] == 2 ? 1 : 0;
 			var focusedRGBValue = decomposedIdxVoid[curChnIdx] == 0 ? 1 : 2;
 
@@ -1447,8 +1445,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 					breakLoop = true;
 				}
 				selectedCommands[x].OnInteract();
-				if (selectedCommands[x] != outerSelectable && selectedCommands[x] != screenSelectable)
-					selectedCommands[x].OnInteractEnded();
+				selectedCommands[x].OnInteractEnded();
 				yield return new WaitForSeconds(0.1f);
 			}
 			yield return "end multiple strikes";
@@ -1465,21 +1462,24 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 				yield return true;
 			yield return null;
 			if (!solving)
+			{
 				outerSelectable.OnInteract();
+				outerSelectable.OnInteractEnded();
+			}
 			else
-            {
+			{
 				if (unlockedSubmission)
-                {
+				{
 					var idxesLetters = decodedWords.Select(a => inputStringRef.IndexOf(a)).ToArray();
 					foreach (var idxL in idxesLetters)
-                    {
+					{
 						var curVal = idxL;
 						var idxes3 = new List<int>();
-                        for (var x = 0; x < 3; x++)
-                        {
+						for (var x = 0; x < 3; x++)
+						{
 							idxes3.Add(curVal % 3);
 							curVal /= 3;
-                        }
+						}
 						idxes3.Reverse();
 						foreach (int value in idxes3)
 						{
@@ -1493,13 +1493,13 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 					innerSelectable.OnInteractEnded();
 				}
 				else
-                {
+				{
 					while (Mathf.FloorToInt(bombInfo.GetTime() % 10) != expectedSafeDigit)
 						yield return true;
 					innerSelectable.OnInteract();
 					innerSelectable.OnInteractEnded();
-                }
-            }
+				}
+			}
 			yield return new WaitForSeconds(0.1f);
 		}
 

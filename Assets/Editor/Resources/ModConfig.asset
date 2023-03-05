@@ -25,10 +25,12 @@ MonoBehaviour:
     (Camellia Remix), only accessible if Unfair's Forgotten Ciphers is disarmed at
     the very end.\nAlso contains 2 sound effects from Hexagon, an old flash made by
     Terry Cavanagh. The original credit to the 2 sound effects can be found from there.\n\r\nModule
-    IDs:\r\nUnfair's Revenge: unfairsRevenge\r\nUnfair's Cruel Revenge: unfairsRevengeCruel\r\n\r\nOriginal
-    idea by Tachatat18\r\nImplemented by VFlyer\r\n\r\nSource Code: https://github.com/VFlyer/UnfairsRevenge\r\n\nHTML
+    IDs:\r\nUnfair's Revenge: unfairsRevenge\r\nUnfair's Cruel Revenge: unfairsRevengeCruel\r\nUnfair's
+    Forgotten Ciphers: unfairsForgottenCiphers\n\r\nOriginal idea by Tachatat18\r\nImplemented
+    by VFlyer\r\n\r\nSource Code: https://github.com/VFlyer/UnfairsRevenge\r\n\nHTML
     Manual of Unfair's Revenge: https://ktane.timwi.de/HTML/Unfair's%20Revenge.html\nHTML
-    Manual of Unfair's Cruel Revenge: https://ktane.timwi.de/HTML/Unfair's%20Cruel%20Revenge.html\n"
-  version: 1.4.1.03
+    Manual of Unfair's Cruel Revenge: https://ktane.timwi.de/HTML/Unfair's%20Cruel%20Revenge.html\nHTML
+    Manual of Unfair's Forgotten Ciphers: https://ktane.timwi.de/HTML/Unfair's%20Forgotten%20Ciphers.html"
+  version: 1.4.1.04
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 9fbcb5eb2009a2944823bb091fb038eb, type: 3}
