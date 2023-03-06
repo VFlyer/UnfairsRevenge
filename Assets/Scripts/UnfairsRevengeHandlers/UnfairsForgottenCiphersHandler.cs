@@ -1088,7 +1088,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 
 
 		// Section where you calculate the time to safely enter submission.
-		QuickLog("Safe Digit Calculations:");
+		QuickLog("---------------- Safe Digit Calculations ----------------");
 		expectedSafeDigit = bombInfo.GetSerialNumberNumbers().LastOrDefault() + moduleID;
 		QuickLog("The last digit of the serial number is {0}, adding {1} to the module ID", bombInfo.GetSerialNumberNumbers().LastOrDefault(), moduleID);
 		var allUnlitIndicatorsAsString = bombInfo.GetOffIndicators().Join("").ToUpperInvariant();
@@ -1117,6 +1117,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 		expectedSafeDigit -= 3 * bombInfo.GetModuleNames().Count(a => a.ToUpperInvariant().Contains("FAIR"));
 		expectedSafeDigit = PMod(expectedSafeDigit + 3, 10);
 		QuickLog("Final Safe Digit: {0}", expectedSafeDigit);
+		QuickLog("---------------- User Interactions ----------------");
 		ledCountQuery.Add(1);
 		isReady = true;
 		StartCoroutine(HandleStartUpAnim());
