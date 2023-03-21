@@ -1335,8 +1335,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 #pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
 	readonly string TwitchHelpMessage = "Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" "+
-		"To time a specific press, specify based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. "+
-		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed.";
+		"To time a specific press, specify as many time stamps based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. " +
+		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed. (Example: \"!{0} r 50 40 30 20 10 00;outer;inner\")";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string command)
 	{

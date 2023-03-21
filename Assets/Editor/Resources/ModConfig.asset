@@ -31,6 +31,6 @@ MonoBehaviour:
     Manual of Unfair's Revenge: https://ktane.timwi.de/HTML/Unfair's%20Revenge.html\nHTML
     Manual of Unfair's Cruel Revenge: https://ktane.timwi.de/HTML/Unfair's%20Cruel%20Revenge.html\nHTML
     Manual of Unfair's Forgotten Ciphers: https://ktane.timwi.de/HTML/Unfair's%20Forgotten%20Ciphers.html"
-  version: 1.4.1.04
+  version: 1.4.1.05
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 9fbcb5eb2009a2944823bb091fb038eb, type: 3}

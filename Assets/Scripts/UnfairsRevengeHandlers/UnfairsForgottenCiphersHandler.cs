@@ -1236,8 +1236,8 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 #pragma warning disable IDE0051 // Remove unused private members
 	bool ZenModeActive;
 	readonly string TwitchHelpMessage = "Select the given button with \"!{0} press L(eft);U(p);R(ight);D(own);Inner;Outer\" " +
-		"To time a specific press, specify based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. " +
-		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed. Inspect the displayed LED colors with \"!{0} inspect\"";
+		"To time a specific press, specify as many time stamps based only on seconds digits (##), full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. " +
+		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed. (Example: \"!{0} u 50 40 30 20 10 00;outer;inner\") Inspect the displayed LED colors with \"!{0} inspect\"";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string command)
 	{

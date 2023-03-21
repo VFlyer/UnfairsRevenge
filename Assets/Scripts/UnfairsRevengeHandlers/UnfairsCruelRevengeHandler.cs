@@ -95,7 +95,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		try
 		{
 			ModConfig<UnfairsCruelRevengeSettings> fileSettings = new ModConfig<UnfairsCruelRevengeSettings>("UnfairsCruelRevengeSettings");
-			if (ucrSettings.version != fileSettings.Settings.version)
+			if (ucrSettings.version == fileSettings.Settings.version)
 			{
 				fileSettings.Settings = ucrSettings;
 			}
@@ -4343,8 +4343,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 	bool TwitchShouldCancelCommand;
 	string TwitchHelpMessage =
 		"Select the given button with \"!{0} press R(ed);G(reen);B(lue);C(yan);M(agenta);Y(ellow);Inner;Outer\" " +
-		"To time a specific press, append based only on seconds digits (##), up to full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. " +
-		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed.\n"+
+		"To time a specific press, append as many time stamps based only on seconds digits (##), up to full time stamp (DD:HH:MM:SS), or MM:SS where MM exceeds 99 min. " +
+		"To press the idx/strike screen \"!{0} screen\" Semicolons can be used to combine presses, both untimed and timed. (Example: \"!{0} r 50 40 30 20 10 00;outer;inner\")\n" +
 		"Enable autocycle on the screen by using \"!{0} autocycle ##.###\", turn autocycle off with \"!{0} autocycle off\", or make the autocycle cycle in the opposite direction with \"!{0} autocycle reverse\". Get the colors of the buttons around the module by using \"!{0} colorblind\" or \"!{0} cycle\"";
 #pragma warning restore IDE0051 // Remove unused private members
 	IEnumerator ProcessTwitchCommand(string command)

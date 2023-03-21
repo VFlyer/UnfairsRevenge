@@ -18,7 +18,7 @@ public class ProgressBarHandler : MonoBehaviour {
 	void displayPercentage()
 	{
 		float percentageInvert = Mathf.Max(0, Mathf.Min(maxProgress - curProgress, maxProgress)) / maxProgress;
-		float percentageBase = Mathf.Max(0,Mathf.Min(curProgress,maxProgress)) / maxProgress;
+		float percentageBase = Mathf.Max(0, Mathf.Min(curProgress,maxProgress)) / maxProgress;
 
 
 		barLeft.transform.localPosition = new Vector3(-0.5f * percentageInvert, barLeft.transform.localPosition.y, barLeft.transform.localPosition.z);
