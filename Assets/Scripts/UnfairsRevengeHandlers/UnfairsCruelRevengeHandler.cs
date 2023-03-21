@@ -95,7 +95,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		try
 		{
 			ModConfig<UnfairsCruelRevengeSettings> fileSettings = new ModConfig<UnfairsCruelRevengeSettings>("UnfairsCruelRevengeSettings");
-			if (ucrSettings.version == fileSettings.Settings.version)
+			if (ucrSettings.version == fileSettings.Settings.version && !fileSettings.Settings.resetSettings)
 			{
 				fileSettings.Settings = ucrSettings;
 			}
