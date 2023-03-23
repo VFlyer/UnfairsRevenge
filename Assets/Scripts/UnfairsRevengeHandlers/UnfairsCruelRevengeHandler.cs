@@ -109,13 +109,14 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			harderUCR = ucrSettings.cruelerRevenge;
 			noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;
 			debugCruelRevenge = ucrSettings.debugUCR;
-			lockCipherIdxes = ucrSettings.debugCiphersIdxes.ToArray();
+			lockCipherIdxes = ucrSettings.debugCiphersIdxes ?? new int[0];
 			if (debugCruelRevenge)
 				instructionsToGenerate = Math.Max(Math.Min(ucrSettings.debugNumPairsInstructions * 2, 12), 2);
 		}
-		catch
+		catch (Exception thrownError)
 		{
-			Debug.LogWarningFormat("<Unfair's Cruel Revenge>: Settings do not work as intended! Using default settings!", loggingModID);
+			Debug.LogWarningFormat("<Unfair's Cruel Revenge>: Settings do not work as intended! Using default settings! The exception thrown:", loggingModID);
+			Debug.LogException(thrownError);
 			legacyUCR = false;
 			harderUCR = false;
 			instructionsToGenerate = 6;
