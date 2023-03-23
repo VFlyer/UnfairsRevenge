@@ -95,7 +95,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		try
 		{
 			ModConfig<UnfairsCruelRevengeSettings> fileSettings = new ModConfig<UnfairsCruelRevengeSettings>("UnfairsCruelRevengeSettings");
-			if (ucrSettings.version == fileSettings.Settings.version && !fileSettings.Settings.resetSettings)
+			if (fileSettings.Settings.resetSettings)
 			{
 				fileSettings.Settings = ucrSettings;
 			}
@@ -104,7 +104,8 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				ucrSettings = fileSettings.Settings;
 				fileSettings.Settings = ucrSettings;
 			}
-			
+
+
 			legacyUCR = ucrSettings.enableLegacyUCR;
 			harderUCR = ucrSettings.cruelerRevenge;
 			noTPCruelCruelRevenge = ucrSettings.noTPCruelerRevenge;

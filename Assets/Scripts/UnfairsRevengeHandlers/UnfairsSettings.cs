@@ -9,7 +9,7 @@ public class UnfairsCruelRevengeSettings
 	public int debugNumPairsInstructions = 3;
 	public int[] debugCiphersIdxes;
 	public bool resetSettings = false;
-	public string version = "2.2";
+	public string version = "2.3";
 }
 public class UnfairsForgottenCiphersSettings
 {
