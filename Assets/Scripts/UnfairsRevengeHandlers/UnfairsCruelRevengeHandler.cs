@@ -3879,6 +3879,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		try
 		{
 			var lastTPSettings = noTPCruelCruelRevenge;
+			var lastDebugUCRSettings = debugCruelRevenge;
 			var missionDescription = Game.Mission.Description;
 			var missionID = Game.Mission.ID;
 			noTPCruelCruelRevenge = true;
@@ -3899,9 +3900,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					debugCruelRevenge = false;
 					break;
 				case "freeplay":
+				case "custom":
 					noTPCruelCruelRevenge = lastTPSettings;
 					Debug.LogFormat("<Unfair's Cruel Revenge #{0}> MISSION DETECTED AS FREEPLAY. CANNOT OVERRIDE SETTINGS.", loggingModID);
-					debugCruelRevenge &= true;
+					debugCruelRevenge = lastDebugUCRSettings;
 					return;
 				default:
 					break;
@@ -3945,7 +3947,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				}
 			}
 			else
+			{
 				noTPCruelCruelRevenge = lastTPSettings;
+				debugCruelRevenge = lastDebugUCRSettings;
+			}
 			Debug.LogFormat("<Unfair's Cruel Revenge #{0}> Are the settings overriden? {1}", loggingModID, settingsOverriden ? "YES BY MISSION DESCRIPTION" : "NO");
 		}
 		catch (Exception resultingError)
