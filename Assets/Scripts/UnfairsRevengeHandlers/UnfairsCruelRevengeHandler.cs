@@ -1468,7 +1468,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 						new[] { "MAKE","THE","STABILIS","WITH","THE","ENGLISH","ALPHABET","IN","ORDER","THEN","TO","MAKE","THE",
 							"MOBILIS","SEPARATE","THE","MODIFIED","ALPHABET","BY","EVERY","OTHER","LETTER","TO","OBTAIN","TWO","HALVES" },
 						new[] { "IF","RED","IS","DIAMETRICALLY","OPPOSITE","TO","CYAN","REVERSE","THE","FIRST","HALF","AND","SWAP",
-							"THOSE","HALVES","OTHERWISE","SWAP","THE","SECOND","HALF","AND","THEN","COCATENATE","THE","HALVES","TOGETHER" },
+							"THOSE","HALVES","OTHERWISE","REVERSE","THE","SECOND","HALF","AND","THEN","COCATENATE","THE","HALVES","TOGETHER" },
 						new[] { "MARK","YOUR","ANCHOR","LETTER","IN","YOUR","MOBILIS","THE","FIRST","LETTER","IN","THE","SERIAL",
 							"NUMBER","IF","THERE","ARE","ANY","OTHERWISE","MARK","A","AS","YOUR","ANCHOR","LETTER","INSTEAD" },
 						new[] { "NOW","TAKE","THE","FIRST","TWO","LETTERS","IN","THE","TWELVE","LETTER","PIGPEN","TEXT","AND",
@@ -4695,7 +4695,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 					yield return string.Format("strikemessage incorrectly pressing {0} on {1} after {2} press{3} in the TP command specified!", buttonPressed == "Inner" ? "Inner Center" : buttonPressed == "Outer" ? "Outer Center" : buttonPressed, bombInfo.GetFormattedTime(), x + 1, x == 0 ? "" : "es");
 				}
 				else if (IsCurInstructionCorrect(buttonPressed) && harderUCR && currentInputPos + 1 >= splittedInstructions.Count)
-					yield return "awardpointsonsolve 29";
+					yield return "awardpointsonsolve 30";
 				selectedCommands[x].OnInteract();
 				if (x + 1 < selectedCommands.Count && colorButtonSelectables.Contains(selectedCommands[x + 1]) && harderUCR && !hasStruck)
 				{
