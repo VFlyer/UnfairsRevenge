@@ -1525,7 +1525,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 							Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red and Cyan are diametrically opposite to each other.", loggingModID);
 							baseAlphabetHalves.Reverse();
 						}
-						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red and Cyan are not diametrically opposite to each other.", loggingModID);
+						else Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Red and Cyan are not diametrically opposite to each other.", loggingModID);
 
 						baseAlphabetHalves[1] = baseAlphabetHalves[1].Reverse().Join("");
 						var combinedMobius = baseAlphabetHalves.Join("");
