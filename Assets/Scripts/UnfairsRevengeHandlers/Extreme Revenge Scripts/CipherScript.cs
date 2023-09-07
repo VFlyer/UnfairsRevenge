@@ -1,33 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class AnyCipherScript
 {
     protected string[] encodingStrings;
-    protected List<string> keywords;
-    protected string alphabet;
+    protected List<string> displayTexts;
+    protected string[] usedAlphabets;
+    int alphabetsRequired { get { return 0; } }
 
 	public AnyCipherScript()
     {
-        keywords = new List<string>();
+        displayTexts = new List<string>();
         encodingStrings = new string[0];
-        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        usedAlphabets = new string[0];
     }
     public virtual IEnumerable<string> GetEncodingString()
     {
         return encodingStrings;
     }
-    public virtual void ChangeAlphabet(string newAlphabet)
+    public virtual void AssignAlphabets(params string[] newAlphabets)
     {
-        alphabet = newAlphabet;
+        usedAlphabets = newAlphabets;
     }
     public virtual IEnumerable<string> GetKeywords()
     {
-        return keywords;
+        return displayTexts;
     }
-    public virtual string Encode(string value)
+    public virtual IEnumerable<string> Encode(params string[] valuesToEncrypt)
     {
-        return value;
+        return valuesToEncrypt;
     }
 }
