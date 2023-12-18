@@ -481,7 +481,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			valueA *= 2;
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are no ports. Value A logged at {1}", loggingModID, valueA);
 		}
-		if (bombInfo.GetSolvableModuleIDs().Count() >= 31)
+		if (bombInfo.GetModuleIDs().Count() >= 31)
 		{
 			valueA /= 2;
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are 31 or more modules on the bomb, including itself. Value A logged at {1}", loggingModID, valueA);
@@ -1014,7 +1014,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			valueA *= 2;
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are no ports. Value A logged at {1}", loggingModID, valueA);
 		}
-		if (bombInfo.GetSolvableModuleIDs().Count() >= 31)
+		if (bombInfo.GetModuleIDs().Count() >= 31)
 		{
 			valueA /= 2;
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: There are 31 or more modules on the bomb, including itself. Value A logged at {1}", loggingModID, valueA);

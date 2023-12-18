@@ -218,7 +218,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			offset *= 2;
 			Debug.LogFormat("[Unfair's Revenge #{0}]: There are no ports. Offset logged at {1}", loggingModID, offset);
 		}
-		if (bombInfo.GetSolvableModuleIDs().Count() >= 31)
+		if (bombInfo.GetModuleIDs().Count() >= 31)
 		{
 			offset /= 2;
 			Debug.LogFormat("[Unfair's Revenge #{0}]: There are 31 or more modules on the bomb, including itself. Offset logged at {1}", loggingModID, offset);
