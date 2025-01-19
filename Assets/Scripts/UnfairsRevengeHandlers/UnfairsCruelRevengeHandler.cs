@@ -1374,7 +1374,11 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				case 10:
 					{// Scytale Transposition
 						int portCount = bombInfo.GetPortCount();
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-------- Scytale Transposition --------+-", loggingModID);
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {1} rows created based on the number of ports.", loggingModID, portCount % 4 + 2);
 						groupedEncryptedResults.Add(EncryptUsingScytaleTransposition(currentString, portCount % 4 + 2));
+
+						Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: -+-------------------------------------------------+-", loggingModID);
 						goto default;
 					}
 				case 11:
