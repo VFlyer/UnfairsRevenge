@@ -1395,7 +1395,7 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 					List<long> currentTimeThresholds = timeThresholds[x].Where(a => ZenModeActive ? a > bombInfo.GetTime() : a < bombInfo.GetTime()).ToList();
 					if (!currentTimeThresholds.Any())
 					{
-						yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
+						yield return string.Format("sendtochaterror Your timed interaction has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
 						yield break;
 					}
 					long targetTime = ZenModeActive ? currentTimeThresholds.Min() : currentTimeThresholds.Max();
@@ -1408,28 +1408,28 @@ public class UnfairsForgottenCiphersHandler : MonoBehaviour {
 					}
 					do
 					{
-						yield return string.Format("trycancel Your timed interation has been canceled after a total of {0}/{1} presses in the command.", x + 1, selectedCommands.Count);
+						yield return string.Format("trycancel Your timed interaction has been canceled after a total of {0}/{1} presses in the command.", x + 1, selectedCommands.Count);
 						if ((long)bombInfo.GetTime() > targetTime && ZenModeActive)
 						{
 							currentTimeThresholds = currentTimeThresholds.Where(a => a > bombInfo.GetTime()).ToList();
 							if (!currentTimeThresholds.Any())
 							{
-								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
+								yield return string.Format("sendtochaterror Your timed interaction has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
 								yield break;
 							}
 							targetTime = currentTimeThresholds.Min();
-							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
+							yield return string.Format("sendtochat Your timed interaction has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
 						}
 						else if ((long)bombInfo.GetTime() < targetTime && !ZenModeActive)
 						{
 							currentTimeThresholds = currentTimeThresholds.Where(a => a < bombInfo.GetTime()).ToList();
 							if (!currentTimeThresholds.Any())
 							{
-								yield return string.Format("sendtochaterror Your timed interation has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
+								yield return string.Format("sendtochaterror Your timed interaction has been canceled. There are no remaining times left for press #{0} in the command that was sent.", x + 1);
 								yield break;
 							}
 							targetTime = currentTimeThresholds.Max();
-							yield return string.Format("sendtochat Your timed interation has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
+							yield return string.Format("sendtochat Your timed interaction has been altered. The new time is now {1} for press #{0} in the command that was sent.", x + 1, FormatSecondsToTime(targetTime));
 						}
 					}
 					while ((long)bombInfo.GetTime() != targetTime);
