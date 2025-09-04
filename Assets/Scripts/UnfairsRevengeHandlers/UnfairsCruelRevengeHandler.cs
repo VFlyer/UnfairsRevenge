@@ -1848,7 +1848,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			}
 			splittedInput.Add(curVal);
 		}
-		return splittedInput.OrderBy(a => key[splittedInput.IndexOf(a)]).Join("");
+		return Enumerable.Range(0, key.Length).OrderBy(a => key[a]).Select(a => splittedInput[a]).Join("");
 	}
 	string EncryptUsingScytaleTransposition(string input, int rowCount = 2)
 	{
