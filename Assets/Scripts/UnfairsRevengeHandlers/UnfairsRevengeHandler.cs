@@ -46,7 +46,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 	IEnumerator currentlyRunning;
 	IEnumerator[] colorsFlashing = new IEnumerator[6];
 	bool isplayingSolveAnim, hasStarted, isShowingStrikeCount, isFinished, hasStruck = false;
-
+	string fullyEncryptedString = "";
 	private Color[] colorWheel = { Color.red, Color.yellow, Color.green, Color.cyan, Color.blue, Color.magenta };
     private int[] idxColorList = Enumerable.Range(0, 6).ToArray();
 	List<string> lastCorrectInputs = new List<string>(), splittedInstructions = new List<string>();
@@ -270,13 +270,14 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		string playfairEncryptedString = EncryptUsingPlayfair(baseString, keyCString, true),
 			step3EncryptedString = multiplier % 13 == 6 ? EncryptUsingAtbash(playfairEncryptedString) : EncryptUsingAffine(playfairEncryptedString, multiplier),
 			caesarEncryptedString = EncryptUsingCaesar(step3EncryptedString,offset);
+		fullyEncryptedString = caesarEncryptedString;
 
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Caesar Encrypted String: {1}", loggingModID, caesarEncryptedString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Affine/Atbash Encrypted String: {1}", loggingModID, step3EncryptedString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Playfair Encrypted String: {1}", loggingModID, playfairEncryptedString);
 		Debug.LogFormat("[Unfair's Revenge #{0}]: Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
 
-		StartCoroutine(TypePigpenText(caesarEncryptedString));
+		StartCoroutine(TypePigpenText(fullyEncryptedString));
 
 	}
 
@@ -411,9 +412,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		string curValue = curValBig.ToString();
 		string remainingSerNo = curSerNo.Substring(3);
 		for (int x = 0; x < remainingSerNo.Length; x++)
-		{
 			curValue += charReference[remainingSerNo[x]];
-		}
 		Debug.LogFormat("[Unfair's Revenge #{0}]: After Appending Numerical Equivalents: {1}", loggingModID, curValue);
 		long givenValue = long.Parse(curValue);
 		while (givenValue > 0)
@@ -441,9 +440,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 					}
 				}
 				if (hexDecimalString.Substring(10).Contains(selectedString[x]))
-				{
 					output += selectedString[x];
-				}
 				else
 				{
 					int intereptedValue = int.Parse(selectedString[x].ToString());
@@ -575,14 +572,10 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 		while (isplayingSolveAnim)
 		{
 			for (int a = 0; a < 10; a += 3)
-			{
 				statusIndicators[a].material.color = Color.white;
-			}
 			yield return new WaitForSeconds(0.2f);
 			for (int a = 0; a < 10; a += 3)
-			{
 				statusIndicators[a].material.color = Color.black;
-			}
 			yield return new WaitForSeconds(Time.deltaTime);
 		}
 		yield return null;
@@ -617,9 +610,7 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			singleLight.enabled = false;
 		centerLight.enabled = false;
 		for (int i = 0; i < colorButtonRenderers.Length; i++)
-		{
 			colorButtonRenderers[i].material.color = colorWheel[idxColorList[i]] * 0.5f;
-		}
 		yield return null;
 	}
 	IEnumerator TypePigpenText(string displayValue)
@@ -653,6 +644,8 @@ public class UnfairsRevengeHandler : MonoBehaviour {
 			{"Me: Nothing.\nRaffina:", "Rainbow Deluxe!" },
 			{"Landing\nSequence...", "Initiated" },
 			{"I'll tell you\nwhat you want", "What you really\nreally want" },
+			{"To the defuser...", "Don't sweat it..." },
+			{"Module Idea:\nTach", "Inspired from\nUnfair Cipher\nby Maca" },
 			{"Invite the\nfollowing and\nget them", "to join the\nAll Worlds\nAlliance " }
 		};
 		KeyValuePair<string, string> selectedSample = sampleQuestionResponse.PickRandom();
