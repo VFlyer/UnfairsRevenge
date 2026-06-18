@@ -721,13 +721,15 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2}: {1}", loggingModID, baseCipherList[idxCipherList[x]], x + 1);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
 
+		var iterations = 0;
 		// Generate non-conflicting instructions.
 		do
 		{
 			splittedInstructions.Clear();
-			GenerateInstructions();
+			GenerateInstructions(instructionsToGenerate - 1);
+			iterations++;
 		}
-		while (splittedInstructions.Select(a => a.Replace(baseAlphabet[9], baseAlphabet[8])).Distinct().Count() != instructionsToGenerate);
+		while (splittedInstructions.Select(a => a.Replace(baseAlphabet[9], baseAlphabet[8])).Distinct().Count() != instructionsToGenerate && iterations < 1000);
 		// For each splitted instruction, replace any (10th letters) with (9th letters) and check if they are distinct to each other to have a length of 6.
 
 
@@ -3690,53 +3692,50 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 				case "AGN":
 					{
 						if (splittedInstructions.Count > 0)
-						{
-							if (splittedInstructions.Count > 0)
-							{
-								var lastInstruction = splittedInstructions[currentInputPos == 0 ? 1 : currentInputPos - 1];
-								if (lastInstruction == "INV" || lastInstruction == "ERT")
-									goto case "INV";
-								else if (lastInstruction == "STR" || lastInstruction == "IKE")
-									goto case "STR";
-								else if (lastInstruction == "REP" || lastInstruction == "EAT")
-									goto case "REP";
-								else if (lastInstruction == "SCN")
-									goto case "SCN";
-								else if (lastInstruction == "SWP")
-									goto case "SWP";
-								else if (lastInstruction == "OPP")
-									goto case "OPP";
-								else if (lastInstruction == "NXS")
-									goto case "NXS";
-								else if (lastInstruction == "PVS")
-									goto case "PVS";
-								else if (lastInstruction == "NXP")
-									goto case "NXP";
-								else if (lastInstruction == "PVP")
-									goto case "PVP";
-								else if (lastInstruction == "SKP")
-									goto case "SKP";
-								else if (lastInstruction == "MOT")
-									goto case "MOT";
-								else if (lastInstruction == "SUB")
-									goto case "SUB";
-								else if (lastInstruction == "PRN")
-									goto case "PRN";
-								else if (lastInstruction == "CHK")
-									goto case "CHK";
-								else if (lastInstruction == "PCR")
-									goto case "PCR";
-								else if (lastInstruction == "PCG")
-									goto case "PCG";
-								else if (lastInstruction == "PCB")
-									goto case "PCB";
-								else if (lastInstruction == "SCC")
-									goto case "SCC";
-								else if (lastInstruction == "SCY")
-									goto case "SCY";
-								else if (lastInstruction == "SCM")
-									goto case "SCM";
-							}
+						{ // Note to self: Switch statement on switch statement prevents accessing earlier blocks.
+							var lastInstruction = splittedInstructions[currentInputPos == 0 ? 1 : currentInputPos - 1];
+							if (lastInstruction == "INV" || lastInstruction == "ERT")
+								goto case "INV";
+							else if (lastInstruction == "STR" || lastInstruction == "IKE")
+								goto case "STR";
+							else if (lastInstruction == "REP" || lastInstruction == "EAT")
+								goto case "REP";
+							else if (lastInstruction == "SCN")
+								goto case "SCN";
+							else if (lastInstruction == "SWP")
+								goto case "SWP";
+							else if (lastInstruction == "OPP")
+								goto case "OPP";
+							else if (lastInstruction == "NXS")
+								goto case "NXS";
+							else if (lastInstruction == "PVS")
+								goto case "PVS";
+							else if (lastInstruction == "NXP")
+								goto case "NXP";
+							else if (lastInstruction == "PVP")
+								goto case "PVP";
+							else if (lastInstruction == "SKP")
+								goto case "SKP";
+							else if (lastInstruction == "MOT")
+								goto case "MOT";
+							else if (lastInstruction == "SUB")
+								goto case "SUB";
+							else if (lastInstruction == "PRN")
+								goto case "PRN";
+							else if (lastInstruction == "CHK")
+								goto case "CHK";
+							else if (lastInstruction == "PCR")
+								goto case "PCR";
+							else if (lastInstruction == "PCG")
+								goto case "PCG";
+							else if (lastInstruction == "PCB")
+								goto case "PCB";
+							else if (lastInstruction == "SCC")
+								goto case "SCC";
+							else if (lastInstruction == "SCY")
+								goto case "SCY";
+							else if (lastInstruction == "SCM")
+								goto case "SCM";
 						}
 						break;
 					}
