@@ -1136,7 +1136,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			.Concat(transpositionCipherIdxes.Shuffle().Take(2))).ToArray().Shuffle();
 		if (customCruelRevenge)
 		{
-			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: DEBUG ENABLED. CIPHER LIST IS DETERMINED BY SETTINGS. NOTE THAT THIS WILL STILL AFFECT AFFINE CIPHER.", loggingModID);
+			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: CUSTOM CIPHER LIST ENABLED. CIPHER LIST IS DETERMINED BY SETTINGS. NOTE THAT THIS WILL STILL AFFECT AFFINE CIPHER.", loggingModID);
 			cipherIdxesAll = lockCipherIdxes.Where(a => a >= 0 && a < 16 && (a != 5 || Mathf.Abs(valueX % 13) != 6)).ToArray() ?? new int[0];
 		}
 		encodingDisplay = cipherIdxesAll.Select(b => (idxCurStrikeDisplay == 2 && idxCurModIDDisplay == 2 ? "FEDCBA9876543210" : idxCurStrikeDisplay == 2 || idxCurModIDDisplay == 2 ? "4A981D325E6C7FB0" : "0123456789ABCDEF").ElementAt(b)).Join("");
@@ -1559,7 +1559,7 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: After {2}: {1}", loggingModID, groupedEncryptedResults[y], baseCipherList[cipherIdxesAll[y]]);
 		}
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Generated instructions: {1}", loggingModID, splittedInstructions.Join(", "));
-		var displayResult = groupedEncryptedResults.LastOrDefault().Join("");
+		var displayResult = cipherIdxesAll.Any() ? groupedEncryptedResults.LastOrDefault().Join("") : "";
 
 		displayPigpenText = FitToScreen(string.IsNullOrEmpty(displayResult) ? splittedInstructions.Join("") : displayResult, 13);
 		StartCoroutine(TypePigpenText(string.IsNullOrEmpty(displayResult) ? splittedInstructions.Join("") : displayResult));
