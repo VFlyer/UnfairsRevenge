@@ -720,7 +720,10 @@ public class UnfairsCruelRevengeHandler : MonoBehaviour {
 		for (int x = 0; x < idxCipherList.Length; x++)
 			Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: {2}: {1}", loggingModID, baseCipherList[idxCipherList[x]], x + 1);
 		Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: ----------------------------------------------", loggingModID);
-
+		//if (!customCruelRevenge)
+		instructionsToGenerate = 6;
+		//else
+		//	Debug.LogFormat("[Unfair's Cruel Revenge #{0}]: Custom Legacy Unfair's Cruel Revenge is active. ", loggingModID);
 		var iterations = 0;
 		// Generate non-conflicting instructions.
 		do
